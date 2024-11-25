@@ -1,0 +1,36 @@
+/* login.module.css */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.centerIt {
+    display: flex;
+    justify-content: center;
+}
+
+.buttonRestablecer {
+    margin-top: 1rem;
+}
+
+.lowercaseText {
+    text-transform: none;
+}
+
+.modalLarge {
+    width: 80vw;
+    height: 80vh;
+}
+
+Option.option{
+    font-size: 2;
+}

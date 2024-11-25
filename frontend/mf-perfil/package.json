@@ -1,0 +1,73 @@
+{
+  "name": "mf-perfil",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@atlaskit/avatar": "^21.5.2",
+    "@atlaskit/button": "^17.8.0",
+    "@atlaskit/css-reset": "^6.6.1",
+    "@atlaskit/dropdown-menu": "^12.8.4",
+    "@atlaskit/dynamic-table": "^14.16.2",
+    "@atlaskit/form": "^9.1.0",
+    "@atlaskit/modal-dialog": "^12.10.10",
+    "@atlaskit/primitives": "^2.1.0",
+    "@atlaskit/select": "^17.3.4",
+    "@atlaskit/textfield": "^6.1.3",
+    "@atlaskit/tokens": "^1.29.1",
+    "@babel/preset-env": "^7.23.5",
+    "@babel/preset-typescript": "^7.23.3",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^12.12.47",
+    "@types/react": "^16.9.43",
+    "@types/react-dom": "^16.9.8",
+    "axios": "^1.6.8",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "dotenv-webpack": "^8.1.0",
+    "jwt-decode": "^4.0.0",
+    "react": "16.8",
+    "react-dom": "16.8",
+    "react-scripts": "3.4.1",
+    "style-loader": "^3.3.1",
+    "typescript": "^3.7.5",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "webpack serve",
+    "build": "webpack --mode production",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "babel-loader": "^9.1.2",
+    "css-loader": "^6.7.3",
+    "html-webpack-plugin": "^5.5.0",
+    "ts-loader": "^6.2.1",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.11.1",
+    "webpack-shell-plugin-next": "^2.3.1"
+  }
+}

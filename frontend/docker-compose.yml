@@ -1,0 +1,282 @@
+version: '3.8'
+
+networks:
+  text-edit-network:
+
+services:
+# ******** SERVICIOS FUNDAMENTALES ********
+
+  rabbitmq:
+    image: rabbitmq:latest
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - text-edit-network
+    command: >
+      sh -c "
+      rabbitmq-plugins enable rabbitmq_management &&
+      rabbitmq-server
+      "
+
+  # ******** MICROSERVICIOS CORE ************
+  ms-users:
+    container_name: text-edit-ms-users
+    image: danaxar/text-edit-ms-users
+    environment:
+      - JWT_SECRET=clavesecreta2312
+      - EXPIRES_IN=12h
+      - AMQP_URL=amqp://user:password@rabbitmq:5672
+      - URI_MONGODB_USERS=mongodb+srv://Fabian:vcRUv4QUl65BLHji@cluster0.bnufw.mongodb.net/textedit_dev_users
+    depends_on:
+      - rabbitmq
+    networks:
+      - text-edit-network
+
+  api-gateway:
+    image: danaxar/text-edit-ms-api-gateway
+    ports:
+      - "3002:3002"
+      - "84:84"
+    environment:
+      - APP_URL=https://meetflow.com
+      - API_PORT=3002
+      - PORT=3002
+      - JWT_SECRET=clavesecreta2312
+      - EXPIRES_IN=12h
+      - AMQP_URL=amqp://user:password@rabbitmq:5672
+    networks:
+      - text-edit-network
+    depends_on:
+      - rabbitmq
+
+  ms-projects:
+    container_name: text-edit-ms-projects
+    image: danaxar/text-edit-ms-projects
+    environment:
+      - JWT_SECRET=clavesecreta2312
+      - EXPIRES_IN=12h
+      - AMQP_URL=amqp://user:password@rabbitmq:5672
+      - URI_MONGODB_PROJECTS=mongodb+srv://Fabian:vcRUv4QUl65BLHji@cluster0.bnufw.mongodb.net/textedit_dev_projects
+    depends_on:
+      - rabbitmq
+    networks:
+      - text-edit-network
+
+  ms-meetings:
+    container_name: text-edit-ms-meetings
+    image: danaxar/text-edit-ms-meetings
+    environment:
+      - JWT_SECRET=clavesecreta2312
+      - EXPIRES_IN=12h
+      - AMQP_URL=amqp://user:password@rabbitmq:5672
+      - URI_MONGODB_MEETINGS=mongodb+srv://Fabian:vcRUv4QUl65BLHji@cluster0.bnufw.mongodb.net/textedit_dev_meetings
+    depends_on:
+      - rabbitmq
+    networks:
+      - text-edit-network
+
+  ms-elements:
+    container_name: text-edit-ms-elements
+    image: danaxar/text-edit-ms-elements
+    environment:
+      - JWT_SECRET=clavesecreta2312
+      - EXPIRES_IN=12h
+      - AMQP_URL=amqp://user:password@rabbitmq:5672
+      - URI_MONGODB_ELEMENTS=mongodb+srv://Fabian:vcRUv4QUl65BLHji@cluster0.bnufw.mongodb.net/textedit_dev_elements
+    depends_on:
+      - rabbitmq
+    networks:
+      - text-edit-network
+
+  ms-meetingminutes:
+    container_name: text-edit-ms-meetingminutes
+    image: danaxar/text-edit-ms-meetingminutes
+    environment:
+      - JWT_SECRET=clavesecreta2312
+      - EXPIRES_IN=12h
+      - AMQP_URL=amqp://user:password@rabbitmq:5672
+      - URI_MONGODB_MEETINGMINUTES=mongodb+srv://Fabian:vcRUv4QUl65BLHji@cluster0.bnufw.mongodb.net/textedit_dev_meetingminutes
+    depends_on:
+      - rabbitmq
+    networks:
+      - text-edit-network
+
+  # ******** MICROFRONTENDS MEMFOLLOW ********
+  front-principal:
+    image: danaxar/text-edit-front-principal
+    container_name: text-edit-front-principal
+    ports:
+      - 3003:3003
+    restart: always
+    depends_on:
+      - api-gateway
+    networks:
+      - text-edit-network
+    environment:
+      - REACT_APP_HELLO_WORLD="Hello World"
+      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_HOME_PORT=3020
+      - REACT_APP_MF_LOGIN_PORT=3021
+      - REACT_APP_MF_PROYECTOS_PORT=3022
+      - REACT_APP_MF_PERFIL_PORT=3023
+      - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
+      - REACT_APP_MF_INFORMACION_PORT=3025
+      - REACT_APP_MF_TAREAS_PORT=3026
+      - REACT_APP_MF_KANBANPLUS_PORT=3027
+      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_PORT=3002
+      - REACT_APP_BACKEND_IO_PORT=84
+
+  mf-textedit:
+    image: danaxar/text-edit-mf-textedit
+    container_name: text-edit-mf-textedit
+    ports:
+      - 3024:3024
+    restart: always
+    depends_on:
+      - api-gateway
+    networks:
+      - text-edit-network
+    environment:
+      - REACT_APP_HELLO_WORLD="Hello World"
+      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_HOME_PORT=3020
+      - REACT_APP_MF_LOGIN_PORT=3021
+      - REACT_APP_MF_PROYECTOS_PORT=3022
+      - REACT_APP_MF_PERFIL_PORT=3023
+      - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
+      - REACT_APP_MF_INFORMACION_PORT=3025
+      - REACT_APP_MF_TAREAS_PORT=3026
+      - REACT_APP_MF_KANBANPLUS_PORT=3027
+      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_PORT=3002
+      - REACT_APP_BACKEND_IO_PORT=84
+
+  mf-home:
+    image: danaxar/text-edit-mf-home
+    container_name: text-edit-mf-home
+    ports:
+      - 3020:3020
+    restart: always
+    depends_on:
+      - api-gateway
+    networks:
+      - text-edit-network
+    environment:
+      - REACT_APP_HELLO_WORLD="Hello World"
+      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_HOME_PORT=3020
+      - REACT_APP_MF_LOGIN_PORT=3021
+      - REACT_APP_MF_PROYECTOS_PORT=3022
+      - REACT_APP_MF_PERFIL_PORT=3023
+      - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
+      - REACT_APP_MF_INFORMACION_PORT=3025
+      - REACT_APP_MF_TAREAS_PORT=3026
+      - REACT_APP_MF_KANBANPLUS_PORT=3027
+      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_PORT=3002
+      - REACT_APP_BACKEND_IO_PORT=84
+
+  mf-informacion:
+    image: danaxar/text-edit-mf-informacion
+    container_name: text-edit-mf-informacion
+    ports:
+      - 3025:3025
+    restart: always
+    depends_on:
+      - api-gateway
+    networks:
+      - text-edit-network
+    environment:
+      - REACT_APP_HELLO_WORLD="Hello World"
+      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_HOME_PORT=3020
+      - REACT_APP_MF_LOGIN_PORT=3021
+      - REACT_APP_MF_PROYECTOS_PORT=3022
+      - REACT_APP_MF_PERFIL_PORT=3023
+      - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
+      - REACT_APP_MF_INFORMACION_PORT=3025
+      - REACT_APP_MF_TAREAS_PORT=3026
+      - REACT_APP_MF_KANBANPLUS_PORT=3027
+      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_PORT=3002
+      - REACT_APP_BACKEND_IO_PORT=84
+
+  mf-login:
+    image: danaxar/text-edit-mf-login
+    container_name: text-edit-mf-login
+    ports:
+      - 3021:3021
+    restart: always
+    depends_on:
+      - api-gateway
+    networks:
+      - text-edit-network
+    environment:
+      - REACT_APP_HELLO_WORLD="Hello World"
+      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_HOME_PORT=3020
+      - REACT_APP_MF_LOGIN_PORT=3021
+      - REACT_APP_MF_PROYECTOS_PORT=3022
+      - REACT_APP_MF_PERFIL_PORT=3023
+      - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
+      - REACT_APP_MF_INFORMACION_PORT=3025
+      - REACT_APP_MF_TAREAS_PORT=3026
+      - REACT_APP_MF_KANBANPLUS_PORT=3027
+      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_PORT=3002
+      - REACT_APP_BACKEND_IO_PORT=84
+
+  mf-perfil:
+    image: danaxar/text-edit-mf-perfil
+    container_name: text-edit-mf-perfil
+    ports:
+      - 3023:3023
+    restart: always
+    depends_on:
+      - api-gateway
+    networks:
+      - text-edit-network
+    environment:
+      - REACT_APP_HELLO_WORLD="Hello World"
+      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_HOME_PORT=3020
+      - REACT_APP_MF_LOGIN_PORT=3021
+      - REACT_APP_MF_PROYECTOS_PORT=3022
+      - REACT_APP_MF_PERFIL_PORT=3023
+      - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
+      - REACT_APP_MF_INFORMACION_PORT=3025
+      - REACT_APP_MF_TAREAS_PORT=3026
+      - REACT_APP_MF_KANBANPLUS_PORT=3027
+      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_PORT=3002
+      - REACT_APP_BACKEND_IO_PORT=84
+
+  mf-proyectos:
+    image: danaxar/text-edit-mf-proyectos
+    container_name: text-edit-mf-proyectos
+    ports:
+      - 3022:3022
+    restart: always
+    depends_on:
+      - api-gateway
+    networks:
+      - text-edit-network
+    environment:
+      - REACT_APP_HELLO_WORLD="Hello World"
+      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_HOME_PORT=3020
+      - REACT_APP_MF_LOGIN_PORT=3021
+      - REACT_APP_MF_PROYECTOS_PORT=3022
+      - REACT_APP_MF_PERFIL_PORT=3023
+      - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
+      - REACT_APP_MF_INFORMACION_PORT=3025
+      - REACT_APP_MF_TAREAS_PORT=3026
+      - REACT_APP_MF_KANBANPLUS_PORT=3027
+      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_PORT=3002
+      - REACT_APP_BACKEND_IO_PORT=84
