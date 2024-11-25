@@ -1,0 +1,16 @@
+#card {
+    background-color: brown;
+    height: 160px;
+}
+.Pie-Container {
+    height: 200px;
+    background-color: aliceblue;
+}
+.row {
+    display: flex;
+    flex-direction: row;
+}
+.column {
+    display: flex;
+    flex-direction: column;
+}
