@@ -1,15 +1,14 @@
-import React, { useEffect, useState, useCallback} from "react";
+import React, { useEffect } from "react";
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import DynamicTable from '@atlaskit/dynamic-table';
 import Select from '@atlaskit/select';
-import Button, { ButtonGroup } from '@atlaskit/button';
+import Button from '@atlaskit/button';
 import { Inline, Box, xcss } from '@atlaskit/primitives';
 import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right'
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
 import TextField from '@atlaskit/textfield';
-import Form, { ErrorMessage, Field, FormFooter } from '@atlaskit/form';
-import LoadingButton from '@atlaskit/button/loading-button';
+import Form, { Field, FormFooter } from '@atlaskit/form';
 import ArchiveIcon from '@atlaskit/icon/glyph/archive'
 
 // Se obtiene el token del usuario logeado
@@ -17,7 +16,6 @@ const tokenUser = localStorage.getItem('tokenUser');
 
 const boxStyles = xcss({
     borderColor: 'color.border.selected',
-    // width: '500px',
     width: '100%',
     backgroundColor: 'color.background.selected',
     borderStyle: 'solid',
@@ -27,7 +25,6 @@ const boxStyles = xcss({
 
 const boxStylesTarjetas = xcss({
     borderColor: 'color.border.selected',
-    // width: '500px',
     margin: '5%',
     width: '90%',
     backgroundColor: 'color.background.input',
@@ -93,7 +90,6 @@ const Tareas: React.FC = () => {
                 const filteredData = response.data.filter((item: Compromiso) => item.type.toLowerCase() === 'compromiso');
                 setcompromisosUsuario(filteredData);
                 setcompromisosUsuarioOriginal(filteredData);
-                // setcompromisosUsuario(response.data);
 
             } catch (error) {
                 console.error(error);
@@ -118,7 +114,6 @@ const Tareas: React.FC = () => {
                     }
                 });
                 console.log("Estado de la tarea actualizado correctamente");
-                // console.log(responsePerfil.data);
             
             } catch (error) {
                 console.error(error);
@@ -143,7 +138,6 @@ const Tareas: React.FC = () => {
     const filtrarDatosTabla = () => {
         // capturar el valor del formulario
         const textoBuscar = (document.getElementsByName("filtrarResultados")[0] as HTMLInputElement).value;
-        // window.alert("filtrar datos: " + textoBuscar);
 
         // comprobar que el usuario haya ingresado un texto para buscar
         if (textoBuscar === "" || textoBuscar === " " || textoBuscar === null || textoBuscar === undefined) {
@@ -287,9 +281,7 @@ return (
                                 <Inline space="space.100" alignBlock="center">
                                     <Button
                                         type="submit"
-                                        // appearance="primary"
                                         onClick={() => setcompromisosUsuario(compromisosUsuarioOriginal)}
-                                        // style={{ marginLeft: '5px' }}
                                     >
                                         Restablecer
                                     </Button>
@@ -297,7 +289,6 @@ return (
                                         type="submit"
                                         appearance="primary"
                                         onClick={() => filtrarDatosTabla()}
-                                        // style={{ marginLeft: '5px' }}
                                     >
                                         Buscar
                                     </Button>
@@ -309,7 +300,6 @@ return (
                 <br />
                 {/* TABLA CON LAS TAREAS */}
                 <DynamicTable
-                    // caption="Tareas del usuario"
                     emptyView={<h2>El usuario no posee tareas</h2>}
                     rowsPerPage={4}
                     defaultPage={1}
@@ -356,25 +346,19 @@ return (
                             },
                             {
                                 key: 'description',
-                                // content: compromiso.description + "Texto",
                                 content: (
                                     <>
-                                        {/* {new Date(compromiso.dateLimit) < new Date() && <p style={{color: "red", margin:0}}><strong>Tarea atrasada</strong></p>} */}
                                         {(new Date(compromiso.dateLimit) < new Date() && compromiso.state !== 'completada' && compromiso.state !== 'archivada') && <p style={{color: "red", margin:0}}><strong>Tarea atrasada</strong></p>}
                                         {compromiso.description}
                                         <br />
-                                        {/* <strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString()} */}
                                         <strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString('es-CL')}
                                         <hr />
                                     </>
                                 ),
                             },
                             {
-                                // key: 'state',
                                 key: createKey(compromiso.state),
-                                // content: compromiso.state,
                                 content: <Select
-                                            // width = "90px"
                                             inputId="single-select-example"
                                             className="single-select"
                                             classNamePrefix="react-select"

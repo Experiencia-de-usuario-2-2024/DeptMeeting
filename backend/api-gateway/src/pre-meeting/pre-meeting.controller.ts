@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Delete, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Delete } from '@nestjs/common';
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
 import { PreMeetingDTO } from './dto/pre-meeting.dto';
 import { IPreMeeting } from 'src/common/interfaces/pre-meeting.interface';

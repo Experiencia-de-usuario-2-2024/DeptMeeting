@@ -161,7 +161,7 @@ export class ElementController {
   @Get('/participants/:email')
   @ApiOperation({ summary: 'Obtener elementos de tipo ** compromiso ** por email de usuario responsable' })
   async compromisosUsuarios(@Param('email') email: string) {
-    return await this._clientProxyElement.send('ElementCompromisosUsuarios', email);
+    return this._clientProxyElement.send('ElementCompromisosUsuarios', email);
   }
 
 

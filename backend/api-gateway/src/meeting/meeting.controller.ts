@@ -16,14 +16,14 @@ import { IMeeting } from 'src/common/interfaces/meeting.interface';
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
 import { MeetingDTO } from './dto/meeting.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Observable } from 'rxjs';
+import {firstValueFrom, Observable} from 'rxjs';
 
 @ApiTags('Microservicio de reuniones (microservice-meetings)')
 @ApiBearerAuth()
 @Controller('api/meeting')
 export class MeetingController {
   // Entrada: cliente proxy global
-  constructor(private readonly clientProxy: ClientProxyMeetflow) { }
+  constructor(private readonly clientProxy: ClientProxyMeetflow) {}
 
   // cliente proxy de reuniones
   private _clientProxyMeeting = this.clientProxy.clientProxyMeeting();
@@ -52,7 +52,7 @@ export class MeetingController {
   @Post()
   @ApiOperation({ summary: 'Crear una reunión' })
   async create(@Body() meetingDTO: MeetingDTO): Promise<Observable<IMeeting>> {
-    return await this._clientProxyMeeting.send(MeetingMSG.CREATE, meetingDTO);
+    return this._clientProxyMeeting.send(MeetingMSG.CREATE, meetingDTO);
   }
 
   /*  
@@ -65,8 +65,8 @@ export class MeetingController {
   updateState(@Param('id') id: string, @Body() state: any) {
     const params = {
       id: id,
-      state: state
-    }
+      state: state,
+    };
     return this._clientProxyMeeting.send(MeetingMSG.SET_STATE, params);
   }
 
@@ -77,7 +77,7 @@ export class MeetingController {
   @Get()
   @ApiOperation({ summary: 'Obtener todas las reuniones' })
   async findAll(): Promise<Observable<IMeeting[]>> {
-    return await this._clientProxyMeeting.send(MeetingMSG.FIND_ALL, '');
+    return this._clientProxyMeeting.send(MeetingMSG.FIND_ALL, '');
   }
 
   /*  
@@ -88,7 +88,7 @@ export class MeetingController {
   @Get(':id')
   @ApiOperation({ summary: 'Obtener reunión por id' })
   async findOne(@Param('id') id: string): Promise<Observable<IMeeting>> {
-    return await this._clientProxyMeeting.send(MeetingMSG.FIND_ONE, id);
+    return this._clientProxyMeeting.send(MeetingMSG.FIND_ONE, id);
   }
 
   /*  
@@ -99,12 +99,12 @@ export class MeetingController {
   @Get('/project/:id')
   @ApiOperation({ summary: 'Obtener reuniones por id de proyecto' })
   async findByProject(@Param('id') id: string): Promise<Observable<IMeeting[]>> {
-    return await this._clientProxyMeeting.send(MeetingMSG.FIND_BY_PROJECT, id);
+    return this._clientProxyMeeting.send(MeetingMSG.FIND_BY_PROJECT, id);
   }
 
-  /*  
+  /*
   Método para actualizar una reunión a partir del id.
-  entrada: id de la reunión y nuevos datos de la reunión. 
+  entrada: id de la reunión y nuevos datos de la reunión.
   salida: objeto de la reunión actualizada.
   */
   @Put(':id')
@@ -113,10 +113,10 @@ export class MeetingController {
     @Param('id') id: string,
     @Body() meetingDTO: MeetingDTO,
   ): Promise<Observable<IMeeting>> {
-    return await this._clientProxyMeeting.send(MeetingMSG.UPDATE, { id, meetingDTO });
+    return this._clientProxyMeeting.send(MeetingMSG.UPDATE, { id, meetingDTO });
   }
 
-  /*  
+  /*
   Método para borrar permanentemente una reunión a partir del id.
   entrada: id de la reunión.
   salida: valor booleano de confirmación.
@@ -127,7 +127,7 @@ export class MeetingController {
     return this._clientProxyMeeting.send(MeetingMSG.DELETE, id);
   }
 
-  /*  
+  /*
   Método para vincular una reunión a un proyecto
   entrada: id del proyecto, id de la reunión
   salida: objeto de la reunión con el proyecto vinculado.
@@ -138,28 +138,29 @@ export class MeetingController {
     @Param('meetingId') meetingId: string,
     @Param('projectId') projectId: string,
   ) {
-    const project = await this._ClientProxyProject
-      .send(ProjectMSG.FIND_ONE, projectId)
-      .toPromise();
+    const project = await firstValueFrom(
+      this._ClientProxyProject.send(ProjectMSG.FIND_ONE, projectId),
+    );
     if (!project)
       throw new HttpException('Proyecto no encontrado', HttpStatus.NOT_FOUND);
-    return await this._clientProxyMeeting.send(MeetingMSG.ADD_PROJECT, {
+    return this._clientProxyMeeting.send(MeetingMSG.ADD_PROJECT, {
       meetingId,
       projectId,
     });
   }
 
-  /*  
+  /*
   Método para  obtener runiones a partir del id de un proyecto.
-  entrada: el id del proyecto. 
-  salida: objeto de las reuniones encontrada para el proyecto.  
+  entrada: el id del proyecto.
+  salida: objeto de las reuniones encontrada para el proyecto.
   */
   @Get('/project/:idProject/number/:numberMeet')
   @ApiOperation({ summary: 'Obtener reunion por id de proyecto y numero de la reunion' })
   async findByProjectNumber(
-    @Param('idProject') idProject: string, 
-    @Param('numberMeet') numberMeet: string): Promise<Observable<IMeeting[]>> {
-    return await this._clientProxyMeeting.send("FIND_BY_PROJECT_NUMBER", {idProject, numberMeet});
+    @Param('idProject') idProject: string,
+    @Param('numberMeet') numberMeet: string,
+  ): Promise<Observable<IMeeting[]>> {
+    return this._clientProxyMeeting.send('FIND_BY_PROJECT_NUMBER', {idProject, numberMeet});
   }
 
   /*  

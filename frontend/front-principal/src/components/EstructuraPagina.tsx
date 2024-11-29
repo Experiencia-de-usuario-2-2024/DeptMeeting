@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Fragment, useCallback, useState  } from "react";
 import HomeProfesorView from '../microfrontends/HomeProfesorView';
 import ProyectosView from '../microfrontends/ProyectosView';
 import PerfilView from '../microfrontends/PerfilView';
@@ -8,27 +8,19 @@ import TareasView from "../microfrontends/TareasView";
 import KanbanPlusView from "../microfrontends/KanbanPlusView";
 
 import ListIcon from '@atlaskit/icon/glyph/list'
-import CommentIcon from '@atlaskit/icon/glyph/comment'
 import HomeIcon from '@atlaskit/icon/glyph/home'
 import Button from '@atlaskit/button';
 import { Inline } from '@atlaskit/primitives';
 import PersonIcon from '@atlaskit/icon/glyph/person'
-import InfoIcon from '@atlaskit/icon/glyph/info'
 import EditorPanelIcon from '@atlaskit/icon/glyph/editor/panel'
-import TaskIcon from '@atlaskit/icon/glyph/task'
 import TableIcon from '@atlaskit/icon/glyph/table'
 
 import Modal, {
     ModalBody,
     ModalFooter,
-    ModalHeader,
-    ModalTitle,
     ModalTransition,
 } from '@atlaskit/modal-dialog';
 
-import { Fragment, useCallback, useState } from 'react';
-import { jsx } from '@emotion/react';
-import { token } from '@atlaskit/tokens';
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
 
@@ -36,17 +28,14 @@ import {
     Banner,
     Content,
     LeftSidebarWithoutResize,
-    LeftSidebar,
     Main,
     PageLayout,
     RightSidebar,
 } from '@atlaskit/page-layout';
 
 import ScrollableContent from '../resources/scrollable-content';
-import SlotLabel from '../resources/slot-label';
 import SlotWrapper from '../resources/slot-wrapper';
 import Toggle from '../resources/toggle';
-import ToggleBox from '../resources/toggle-box';
 import toKebabCase from '../resources/to-kebab-case';
 import SignOutIcon from '@atlaskit/icon/glyph/sign-out'
 
@@ -104,7 +93,7 @@ const EstructuraPagina = () =>{
     }
 
     // Estado para tener la informacion del usuario logeado
-    const [usuarioPerfilLog, setusuarioPerfilLog] = React.useState<Usuario>(); 
+    const [usuarioPerfilLog, setusuarioPerfilLog] = React.useState<Usuario>();
 
     // estado para guardar el nombre del proyecto
     const [nombreProyecto, setNombreProyecto] = React.useState('');
@@ -266,7 +255,7 @@ const EstructuraPagina = () =>{
     // Salida: Ninguna. Se guarda en local storage el id del perfil al que se quiere ir, ademas de que se modificar otra variable en local storage, la cual indica que se quiere ver el perfil
     const miPerfil = (idUser: string) => {
         const idPerfil = localStorage.getItem('idPerfil');
-        if (verPerfil === true && idPerfil === idUser) {
+        if (verPerfil && idPerfil === idUser) {
             return null;
         }
 
@@ -277,6 +266,8 @@ const EstructuraPagina = () =>{
         localStorage.setItem('verPerfil', JSON.stringify(newValue));
         localStorage.setItem('verActaDialogica', JSON.stringify(false));
 
+        // Jyr comentario: XDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+        // mi coódigo despues de estar 2 días sin dormir ser tipo:
         if (verPerfil == false) {
             setVerPerfil(true);
         }
@@ -286,17 +277,15 @@ const EstructuraPagina = () =>{
         window.location.reload();
     }
 
-    // Funcion para cerrar sesion, para lo cual elimina todo elemento de local storage
+    // Funcion para cerrar sesion, para lo cual elimina to.do elemento de local storage
     // Entrada: Ninguna
-    // Salida: Ninguna. Se elimina todo elemento de local storage
+    // Salida: Ninguna. Se elimina to.do elemento de local storage
     const cerrarSesion = () => {        
         const confirmacion = window.confirm("¿Está seguro/a de que quiere cerrar sesión?");
         if (confirmacion) {
             localStorage.clear();
             window.location.reload();
         }
-        // localStorage.clear();
-        // window.location.reload();
     }
 
     // **************************************************************************************************************************************************************************************** //

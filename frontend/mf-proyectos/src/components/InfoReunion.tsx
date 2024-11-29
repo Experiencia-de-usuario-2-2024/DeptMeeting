@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Box, Inline, Stack, xcss } from "@atlaskit/primitives";
+import React, { useEffect } from "react";
+import { Inline, Stack } from "@atlaskit/primitives";
 import axios from "axios";
 import Button, { ButtonGroup } from '@atlaskit/button';
-import LoadingButton from '@atlaskit/button/loading-button';
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
-import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled'
-import { jwtDecode } from 'jwt-decode';
 import Reuniones from "./Reuniones";
 import LinkIcon from '@atlaskit/icon/glyph/link'
 
@@ -186,8 +183,8 @@ const InfoReunion: React.FC = () => {
         localStorage.setItem('estadoReunion', reunionProyecto?.state ?? '');
 
         // variable auxiliar para mostrar el id de la reunion en el mensaje emergente (borrar una vez se finalizen todas las pruebas)
-        var aux = localStorage.getItem('idReunion');
-        
+        const aux = localStorage.getItem('idReunion');
+
         // se cambia la variable de verActaDialogica a true, para que se muestre el acta dialogica, posteriormente se actualiza su valor en local storage
         const verActaValorOriginal = verActaDialogica
         const newValue = !verActaDialogica;
@@ -204,8 +201,6 @@ const InfoReunion: React.FC = () => {
         async function obtenerMeetingMinute() {
             // window.alert("Entre a la funcion obtenerMeetingMinute");
             try {
-                // window.alert("Entre al try de obtenerMeetingMinute");
-                // window.alert("Valor de aux: " + aux);
                 // Solo se requiere del token del usuario para realizar la petición
                 const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/reunion/` + aux, {
                     headers: {
@@ -214,7 +209,6 @@ const InfoReunion: React.FC = () => {
                 });
                 console.log(" +++++++++++++++ INFORMACION DEL ACTA DIALOGICA +++++++++++++++");
                 console.log(response.data);
-                // window.alert(" ++++++ id de la reunion: " + aux + " id de la minuta: " + response.data[0]._id);
                 localStorage.setItem('idMeetingMinute', response.data[0]._id);
                 setMeetingMinute(response.data[0]);
 
@@ -222,7 +216,7 @@ const InfoReunion: React.FC = () => {
                     setVerActaDialogica(true);
                 }
                 else{
-                    // setVerActaDialogica(false);    
+                    // setVerActaDialogica(false); | Jyr comentario: ??????????????????????????????????????????
                     window.location.reload();
                 }
 
@@ -236,7 +230,6 @@ const InfoReunion: React.FC = () => {
                 if(reunionProyecto?.state === "nueva" || reunionProyecto?.state === "Nueva" || reunionProyecto?.state === "new" || reunionProyecto?.state === "New"){
                     cambiarEstado(idReunion);
                 };
-                // window.alert("ERROR AL OBTENER LA INFORMACION DEL ACTA DIALOGICA");
                 if (verActaDialogica == false) {
                     setVerActaDialogica(true);
                 }
@@ -244,7 +237,6 @@ const InfoReunion: React.FC = () => {
                     setVerActaDialogica(false);    
                 }
                 window.location.reload();
-                // console.log("ERROR AL OBTENER LA INFORMACION DEL ACTA DIALOGICA");
                 console.error(error);
             }
         }
@@ -289,7 +281,6 @@ const InfoReunion: React.FC = () => {
                         <ButtonGroup>
                             <Button iconBefore={<ArrowLeftIcon label="" size="medium" />} onClick={() => cancelarOperacion()} style={{ marginRight: '5px'}}> Ir al proyecto </Button>
                             {/* se comenta esta opción, la cual es la original, puesto que ahora la etiqueta del boton se correspondera con el estado de la reunion */}
-                            {/* <Button appearance="primary" iconBefore={<LinkIcon label="" size="medium" />} onClick={() => irReunion()} style={{ marginLeft: '5px' }}> Ir a reunión </Button> */}
                             {reunionProyecto?.state === "Nueva" && (
                                 <Button appearance="primary" iconBefore={<LinkIcon label="" size="medium" />} onClick={() => irReunion()} style={{ marginLeft: '5px' }}> Ir a pre-reunión </Button>
                             )}

@@ -1,6 +1,6 @@
-import React, { lazy, Suspense, useEffect} from "react";
+import React, { useEffect} from "react";
 import "./App.css";
-import { BrowserRouter, Route, Routes, Link, useNavigate} from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate} from "react-router-dom";
 
 
 import EstructuraPagina from "./components/EstructuraPagina";

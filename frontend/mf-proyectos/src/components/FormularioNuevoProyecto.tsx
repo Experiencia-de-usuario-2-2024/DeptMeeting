@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from "react";
-// import { Box, Inline, Stack, xcss } from "@atlaskit/primitives";
 import axios from "axios";
 import Button, { ButtonGroup } from '@atlaskit/button';
 import LoadingButton from '@atlaskit/button/loading-button';
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
-
-import InfoIcon from '@atlaskit/icon/glyph/info';
-import { B300 } from '@atlaskit/theme/colors';
-import { token } from '@atlaskit/tokens';
 
 import { jwtDecode } from 'jwt-decode';
 import Proyectos from "./Proyectos";
@@ -15,18 +10,16 @@ import Proyectos from "./Proyectos";
 import TextField from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
 import Form, { Field, FormFooter } from '@atlaskit/form';
-import Flag from '@atlaskit/flag';
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
-// console.log("tokenUser: ", tokenUser);
 
-import Select, { ActionMeta, MultiValue, PropsValue } from 'react-select';
+import Select, { ActionMeta, PropsValue } from 'react-select';
 
 //*******************************************************************
 
-var miembrosOriginales: string[] = [];
-var emailUsuarioPerfil: string = "";
+let miembrosOriginales: string[] = [];
+let emailUsuarioPerfil: string = "";
 
 const FormularioNuevoProyecto: React.FC = () => {
 
@@ -291,8 +284,8 @@ const FormularioNuevoProyecto: React.FC = () => {
         async function fin(){
             await createProjectAndIncludeParticipants();
             await ActualizarProyecto(localStorage.getItem('idProyecto') || "", miembrosOriginales);
-            await finalizarOperacion();
-            await window.location.reload();
+            finalizarOperacion();
+            window.location.reload();
         }
         fin();
     }
@@ -350,9 +343,7 @@ const FormularioNuevoProyecto: React.FC = () => {
         <Field
             aria-required={true}
             name="userOwner"
-            // defaultValue=""
             defaultValue={emailUsuarioPerfil}
-            // defaultValue={usuarioPerfil?.email || ""}
             label="Dueño/a del proyecto (correo electrónico)"
             isRequired
         >
@@ -402,8 +393,6 @@ const FormularioNuevoProyecto: React.FC = () => {
                     <div
                         style={{
                             display: 'flex',
-                            // width: '400px',
-                            // maxWidth: '100%',
                             margin: '0 auto',
                             marginLeft: '15px',
                             marginRight: '15px',
@@ -414,7 +403,6 @@ const FormularioNuevoProyecto: React.FC = () => {
                     <h1>Creación de nuevo proyecto</h1>
                         <Form<{ username: string }>
                             onSubmit={(data) => {
-                                // console.log('form data', data);
                                 return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
                                     data.username === 'error' ? { username: 'IN_USE' } : undefined,
                                 );

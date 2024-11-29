@@ -1,6 +1,5 @@
-// import React from "react";
-import React, { useEffect, useState } from "react";
-import { Box, Inline, Stack, xcss } from "@atlaskit/primitives";
+import React, { useEffect } from "react";
+import { Box, Inline, xcss } from "@atlaskit/primitives";
 import Avatar from '@atlaskit/avatar';
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
@@ -25,11 +24,9 @@ const boxStyles = xcss({
     listStyle: 'none',
     textAlign: 'center',
     '::before': {
-        // content: '"✨"',
         paddingInlineEnd: 'space.050',
     },
     '::after': {
-        // content: '"✨"',
         paddingInlineStart: 'space.050',
     },
     ':hover': {
@@ -86,9 +83,6 @@ const HomeProfesor: React.FC = () => {
     
     // Para determinar si se muestra en la parte central el acta dialogica o no (en cualquiera que sea su etapa, pre, in, post o finalizada)
     const [verActaDialogica, setVerActaDialogica] = React.useState(false);
-
-    // para guardar los datos del acta dialogica (meetingminute)
-    const [meetingminute, setMeetingMinute] = React.useState<MeetingMinute>();
 
     //OBTENER TODOS LOS ESTUDIANTES AL PRINCIPIO
     const [estudiantes, setEstudiantes] = React.useState<Estudiantes[]>([]);
@@ -162,7 +156,6 @@ const HomeProfesor: React.FC = () => {
         localStorage.setItem('verPerfil', JSON.stringify(newValue));
         localStorage.setItem('verActaDialogica', JSON.stringify(false));
 
-
         if (verPerfil == false) {
             setVerPerfil(true);
         }
@@ -170,7 +163,6 @@ const HomeProfesor: React.FC = () => {
             setVerPerfil(false);    
         }
         window.location.reload();
-        // localStorage.setItem('verPerfil', 'true');
     }
 
     // Entrada: id del acta dialogica asociada al estudiante que se vera
@@ -184,7 +176,6 @@ const HomeProfesor: React.FC = () => {
             return;
         }
 
-        // window.alert("Se mostrara el acta dialogica con id: " + idActa);
 
         // se guarda en local storage el id del acta dialogica que se mostrara
         localStorage.setItem('idMeetingMinute', idActa);

@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Box, Inline, Stack, xcss } from "@atlaskit/primitives";
 import axios from "axios";
 import Button, { ButtonGroup } from '@atlaskit/button';
 import LoadingButton from '@atlaskit/button/loading-button';
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
-import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled'
-import { jwtDecode } from 'jwt-decode';
 import Reuniones from "./Reuniones";
 import TextField from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
@@ -230,7 +227,6 @@ const FormularioNuevaReunion: React.FC = () => {
                         <h1>Creación de nueva reunión</h1>
                         <Form<{ username: string }>
                             onSubmit={(data) => {
-                                // console.log('form data', data);
                                 return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
                                     data.username === 'error' ? { username: 'IN_USE' } : undefined,
                                 );

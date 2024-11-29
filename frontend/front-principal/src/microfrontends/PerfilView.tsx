@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense } from "react";
 
 // @ts-ignore
 const Perfil = lazy(() => import("MF_PERFIL/Perfil").catch(error => {

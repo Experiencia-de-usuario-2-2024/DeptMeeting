@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Box, Inline, Stack, xcss } from "@atlaskit/primitives";
+import React, { useEffect } from "react";
+import { Box, Stack, xcss } from "@atlaskit/primitives";
 import axios from "axios";
 import Button from '@atlaskit/button';
-import AddIcon from '@atlaskit/icon/glyph/add'
 import FormularioNuevoProyecto from './FormularioNuevoProyecto';
 import Reuniones from "./Reuniones";
-
-import { jwtDecode } from 'jwt-decode';
 
 
 // Se obtiene el token del usuario logeado
@@ -18,13 +15,10 @@ const listStyles = xcss({
 });
 const boxStyles = xcss({
     color: 'color.text',
-    // width: '100%',
-    // height: '50px',
     backgroundColor: 'color.background.selected',
     borderWidth: 'border.width',
     borderStyle: 'solid',
     borderColor: 'color.border.selected',
-    // padding: 'space.100',
     borderRadius: 'border.radius.100',
     transitionDuration: '200ms',
     listStyle: 'none',
@@ -35,11 +29,9 @@ const boxStyles = xcss({
     marginLeft: '15px', // Add margin left
     marginRight: '15px', // Add margin right
     '::before': {
-        // content: '"✨"',
         paddingInlineEnd: 'space.050',
     },
     '::after': {
-        // content: '"✨"',
         paddingInlineStart: 'space.050',
     },
     ':hover': {
@@ -100,7 +92,6 @@ const Proyectos: React.FC = () => {
                 });
                 console.log("Proyectos del usuario:");
                 console.log(response.data);
-                // setProyectosUser(response.data);
                 // se invierte la lista de proyectos del usuario, de tal forma se mostraran primero los proyectos mas nuevos
                 setProyectosUser(response.data.reverse());
 
@@ -172,9 +163,6 @@ const Proyectos: React.FC = () => {
                                 </>
                             )}
                             {/* asi estaba antes, a todos los usuarios se les permitia crear proyectos */}
-                            {/* {proyectosUser.length > 12 && (
-                                <Button className="botonNuevoProyecto" appearance="primary" onClick={() => nuevoProyecto()} style={{ marginLeft: '15px', marginRight: '15px' }}>+ Añadir nuevo proyecto</Button>
-                            )} */}
                             
                             {proyectosUser.map((proyectoUser) => (
                                 <Box xcss={boxStyles} as="li" key={proyectoUser._id} onClick={() => seleccionProyecto(proyectoUser._id, proyectoUser.name, proyectoUser.shortName)}>
