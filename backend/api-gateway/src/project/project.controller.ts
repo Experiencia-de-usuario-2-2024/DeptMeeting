@@ -15,21 +15,20 @@ import { ProjectMSG } from 'src/common/constants';
 import { IProject } from 'src/common/interfaces/project.interface';
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
 import { ProjectDTO } from './dto/project.dto';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 @ApiTags('Microservicio de proyectos (microservice-projects)')
 @UseGuards(JwtAuthGuard)
 @Controller('api/project')
 export class ProjectController {
-
   // Entrada: cliente proxy global
-  constructor(private readonly clientProxy: ClientProxyMeetflow) { }
+  constructor(private readonly clientProxy: ClientProxyMeetflow) {}
 
   // Proyectos
   private _clientProxyProject = this.clientProxy.clientProxyProject();
 
   // Invitados
-/*   private _clientProxyGuest = this.clientProxy.clientProxyGuest(); */
+  /*   private _clientProxyGuest = this.clientProxy.clientProxyGuest(); */
 
   // cliente proxy de notificaciones
   private _clientProxyNotifications =
@@ -60,7 +59,7 @@ export class ProjectController {
     const userEmail = req.user.email;
     projectDTO.userOwner = userEmail;
     projectDTO.userMembers = userEmail;
-    return await this._clientProxyProject.send(ProjectMSG.CREATE, projectDTO);
+    return this._clientProxyProject.send(ProjectMSG.CREATE, projectDTO);
   }
 
   /*  
@@ -71,10 +70,10 @@ export class ProjectController {
   @Get('/getProjectbyID/:id')
   @ApiOperation({ summary: 'Obtener proyecto por id' })
   async findOne(@Param('id') id: string) {
-    return await this._clientProxyProject.send(ProjectMSG.FIND_ONE, id);
+    return this._clientProxyProject.send(ProjectMSG.FIND_ONE, id);
   }
 
-    /*  
+  /*  
   Método para  obtener un proyecto a partir del id.
   entrada: id del proyecto. 
   salida: objeto del proyecto encontrada.  
@@ -82,7 +81,7 @@ export class ProjectController {
   @Get('/get/all')
   @ApiOperation({ summary: 'Obtener todos los proyectos' })
   async findAll() {
-    return await this._clientProxyProject.send(ProjectMSG.FIND_ALL, '');
+    return this._clientProxyProject.send(ProjectMSG.FIND_ALL, '');
   }
 
   /*  
@@ -96,7 +95,7 @@ export class ProjectController {
     @Param('id') id: string,
     @Body() projectDTO: ProjectDTO,
   ): Promise<Observable<IProject>> {
-    return await this._clientProxyProject.send(ProjectMSG.UPDATE, { id, projectDTO });
+    return this._clientProxyProject.send(ProjectMSG.UPDATE, { id, projectDTO });
   }
 
   /*  
@@ -111,27 +110,6 @@ export class ProjectController {
   }
 
   /*  
-  Método para añadir un invitado al proyecto.
-  entrada: id del proyecto e id del invitado
-  salida: objeto del proyecto con nuevo invitado añadido.  
-  */
-/*   @Post(':projectId/guest/:guestId')
-  async addGuest(
-    @Param('projectId') projectId: string,
-    @Param('guestId') guestId: string,
-  ) {
-    const guest = await this._clientProxyGuest.send(GuestMSG.FIND_ONE, guestId);
-    if (!guest) {
-      throw new HttpException('Invitado no encontrado', HttpStatus.NOT_FOUND);
-    } else {
-      return this._clientProxyProject.send(ProjectMSG.ADD_GUEST, {
-        projectId,
-        guestId,
-      });
-    }
-  } */
-
-  /*  
   Método para obtener todos los proyectos de un usuario por su id
   entrada: id del usuario que solicita
   salida: objeto del proyecto encontrado.  
@@ -139,7 +117,9 @@ export class ProjectController {
   @Get('/get/findByUser')
   @ApiOperation({ summary: 'encuentra proyect' })
   async findAllForUser(@Req() req: any) {
-    return await this._clientProxyProject.send('LIST_PROJECTS', req.user).toPromise();
+    return await firstValueFrom(
+      this._clientProxyProject.send('LIST_PROJECTS', req.user),
+    );
   }
 
   /*  
@@ -154,8 +134,8 @@ export class ProjectController {
   ) {
     const params = {
       projectId: projectId,
-      memberEmail: memberEmail
-    }
+      memberEmail: memberEmail,
+    };
     return this._clientProxyProject.send(ProjectMSG.ADD_MEMBER, params);
   }
 
@@ -165,15 +145,16 @@ entrada: id de la acta dialógica y nuevos datos de la acta dialógica.
 salida: objeto de la acta dialógica actualizada.
 */
   @Post('/notify/invite/member')
-  @ApiOperation({ summary: 'Notificar al usuario que ha sido invitado a un proyecto' })
+  @ApiOperation({
+    summary: 'Notificar al usuario que ha sido invitado a un proyecto',
+  })
   sendNotification(@Body() project: any, @Req() req: any) {
-    console.log("Solicitando enviar notificación", project);
-    console.log("desde", req.user);
+    console.log('Solicitando enviar notificación', project);
+    console.log('desde', req.user);
     const params = {
       project: project,
-      user: req.user
-    }
+      user: req.user,
+    };
     return this._clientProxyNotifications.send('SEND_INVITE_MEMBER', params);
   }
-
 }

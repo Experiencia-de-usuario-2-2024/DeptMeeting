@@ -1,4 +1,4 @@
-import { Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserMSG } from 'src/common/constants';
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
@@ -10,7 +10,7 @@ export class AuthService {
   constructor(
     private readonly clientProxy: ClientProxyMeetflow,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   // cliente proxy de usuarios
   private _clientProxyUser = this.clientProxy.clientProxyUser();
@@ -21,7 +21,7 @@ export class AuthService {
    salida: boolean de usuario validado
   */
   async validateUser(username: string, password: string): Promise<any> {
-    const user = await this._clientProxyUser.send(UserMSG.VALID_USER, { username, password })
+    this._clientProxyUser.send(UserMSG.VALID_USER, { username, password });
   }
 
   /*  
@@ -30,20 +30,18 @@ export class AuthService {
    salida: objeto del nuevo usuario.  
   */
   async signIn(loginDto: LoginDto) {
-    const isExist = await this._clientProxyUser.send(UserMSG.VALID_USER, loginDto);
-    return await this._clientProxyUser.send(UserMSG.VALID_USER, loginDto);
+    return this._clientProxyUser.send(UserMSG.VALID_USER, loginDto);
   }
 
   /*  
-   Metodo para asginar token con una firma en especifica (id y email de usuario)
+   Metodo para asginar token con una firma en específica (id y email de usuario)
    entrada: datos del usuario. 
    salida: token jwt
   */
   async setToken(payload: any) {
-    const token = await this.jwtService.sign(payload);
-    return await token;
+    return this.jwtService.sign(payload);
   }
-  
+
   /*  
      Metodo para crear un nuevo usuario.
      entrada: datos del usuario. 

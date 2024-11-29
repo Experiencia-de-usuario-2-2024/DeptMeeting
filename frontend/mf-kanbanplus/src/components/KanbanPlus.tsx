@@ -4,8 +4,8 @@ import { jwtDecode } from "jwt-decode";
 import { Inline, Box, xcss } from "@atlaskit/primitives";
 import Form, { ErrorMessage, Field, FormFooter } from "@atlaskit/form";
 import TextField from "@atlaskit/textfield";
-import Button, { ButtonGroup } from "@atlaskit/button";
-import Select, { ActionMeta, MultiValue, PropsValue } from "react-select";
+import Button from "@atlaskit/button";
+import Select, { ActionMeta, PropsValue } from "react-select";
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem("tokenUser");
@@ -72,10 +72,10 @@ const KanbanPlus: React.FC = () => {
   }
 
   // para guardar la lista de compromisos
-  var listaCompromisosTodosUsuarios: Compromiso[] = [];
+  const listaCompromisosTodosUsuarios: Compromiso[] = [];
 
   // para guardar la lista de estudiantes
-  var listaEstudiantes: Estudiantes[] = [];
+  let listaEstudiantes: Estudiantes[] = [];
 
   // para guardar los datos de los estudiantes
   const [estudiantes, setEstudiantes] = React.useState<Estudiantes[]>([]);
@@ -113,14 +113,11 @@ const KanbanPlus: React.FC = () => {
         console.error(error);
       }
     }
-    // obtenerEstudiantes();
 
     const fetchData = async () => {
       await obtenerEstudiantes();
       // Recorrer la lista de estudiantes para obtener los compromisos de cada uno y guardarlos en la listaCompromisosTodosUsuarios
-      // console.log("Estudiantes: ", estudiantes);
-      await listaEstudiantes.map((estudiante) => {
-        // console.log("Estudiante: ", estudiante);
+      listaEstudiantes.map((estudiante) => {
         obtenerCompromisosUsuario(estudiante.email);
       });
     };
@@ -164,9 +161,6 @@ const KanbanPlus: React.FC = () => {
     const textoBuscar = (
       document.getElementsByName("filtrarResultados")[0] as HTMLInputElement
     ).value;
-    // window.alert("filtrar datos: " + textoBuscar);
-
-    // comprobar que el usuario haya ingresado un texto para buscar
     if (
       textoBuscar === "" ||
       textoBuscar === " " ||
@@ -259,7 +253,6 @@ const KanbanPlus: React.FC = () => {
         {/* formulario que permita al usuario filtar los resultados de busqueda */}
         <Form<{ username: string }>
           onSubmit={(data) => {
-            // console.log('form data', data);
             return new Promise((resolve) => setTimeout(resolve, 2000)).then(
               () =>
                 data.username === "error" ? { username: "IN_USE" } : undefined

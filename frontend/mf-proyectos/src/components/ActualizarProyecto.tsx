@@ -1,28 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Box, Inline, Stack, xcss } from "@atlaskit/primitives";
 import axios from "axios";
 import Button, { ButtonGroup } from '@atlaskit/button';
 import LoadingButton from '@atlaskit/button/loading-button';
 import TextField from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
 import Form, { Field, FormFooter } from '@atlaskit/form';
-import Select, { ActionMeta, MultiValue, PropsValue } from 'react-select';
+import Select, { ActionMeta, PropsValue } from 'react-select';
 
-import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
-import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled'
 import CrossIcon from '@atlaskit/icon/glyph/cross'
 import CheckIcon from '@atlaskit/icon/glyph/check'
 
 
 import { jwtDecode } from 'jwt-decode';
 import Reuniones from "./Reuniones";
-import LinkIcon from '@atlaskit/icon/glyph/link'
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
 
-var listaMiembrosOriginal: string[] = [];
-var nuevosMiembros: string[] = [];
+let listaMiembrosOriginal: string[] = [];
+let nuevosMiembros: string[] = [];
 
 const ActualizarProyecto: React.FC = () => {
 
@@ -169,7 +165,6 @@ const ActualizarProyecto: React.FC = () => {
                     }
                 });
                 console.log("Proyecto actualizado");
-                // console.log(responseProyecto.data);
             
             } catch (error) {
                 console.error(error);
@@ -239,10 +234,6 @@ const ActualizarProyecto: React.FC = () => {
             await peticionActualizar();
             const idProyectoRecuperado = localStorage.getItem('idProyecto');
             // debo utilizar "listaMiembrosOriginal" y no "userMembersElement" debido a que este ultimo solo contiene los elementos que se han añadido en el campo "userMember" y no a todos los miembros del proyecto
-            // listaMiembrosOriginal.forEach((miembro) => {
-            //     incluirParticipantes(miembro);
-            //     ActualizarParticipantes(miembro, idProyectoRecuperado || "", shortNameValue);
-            // });
 
             
             userMemberElements.forEach((element: HTMLElement) => {
@@ -359,41 +350,6 @@ const ActualizarProyecto: React.FC = () => {
         );
     };
 
-    // SOLO UNA IDEA, NO SE UTILIZA
-    // siguendo la idea de "UserMember" se crea un campo para mostrar los miembros actuales del proyecto, permitiendo eliminarlos si se considera pertinente
-    // const UserMemberActual = () => {
-    //     const [selectedStudent, setSelectedStudent] = useState<PropsValue<Estudiantes>>([]);
-
-    //     useEffect(() => {
-    //         const filteredEstudiantes = estudiantes.filter((estudiante) => Array.isArray(proyectoUser?.userMembers) && proyectoUser?.userMembers.includes(estudiante.email));
-    //         setSelectedStudent(filteredEstudiantes.map((estudiante) => ({ value: estudiante.email, label: estudiante.email, email: estudiante.email })));
-    //     }, [estudiantes, proyectoUser]);
-
-    //     return (
-    //         <Field
-    //             aria-required={true}
-    //             name="userMember"
-    //             defaultValue=""
-    //             label="Miembros actuales del proyecto"
-    //             // isRequired
-    //         >
-    //             {({ fieldProps, error, valid }) => (
-    //                 <Select
-    //                     {...fieldProps}
-    //                     isMulti
-    //                     options={estudiantes.map((estudiante) => ({ value: estudiante.email, label: estudiante.email, email: estudiante.email }))}
-    //                     value={selectedStudent}
-    //                     onChange={(newValue: PropsValue<Estudiantes>, actionMeta: ActionMeta<Estudiantes>) => {
-    //                         setSelectedStudent(newValue);
-    //                         // Handle the onChange event here
-    //                         console.log(newValue);
-    //                     }}
-    //                     placeholder="Seleccione..."
-    //                 />
-    //             )}
-    //         </Field>
-    //     );
-    // };
 
     //**********************************************************************
     //*******************  */ CAMPOS DEL FORMULARIO ************************
@@ -413,8 +369,6 @@ const ActualizarProyecto: React.FC = () => {
                     <div
                         style={{
                             display: 'flex',
-                            // width: '400px',
-                            // maxWidth: '100%',
                             margin: '0 auto',
                             marginLeft: '15px',
                             marginRight: '15px',
@@ -425,7 +379,6 @@ const ActualizarProyecto: React.FC = () => {
                     <h1>Editar proyecto</h1>
                         <Form<{ username: string }>
                             onSubmit={(data) => {
-                                // console.log('form data', data);
                                 return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
                                     data.username === 'error' ? { username: 'IN_USE' } : undefined,
                                 );
@@ -456,7 +409,6 @@ const ActualizarProyecto: React.FC = () => {
 
                                     <FormFooter>
                                         <ButtonGroup>
-                                            {/* <Button onClick={() => cancelarOperacion()}>Cancelar operación</Button> */}
                                             <Button iconBefore={<CrossIcon label="" size="medium" />} onClick={() => cancelarOperacion()} style={{ marginRight: '5x' }}> Cancelar </Button>
                                             <LoadingButton
                                                 iconBefore={<CheckIcon label="" size="medium" />}

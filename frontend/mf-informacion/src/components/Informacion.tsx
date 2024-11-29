@@ -1,9 +1,8 @@
 import React from "react";
-import { Box, xcss } from '@atlaskit/primitives';
+import { Box, xcss, Inline } from '@atlaskit/primitives';
 import Button from '@atlaskit/button';
 import ReactPlayer from 'react-player';
 import Image from '@atlaskit/image'
-import { Inline, Stack } from '@atlaskit/primitives';
 
 // imagenes de los elementos dialogicos
 import i__Compromiso from "../assets/static/i__Compromiso.png";

@@ -7,12 +7,10 @@ import { ElementDTO } from './dto/element.dto';
 
 @Injectable()
 export class ElementService {
-
-
   constructor(
     @InjectModel(ELEMENT.name)
     private readonly model: Model<IElement>,
-  ) { }
+  ) {}
 
   /*  
 Método para crear un elemento.
@@ -29,7 +27,7 @@ salida: objeto de nuevo elemento.
  salida: objeto de elementos encontrados. 
  */
   async findAll(): Promise<IElement[]> {
-    return await this.model.find();
+    return this.model.find();
   }
 
   /*  
@@ -38,7 +36,7 @@ entrada: id del usuario encargado.
 salida: objeto del elemento encontrada.  
 */
   async findOne(id: string): Promise<IElement> {
-    return await this.model.findById(id);
+    return this.model.findById(id);
   }
 
   /*  
@@ -47,7 +45,7 @@ entrada: id de la reunion vinculada.
 salida: objeto del elemento encontrado.  
 */
   async findByMeeting(id: string): Promise<IElement[]> {
-    return await this.model.where({ meeting: [id] });
+    return this.model.where({ meeting: [id] });
   }
 
   /*  
@@ -56,7 +54,7 @@ salida: objeto del elemento encontrado.
  salida: objeto del elemento encontrado.  
 */
   async findCompromisesByMeeting(id: string): Promise<IElement[]> {
-    return await this.model.where({ meeting: [id], type: 'compromiso' });
+    return this.model.where({ meeting: [id], type: 'compromiso' });
   }
 
   /*  
@@ -65,7 +63,7 @@ entrada: id del proyecto vinculado.
 salida: objeto del elemento encontrado.  
 */
   async findByProject(id: string): Promise<IElement[]> {
-    return await this.model.where({ project: [id] })
+    return this.model.where({ project: [id] });
   }
 
   /*  
@@ -74,7 +72,7 @@ entrada: id del usuario encargado.
 salida: objeto del elemento encontrada.  
 */
   async findByUser(id: string): Promise<IElement[]> {
-    return await this.model.where({ participants: [id] })
+    return this.model.where({ participants: [id] });
   }
 
   /*  
@@ -83,7 +81,11 @@ entrada: id del proyecto vinculado.
 salida: objeto del elemento encontrado.  
 */
   async findByUserProject(emailUser: string, idProject): Promise<IElement[]> {
-    return await this.model.where({ participants: [emailUser], project: idProject, type: 'compromiso' })
+    return this.model.where({
+      participants: [emailUser],
+      project: idProject,
+      type: 'compromiso',
+    });
   }
 
   /*  
@@ -91,25 +93,49 @@ Método para  obtener un elemento a partir del id del proyecto, email de usuario
 entrada: id del proyecto vinculado. 
 salida: objeto del elemento encontrado.  
 */
-  async filterTasks(emailUser: string, idProject: string, state: string): Promise<IElement[]> {
+  async filterTasks(
+    emailUser: string,
+    idProject: string,
+    state: string,
+  ): Promise<IElement[]> {
     if (state === 'all') {
       if (emailUser === 'all') {
-        return await this.model.where({ project: idProject, type: 'compromiso' })
+        return this.model.where({
+          project: idProject,
+          type: 'compromiso',
+        });
       } else if (idProject === 'all') {
-          return await this.model.where({ participants: [emailUser], type: 'compromiso' })
+        return this.model.where({
+          participants: [emailUser],
+          type: 'compromiso',
+        });
       } else {
-          return await this.model.where({ participants: [emailUser], project: idProject, type: 'compromiso' })
+        return this.model.where({
+          participants: [emailUser],
+          project: idProject,
+          type: 'compromiso',
+        });
       }
+    } else if (emailUser === 'all') {
+      return this.model.where({
+        project: idProject,
+        type: 'compromiso',
+        state: state,
+      });
+    } else if (idProject === 'all') {
+      return this.model.where({
+        participants: [emailUser],
+        type: 'compromiso',
+        state: state,
+      });
     } else {
-      if (emailUser === 'all') {
-        return await this.model.where({ project: idProject, type: 'compromiso', state: state })
-      } else if (idProject === 'all') {
-          return await this.model.where({ participants: [emailUser], type: 'compromiso', state: state })
-      } else {
-          return await this.model.where({ participants: [emailUser], project: idProject, type: 'compromiso', state: state })
-      }
+      return this.model.where({
+        participants: [emailUser],
+        project: idProject,
+        type: 'compromiso',
+        state: state,
+      });
     }
-
   }
 
   /*  
@@ -118,7 +144,10 @@ salida: objeto del elemento encontrado.
  salida: objeto del elemento encontrado.  
 */
   async findByProjectPreview(id: string): Promise<IElement[]> {
-    return await this.model.where({ project: [id], state: ['desarrollo', 'new', 'pausada', 'evaluando'] })
+    return this.model.where({
+      project: [id],
+      state: ['desarrollo', 'new', 'pausada', 'evaluando'],
+    });
   }
 
   /*  
@@ -127,7 +156,7 @@ salida: objeto del elemento encontrado.
   salida: objeto del elemento actualizada.
   */
   async update(id: string, elementDTO: ElementDTO): Promise<IElement> {
-    return await this.model.findByIdAndUpdate(id, elementDTO, {
+    return this.model.findByIdAndUpdate(id, elementDTO, {
       new: true,
     });
   }
@@ -145,15 +174,14 @@ salida: valor booleano de confirmación.
     };
   }
 
-
-
-
   // METODOS NUEVOS
 
   // Metodo para obtener elementos de tipo "compromiso" a partir del email de usuarios encargados.
   // COLOCAR CORCHETES AL ANY SI ES QUE SOLO DEVUELVE UN ELEMENTO A PESAR DE QUE SEAN VARIOS
   async compromisosUsuarios(email: string): Promise<any[]> {
-    return await this.model.where({ participants: email, type:['compromiso', 'Compromiso'] }); // mediante el frontend se realiza una nueva verificacion para que solo se muestren los compromisos
+    return this.model.where({
+      participants: email,
+      type: ['compromiso', 'Compromiso'],
+    }); // mediante el frontend se realiza una nueva verificacion para que solo se muestren los compromisos
   }
-
 }

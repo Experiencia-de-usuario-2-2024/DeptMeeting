@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense } from "react";
 
 // @ts-ignore
 const Proyectos = lazy(() => import("MF_PROYECTOS/Proyectos").catch(error => {

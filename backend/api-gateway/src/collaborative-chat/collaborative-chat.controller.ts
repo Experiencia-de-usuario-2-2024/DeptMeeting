@@ -6,29 +6,28 @@ import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
 @ApiTags('Microservicio chat colaborativo (microservice-collaborative-chat)')
 @Controller('api/collaborative-chat')
 export class CollaborativeChatController {
+  constructor(private readonly clientProxy: ClientProxyMeetflow) {}
 
- constructor(private readonly clientProxy: ClientProxyMeetflow) { }
-
-private _clientProxyCollaborativeChat = this.clientProxy.clientProxyCollaborativeChat();
+  private _clientProxyCollaborativeChat = this.clientProxy.clientProxyCollaborativeChat();
 
   @Post('create')
   @ApiOperation({ summary: 'Crear chat colaborativo' })
   async addProject(@Body() collaborativeChat: any, @Req() req: any) {
-    console.log("CREAR_COLLABORATIVE_CHAT");
-    return await this._clientProxyCollaborativeChat.send('CREAR_COLLABORATIVE_CHAT', collaborativeChat);
+    console.log('CREAR_COLLABORATIVE_CHAT');
+    return this._clientProxyCollaborativeChat.send('CREAR_COLLABORATIVE_CHAT', collaborativeChat);
   }
 
   @Get('/get/:id')
   @ApiOperation({ summary: 'obtener chat colaborativo por id' })
   async findOne(@Param('id') id: string) {
-    return await this._clientProxyCollaborativeChat.send('BUSCAR_UN_COLLABORATIVE_CHAT', id);
+    return this._clientProxyCollaborativeChat.send('BUSCAR_UN_COLLABORATIVE_CHAT', id);
   }
 
   @Get('/get-all')
   @ApiOperation({ summary: 'obtener todos los chat colaborativo' })
   async findAll() {
-    console.log("Solicitando todos los chat colaborativos");
-    return await this._clientProxyCollaborativeChat.send('BUSCAR_TODOS_COLLABORATIVE_CHAT', '');
+    console.log('Solicitando todos los chat colaborativos');
+    return this._clientProxyCollaborativeChat.send('BUSCAR_TODOS_COLLABORATIVE_CHAT', '');
   }
 
   @Put(':id')
@@ -37,7 +36,7 @@ private _clientProxyCollaborativeChat = this.clientProxy.clientProxyCollaborativ
     @Param('id') id: string,
     @Body() collaborativeChat: any,
   ): Promise<Observable<any>> {
-    return await this._clientProxyCollaborativeChat.send("ACTUALIZAR_COLLABORATIVE_CHAT", { id, collaborativeChat });
+    return this._clientProxyCollaborativeChat.send("ACTUALIZAR_COLLABORATIVE_CHAT", { id, collaborativeChat });
   }
 
   @Delete(':id')

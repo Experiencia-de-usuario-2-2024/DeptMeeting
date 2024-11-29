@@ -1,19 +1,12 @@
-import React, { useEffect, useState, useCallback, Fragment, ReactNode, FC} from "react";
-import { css, jsx } from '@emotion/react';
+import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import { Box, xcss } from '@atlaskit/primitives';
-import { Inline, Stack } from '@atlaskit/primitives';
+import { Box, xcss, Stack } from '@atlaskit/primitives';
 import Avatar from '@atlaskit/avatar';
-import Form, { Field, FormFooter } from '@atlaskit/form';
+import Form, { Field } from '@atlaskit/form';
 import TextField from '@atlaskit/textfield';
 import CheckIcon from '@atlaskit/icon/glyph/check'
-import Button, { ButtonGroup } from '@atlaskit/button';
-import LoadingButton from '@atlaskit/button/loading-button';
-import Textfield from '@atlaskit/textfield';
+import Button from '@atlaskit/button';
 import { jwtDecode } from 'jwt-decode';
-import DynamicTable from '@atlaskit/dynamic-table';
-import Select from '@atlaskit/select';
-import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
 
 import WatchIcon from '@atlaskit/icon/glyph/watch'
 import WatchFilledIcon from '@atlaskit/icon/glyph/watch-filled'
@@ -90,8 +83,8 @@ const Perfil: React.FC = () => {
     
 
     // ya no se utiliza
-    var emailUsuarioPerfil: string;
-    var emailUsuarioLog: string;
+    let emailUsuarioPerfil: string;
+    let emailUsuarioLog: string;
 
 
     useEffect(() => {
@@ -146,7 +139,6 @@ const Perfil: React.FC = () => {
                 console.error(error);
             }
         }
-        // obtenerDatosUsuarioLog();
 
         // funcion para obtener las tareas del usuario 
         async function obtenerCompromisosUsuario() {
@@ -166,7 +158,6 @@ const Perfil: React.FC = () => {
                 console.error(error);
             }
         }
-        // obtenerCompromisosUsuario();
 
         // garantizar el orden de las funciones asincronas
         async function obtenerDatos() {
@@ -190,7 +181,7 @@ const Perfil: React.FC = () => {
         const emailValue = (document.getElementsByName("email")[0] as HTMLInputElement).value;
         const passwordValue = (document.getElementsByName("password")[0] as HTMLInputElement).value;
 
-        var asignarEstudianteProfesorValue: string = "";
+        let asignarEstudianteProfesorValue: string = "";
         // este campo solamente se mostrara si el usuario logeado es estudiante
         const tipoDeUsuario = localStorage.getItem('tipoUsuario');
         if (tipoDeUsuario === 'estudiante' || tipoDeUsuario === 'Estudiante') {
@@ -233,7 +224,6 @@ const Perfil: React.FC = () => {
                     }
                 });
                 console.log("Perfil actualizado correctamente");
-                // console.log(responsePerfil.data);
             
             } catch (error) {
                 console.error(error);
@@ -259,7 +249,6 @@ const Perfil: React.FC = () => {
                     }
                 });
                 console.log("Estado de la tarea actualizado correctamente");
-                // console.log(responsePerfil.data);
             
             } catch (error) {
                 console.error(error);

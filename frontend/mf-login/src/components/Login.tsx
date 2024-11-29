@@ -1,17 +1,13 @@
 import React, {Fragment, useEffect, useState, useCallback} from "react";
 import styles from "../styles/login.module.css";
-import {css, jsx} from '@emotion/react';
 
 import { Box, xcss } from '@atlaskit/primitives';
 import Select, { ValueType } from '@atlaskit/select';
 import TextField from '@atlaskit/textfield';
 import LoadingButton from '@atlaskit/button/loading-button';
 import Button from '@atlaskit/button';
-import Textfield from '@atlaskit/textfield';
-import Flag, {FlagGroup } from '@atlaskit/flag';
 import SucessIcon from '@atlaskit/icon/glyph/check-circle';
 import { G400 } from '@atlaskit/theme/colors';
-import { token } from '@atlaskit/tokens';
 import SignInIcon from '@atlaskit/icon/glyph/sign-in'
 
 import axios from "axios";
@@ -20,9 +16,8 @@ import Form, {
     ErrorMessage,
     Field,
     FormFooter,
-    FormHeader, HelperMessage,
+    FormHeader,
     RequiredAsterisk,
-    ValidMessage,
 } from '@atlaskit/form';
 
 import Modal, {
@@ -151,32 +146,27 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
     };
 
     const recuperarPassword = () => {
-        try{
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/resetpass/${correoRecover}`, //MODIFICAR (listo, falta probar)
-                headers: { }
-            };
+        let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/resetpass/${correoRecover}`, //MODIFICAR (listo, falta probar)
+            headers: { }
+        };
 
-            axios.request(config)
-                .then((response) => {
-                    console.log(JSON.stringify(response.data));
-                    setCorreoRecoverSuccess(true); //Muestra aviso de registro exitoso
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setErrorMessage(error.response.data.error.message);
-                    setIsErrorModalOpen(true);
-                });
-        } catch (error) {
-            console.log(error);
-            setErrorMessage("error");
-            setIsErrorModalOpen(true);
-        }
-    }; //TODO: Implementar recuperación de contraseña
+        axios.request(config)
+            .then((response) => {
+                console.log(JSON.stringify(response.data));
+                setCorreoRecoverSuccess(true); //Muestra aviso de registro exitoso
+            })
+            .catch((error) => {
+                console.log(error);
+                setErrorMessage(error.response.data.error.message);
+                setIsErrorModalOpen(true);
+            });
+    };
 
 
+    // Jyr comentario: ni idea que intengo aqui... lo veré después... Y sí... El wn encargo de limpiar está ensuciando.
     useEffect(() => {
         switch (errorMessageText) {
             case 'IS_VALID':
@@ -498,7 +488,7 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
                                                         <Field id="correoRecover" name="correoRecover" label="Escribe tu correo para continuar">
                                                             {({ fieldProps }) => (
                                                                 <Fragment>
-                                                                    <Textfield
+                                                                    <TextField
                                                                         {...fieldProps}
                                                                         defaultValue=""
                                                                         value={correoRecover}

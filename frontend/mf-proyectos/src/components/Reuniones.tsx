@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Box, Inline, Stack, xcss } from "@atlaskit/primitives";
 import axios from "axios";
 import Button, { ButtonGroup } from '@atlaskit/button';
-import LoadingButton from '@atlaskit/button/loading-button';
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
 import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled'
 import { jwtDecode } from 'jwt-decode';
@@ -20,7 +19,7 @@ import MoreIcon from '@atlaskit/icon/glyph/more'
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
-var mailUser = "";
+let mailUser = "";
 
 
 const listStyles = xcss({
@@ -28,13 +27,10 @@ const listStyles = xcss({
 });
 const boxStyles = xcss({
     color: 'color.text',
-    // width: '93%',
-    // height: '50px',
     backgroundColor: 'color.background.selected',
     borderWidth: 'border.width',
     borderStyle: 'solid',
     borderColor: 'color.border.selected',
-    // padding: 'space.100',
     borderRadius: 'border.radius.100',
     transitionDuration: '200ms',
     listStyle: 'none',
@@ -44,13 +40,10 @@ const boxStyles = xcss({
     justifyContent: 'center',
     marginLeft: '15px', // Add margin left
     marginRight: '15px', // Add margin right
-    // paddingInline: 'space.800',
     '::before': {
-        // content: '"✨"',
         paddingInlineEnd: 'space.050',
     },
     '::after': {
-        // content: '"✨"',
         paddingInlineStart: 'space.050',
     },
     ':hover': {
@@ -220,7 +213,6 @@ const Reuniones: React.FC = () => {
     // Entrada: id de la reunion y nombre de la reunion
     // Salida: cambiar valor de variable en local storage para mostrar la informacion de la reunion
     const seleccionReunion = (idReunion: string, nameReunion:string, estadoReunion:string) => {
-        // window.alert("Reunion seleccionada (FUNCIONALIDAD NO IMPLEMENTADA)");
         console.log("Viendo la reunion: ", nameReunion, "con el id: ", idReunion);
         const newValue = !verReunion;
         localStorage.setItem('verReunion', JSON.stringify(newValue));
