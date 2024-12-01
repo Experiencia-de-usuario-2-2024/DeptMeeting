@@ -10,9 +10,9 @@ import { ProjectModule } from './project/project.module';
     ProjectModule,
     ConfigModule.forRoot({
       envFilePath: ['.env.development'],
-      isGlobal: true
+      isGlobal: true,
     }),
-    MongooseModule.forRoot(process.env.URI_MONGODB_PROJECTS)
+    MongooseModule.forRoot(process.env.URI_MONGODB_PROJECTS),
   ],
   controllers: [AppController],
   providers: [AppService],

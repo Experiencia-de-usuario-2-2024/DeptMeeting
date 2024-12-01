@@ -16,7 +16,7 @@ mode: "development",
 devServer: {
     //port: 3017, // Modificar -> LISTO
     port: process.env.REACT_APP_MF_KANBANPLUS_PORT, // Modificar -> listo
-    allowedHosts: process.env.REACT_APP_ALLOWED_HOSTS ? [process.env.REACT_APP_ALLOWED_HOSTS] : [], // Convierte la variable en un array con un solo host
+    allowedHosts: process.env.REACT_APP_ALLOWED_HOSTS, // Convierte la variable en un array con un solo host
 },
 module: {
     rules: [
