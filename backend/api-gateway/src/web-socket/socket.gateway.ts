@@ -16,11 +16,12 @@ import { Server, Socket } from 'socket.io';
     namespace: 'chat',
   },
 })
-
 export class ScoketGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer() server: Server;
+
+  afterInit(server: any) {}
 
   handleConnection(client: Socket, ...args: any[]) {
     console.log('Usuario nuevo conectado');
@@ -29,7 +30,7 @@ export class ScoketGateway
     console.log('Usuario desconectado');
   }
 
-  // EVENTO DE ENVIAR MENSAJE 
+  // EVENTO DE ENVIAR MENSAJE
   @SubscribeMessage('event_message')
   handleIncomingMessage(
     client: Socket,
@@ -142,7 +143,7 @@ export class ScoketGateway
     this.server.to('room_' + room).emit('new_comenzar_reunion', valorIniciarReunion);
   }
 
-  
+
   // PARA EL CHAT COLABORATIVO QUE EXISTE DENTRO DE LA REUNION
   // funciona separando el chat en salas
   @SubscribeMessage('messageVer2')
@@ -176,7 +177,7 @@ export class ScoketGateway
 
 
 
-  
+
 
   // EVENTO DE CREAR REUNIÓN
   @SubscribeMessage('event_meet')
