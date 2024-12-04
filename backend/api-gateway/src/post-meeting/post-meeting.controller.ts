@@ -1,6 +1,6 @@
 
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
-import { Body, Controller, Get, Param, Post, Put, Delete} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Delete, UseGuards } from '@nestjs/common';
 import { IPostMeeting } from 'src/common/interfaces/post-meeting.interface';
 import { Observable } from 'rxjs';
 import { PostMeetingMSG } from 'src/common/constants';

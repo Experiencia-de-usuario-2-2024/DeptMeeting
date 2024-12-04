@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class PostMeetingDTO{
     meeting: string[]; // id de la reunión asociada

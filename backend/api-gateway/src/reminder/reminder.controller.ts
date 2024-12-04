@@ -1,11 +1,15 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpException,
+    HttpStatus,
+    Param,
+    Post,
+    Put,
+    Req,
+    UseGuards,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
@@ -18,13 +22,14 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 @Controller('api/reminder')
 //Clase que representa los recordatorios del sistema
 export class ReminderController {
-  // Entrada: cliente proxy global
-  constructor(private readonly clientProxy: ClientProxyMeetflow) {}
 
-  // cliente proxy de recordatorios
-  private _clientProxyReminder = this.clientProxy.clientProxyReminder();
+      // Entrada: cliente proxy global
+    constructor(private readonly clientProxy: ClientProxyMeetflow) { }
 
-  /* 
+     // cliente proxy de recordatorios
+    private _clientProxyReminder = this.clientProxy.clientProxyReminder();
+
+    /* 
      Modelo estructural de datos:
 
        1. IReminder:    Interface
@@ -35,55 +40,52 @@ export class ReminderController {
 
    */
 
-  // METODOS CRUD para recordatorios
+    // METODOS CRUD para recordatorios
 
-  /*  
+    /*  
     Método para crear una nueva recordatorio.
     entrada: datos del recordatorio. 
     salida: objeto de nueva recordatorio.  
     */
-  @Post('/create')
-  @ApiOperation({ summary: 'Crear un recordatorio' })
-  create(@Body() reminderDTO: ReminderDTO): Observable<IReminder> {
-    return this._clientProxyReminder.send(ReminderMSG.CREATE, reminderDTO);
-  }
+    @Post('/create')
+    @ApiOperation({ summary: 'Crear un recordatorio' })
+    create(@Body() reminderDTO: ReminderDTO): Observable<IReminder> {
+        return this._clientProxyReminder.send(ReminderMSG.CREATE, reminderDTO);
+    }
 
-  /*  
+   /*  
     Método para  obtener una recordatorio a partir del id.
     entrada: id del recordatorio. 
     salida: objeto del recordatorio encontrada.  
     */
-  @Get('/:id')
-  @ApiOperation({ summary: 'Obtener recordatorio por id' })
-  async findOne(@Param('id') id: string) {
-    return this._clientProxyReminder.send(ReminderMSG.FIND_ONE, id);
-  }
+    @Get('/:id')
+    @ApiOperation({ summary: 'Obtener recordatorio por id' })
+    async findOne(@Param('id') id: string) {
+        return await this._clientProxyReminder.send(ReminderMSG.FIND_ONE, id);
+    }
 
-  /*  
+    /*  
     Método para actualizar un recordatorio a partir del id.
     entrada: id del recordatorio y nuevos datos del recordatorio. 
     salida: objeto de la recordatorio actualizada.
     */
-  @Put(':id')
-  @ApiOperation({ summary: 'Actualizar recordatorio por id' })
-  async update(
-    @Param('id') id: string,
-    @Body() reminderDTO: ReminderDTO,
-  ): Promise<Observable<IReminder>> {
-    return this._clientProxyReminder.send(ReminderMSG.UPDATE, {
-      id,
-      reminderDTO,
-    });
-  }
+    @Put(':id')
+    @ApiOperation({ summary: 'Actualizar recordatorio por id' })
+    async update(
+        @Param('id') id: string,
+        @Body() reminderDTO: ReminderDTO,
+    ): Promise<Observable<IReminder>> {
+        return await this._clientProxyReminder.send(ReminderMSG.UPDATE, { id, reminderDTO });
+    }
 
-  /*  
+    /*  
     Metodo para borrar permanentemente el recordatorio a partir del id.
     entrada: id del recodatorio.
     salida: valor booleano de confirmación.
     */
-  @Delete(':id')
-  @ApiOperation({ summary: 'Borrar permanentemente un recordatorio por id' })
-  delete(@Param('id') id: string): Observable<any> {
-    return this._clientProxyReminder.send(ReminderMSG.DELETE, id);
-  }
+    @Delete(':id')
+    @ApiOperation({ summary: 'Borrar permanentemente un recordatorio por id' })
+    delete(@Param('id') id: string): Observable<any> {
+        return this._clientProxyReminder.send(ReminderMSG.DELETE, id);
+    }
 }

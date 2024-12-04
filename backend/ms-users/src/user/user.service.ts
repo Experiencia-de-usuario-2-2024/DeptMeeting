@@ -1,9 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserDocument } from "./schema/user.schema";
+import { UserSchema, UserDocument } from "./schema/user.schema";
 import { Model, Document } from 'mongoose';
 import { v4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
+import { IUser } from 'src/common/interfaces/user.interface';
 import { UserDTO } from './dto/user.dto';
 import {User} from "./user.entity";
 
@@ -28,7 +29,8 @@ export class UserService {
    salida: objeto del nuevo usuario.  
   */
   async create(userDTO: UserDTO): Promise<User> {
-    const { tagName, name, email, avatar, asignado, password, type } = userDTO;
+    const { tagName, name, email, avatar, asignado, password, type, role } = userDTO;
+    const activationToken = v4();
     const hash = await this.hashPassword(password);
     const userValidate = await this.findByEmail(userDTO.email);
     if (!userValidate) {
@@ -40,7 +42,8 @@ export class UserService {
         asignado,
         password: hash,
         type,
-        color: 'grey'
+        color: 'grey',
+        role
       });
       return await user.save();
     } else {
@@ -103,9 +106,15 @@ entrada: id del usuario y nuevos datos del usuario.
 salida: objeto del usuario actualizada.
 */
   async update(ide: string, userDTO: UserDTO): Promise<any> {
-    const { name, institution, email, avatar, asignado, tagName, type, currentProject, currentProjectId, currentMeeting, currentMeetingId, proyectoPrincipal } = userDTO;
-    const hash = await this.hashPassword(userDTO.password);
-    return await this.userModel.findByIdAndUpdate(ide, {
+    const { name, institution, email, avatar, asignado, tagName, type, currentProject, currentProjectId, currentMeeting, currentMeetingId, proyectoPrincipal, password } = userDTO;
+
+    // Solo hashear la contraseña si se proporciona una nueva
+    let hash: string;
+    if (password){
+      hash = await this.hashPassword(password);
+    }
+
+    const updateData: any = {
       name,
       institution,
       email,
@@ -118,8 +127,14 @@ salida: objeto del usuario actualizada.
       currentMeeting,
       currentMeetingId,
       proyectoPrincipal,
-      password: hash
-    }, { new:true }).exec();
+    };
+
+    // Solo añadir el hash si la contraseña fue actualizada
+    if (hash){
+      updateData.password = hash;
+    }
+
+    return await this.userModel.findByIdAndUpdate(ide, updateData, { new:true }).exec();
   }
 
   /*  
@@ -195,12 +210,14 @@ salida: objeto del usuario actualizada.
   salida: objeto del usuario encontrado.  
   */
   async findAllByEmail(email: string): Promise<any> {
+    // return this.userModel.findOne({email});
     return this.userModel.where({asignado: [email]});
   }
 
 
   async updateByEmailVer2(correo: string, userDTO: UserDTO): Promise<UserDocument> {
     const { name, institution, email, currentProject, currentMeeting, lastLink, currentProjectId, currentMeetingId, proyectoPrincipal } = userDTO;
+    // console.log("CORREO QUE LLEGA en ms service: ", correo);
     return await this.userModel.findOneAndUpdate({email: correo}, {
       name,
       institution,

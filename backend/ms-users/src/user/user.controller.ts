@@ -31,6 +31,7 @@ export class UserController {
   */
   @MessagePattern(UserMSG.CREATE)
   async create(@Payload() userDTO: UserDTO) {
+    console.log("Creando usuario: ", userDTO);
     const user = await this.userService.create(userDTO);
     if (user) {
       return user;
@@ -187,6 +188,7 @@ export class UserController {
   // Metodo para actualizar un usuario segun su correo
   @MessagePattern('ACTUALIZAR_USUARIO_POR_CORREO_VER2')
   updateByEmailVer2(@Payload() payload: any) {
+    // console.log("CORREO QUE LLEGA en ms controller: ", payload.correo);
     return this.userService.updateByEmailVer2(payload.correo, payload.userDTO);
   }
 

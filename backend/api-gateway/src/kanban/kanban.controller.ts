@@ -1,11 +1,15 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpException,
+    HttpStatus,
+    Param,
+    Post,
+    Put,
+    Req,
+    UseGuards,
 } from '@nestjs/common';
 import { KanbanDTO } from './dto/kanban.dto';
 import { Observable } from 'rxjs';
@@ -17,16 +21,17 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 @ApiTags('Microservicio de Kanban (microservice-kanban)')
 @Controller('api/kanban')
 export class KanbanController {
-  // IMPORTANTE!!!!! FUNCIONALIDADES NO IMPLEMENTADAS EN DETALLE
-  // IMPORTANTE!!!!! FUNCIONALIDADES NO IMPLEMENTADAS EN DETALLE
 
-  // Entrada: cliente proxy global
-  constructor(private readonly clientProxy: ClientProxyMeetflow) {}
+    // IMPORTANTE!!!!! FUNCIONALIDADES NO IMPLEMENTADAS EN DETALLE
+    // IMPORTANTE!!!!! FUNCIONALIDADES NO IMPLEMENTADAS EN DETALLE
 
-  // cliente proxy de kanban
-  private _clientProxyKanban = this.clientProxy.clientProxyKanban();
+    // Entrada: cliente proxy global
+    constructor(private readonly clientProxy: ClientProxyMeetflow) { }
 
-  /* 
+    // cliente proxy de kanban
+    private _clientProxyKanban = this.clientProxy.clientProxyKanban();
+
+    /* 
     Modelo estructural de datos:
 
        1. IKanban:    Interface
@@ -37,63 +42,63 @@ export class KanbanController {
 
     */
 
-  // METODOS CRUD para kanban
+    // METODOS CRUD para kanban
 
-  /*  
+    /*  
      Metodo para crear un kanban.
      entrada: datos del kanban. 
      salida: objeto de nueva kanban.  
     */
-  @Post()
-  @ApiOperation({ summary: 'Crear un tablero Kanban' })
-  create(@Body() kanbanDTO: KanbanDTO): Observable<IKanban> {
-    return this._clientProxyKanban.send(KanbanMSG.CREATE, kanbanDTO);
-  }
+    @Post()
+    @ApiOperation({ summary: 'Crear un tablero Kanban' })
+    create(@Body() kanbanDTO: KanbanDTO): Observable<IKanban> {
+        return this._clientProxyKanban.send(KanbanMSG.CREATE, kanbanDTO);
+    }
 
-  /*  
+    /*  
      Método para obtener todos los tableros kanban.
      salida: objeto de kanban encontrados. 
     */
-  @Get('/ver/kanban')
-  @ApiOperation({ summary: 'Obtener todos los tableros Kanban' })
-  async findAll() {
-    console.log('Solicitando a microservicio kanban: visualización');
-    return this._clientProxyKanban.send(KanbanMSG.FIND_ALL, '');
-  }
+    @Get('/ver/kanban')
+    @ApiOperation({ summary: 'Obtener todos los tableros Kanban' })
+    async findAll() {
+        console.log("Solicitando a microservicio kanban: visualización");
+        return await this._clientProxyKanban.send(KanbanMSG.FIND_ALL, '');
+    }
 
-  /*  
+    /*  
     Método para  obtener una kanban a partir del id.
     entrada: id del kanban. 
     salida: objeto del kanban encontrada.  
     */
-  @Get(':id')
-  @ApiOperation({ summary: 'Obtener tablero Kanban por id' })
-  async findOne(@Param('id') id: string) {
-    return this._clientProxyKanban.send(KanbanMSG.FIND_ONE, id);
-  }
+    @Get(':id')
+    @ApiOperation({ summary: 'Obtener tablero Kanban por id' })
+    async findOne(@Param('id') id: string) {
+        return await this._clientProxyKanban.send(KanbanMSG.FIND_ONE, id);
+    }
 
-  /*  
+    /*  
     Método para actualizar un tablero kanban a partir del id.
     entrada: id del kanban y nuevos datos del kanban. 
     salida: objeto del kanban actualizado.
     */
-  @Put(':id')
-  @ApiOperation({ summary: 'Actualizar tablero kanban por id' })
-  async update(
-    @Param('id') id: string,
-    @Body() kanbanDTO: KanbanDTO,
-  ): Promise<Observable<IKanban>> {
-    return this._clientProxyKanban.send(KanbanMSG.UPDATE, { id, kanbanDTO });
-  }
+    @Put(':id')
+    @ApiOperation({ summary: 'Actualizar tablero kanban por id' })
+    async update(
+        @Param('id') id: string,
+        @Body() kanbanDTO: KanbanDTO,
+    ): Promise<Observable<IKanban>> {
+        return await this._clientProxyKanban.send(KanbanMSG.UPDATE, { id, kanbanDTO });
+    }
 
-  /*  
+    /*  
     Método para borrar permanentemente un tablero kanban a partir del id.
     entrada: id del kanban.
     salida: valor booleano de confirmación.
     */
-  @Delete(':id')
-  @ApiOperation({ summary: 'Borrar permanentemente un tablero Kanban por id' })
-  delete(@Param('id') id: string): Observable<any> {
-    return this._clientProxyKanban.send(KanbanMSG.DELETE, id);
-  }
+    @Delete(':id')
+    @ApiOperation({ summary: 'Borrar permanentemente un tablero Kanban por id' })
+    delete(@Param('id') id: string): Observable<any> {
+        return this._clientProxyKanban.send(KanbanMSG.DELETE, id);
+    }
 }

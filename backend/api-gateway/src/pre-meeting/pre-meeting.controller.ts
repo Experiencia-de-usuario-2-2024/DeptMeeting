@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Delete, UseGuards } from '@nestjs/common';
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
 import { PreMeetingDTO } from './dto/pre-meeting.dto';
 import { IPreMeeting } from 'src/common/interfaces/pre-meeting.interface';
@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { PreMeetingMSG } from 'src/common/constants';
 import { IMeeting } from 'src/common/interfaces/meeting.interface';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('Microservicio de pre-reuniones (microservice-premeetings)')
 @Controller('api/pre-meeting')

@@ -1,4 +1,12 @@
 import { Controller } from '@nestjs/common';
+import {
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ElementService } from './element.service';
 import { ElementDTO } from './dto/element.dto';
 import { ElementMSG } from 'src/common/constants';
@@ -6,10 +14,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 
 @Controller()
 export class ElementController {
-
-  constructor(
-    private readonly elementService: ElementService,
-  ) { }
+  constructor(private readonly elementService: ElementService) {}
 
   /* 
 Modelo estructural de datos:
@@ -29,12 +34,9 @@ entrada: datos del elemento.
 salida: objeto de nuevo elemento.  
 */
   @MessagePattern(ElementMSG.CREATE)
-  async create(
-    @Payload() elementDTO: ElementDTO
-  ) {
+  async create(@Payload() elementDTO: ElementDTO) {
     return this.elementService.create(elementDTO);
   }
-
 
   /*  
 Método para obtener todos los elementos.
@@ -122,7 +124,10 @@ salida: objeto del elemento encontrado.
 */
   @MessagePattern(ElementMSG.FIND_BY_USER_PROJECT)
   findByUserProject(@Payload() payload: any) {
-    return this.elementService.findByUserProject(payload.emailUser, payload.idProject);
+    return this.elementService.findByUserProject(
+      payload.emailUser,
+      payload.idProject,
+    );
   }
 
   /*  
@@ -132,12 +137,12 @@ salida: objeto del elemento encontrado.
 */
   @MessagePattern(ElementMSG.FIND_BY_T_PROJECT)
   filterTasks(@Payload() payload: any) {
-    return this.elementService.filterTasks(payload.emailUser, payload.idProject, payload.nameState);
+    return this.elementService.filterTasks(
+      payload.emailUser,
+      payload.idProject,
+      payload.nameState,
+    );
   }
-
-
-
-
 
   // NUEVOS METODOS
 
@@ -147,7 +152,9 @@ salida: objeto del elemento encontrado.
     return await this.elementService.compromisosUsuarios(email);
   }
 
-
-
-
+  // Metodo para obtener elementos de tipo "compromiso" a partir del id de la reunion.
+  @MessagePattern('find_compromisos_by_project')
+  async compromisosReunion(@Payload() id: string) {
+    return await this.elementService.compromisosProyecto(id);
+  }
 }

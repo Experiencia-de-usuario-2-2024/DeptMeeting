@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MEETING} from 'src/common/models/models';
+import { MEETING, PROJECT } from 'src/common/models/models';
 import { MeetingController } from './meeting.controller';
 import { MeetingService } from './meeting.service';
 import { MeetingSchema } from './schema/meeting.schema';

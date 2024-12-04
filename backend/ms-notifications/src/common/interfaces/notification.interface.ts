@@ -1,4 +1,4 @@
 export interface INotification extends Document {
-    type: string;
-    description: string;
+  type: string;
+  description: string;
 }
