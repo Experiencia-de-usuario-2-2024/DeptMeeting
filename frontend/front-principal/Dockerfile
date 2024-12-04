@@ -1,5 +1,5 @@
 # Usa una imagen base adecuada para tu proyecto
-FROM node:18
+FROM node:20
 
 # Establece el directorio de trabajo dentro del contenedor  ----> MODIFICAR POR CADA DOCKERFILE
 WORKDIR /front-principal
@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Expone el puerto en el que se ejecuta tu aplicación ---> MODIFICAR POR CADA DOCKERFILE
-EXPOSE 3002
+EXPOSE 3003
 
 # Comando para iniciar tu aplicación
 CMD [ "npm", "start" ]

@@ -1,5 +1,5 @@
 # Usa una imagen base adecuada para tu proyecto
-FROM node:18
+FROM node:20
 
 # Establece el directorio de trabajo dentro del contenedor  ----> MODIFICAR POR CADA DOCKERFILE
 WORKDIR /mf-informacion
