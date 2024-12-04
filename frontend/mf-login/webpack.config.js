@@ -90,7 +90,7 @@ module.exports = {
             name: "mf_login", // Modificar
             filename: "remoteEntry.js",
             exposes: {
-                "./Login": "./src/components/Login", // Ejemplo, aqui se exponen los componentes
+                "./Login": "./src/components/LoginForm", // Ejemplo, aqui se exponen los componentes
             },
             shared: {
                 ...dependencies,
