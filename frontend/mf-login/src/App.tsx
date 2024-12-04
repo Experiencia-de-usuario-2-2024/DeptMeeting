@@ -1,6 +1,7 @@
 import React from "react";
 import "./App.css";
 import Login from "./components/Login";
+import LoginForm from './components/LoginForm.tsx';
 
 function App() {
   const handleLogin = () => {
@@ -11,11 +12,7 @@ function App() {
   return (
       <div className="App">
         <header className="App-header">
-          {/* <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p> */}
-          <Login onLogin={handleLogin} />
-
+          <LoginForm/>
         </header>
       </div>
   );
