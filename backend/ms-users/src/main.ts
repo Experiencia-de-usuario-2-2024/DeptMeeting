@@ -12,5 +12,6 @@ async function bootstrap() {
   });
   await app.listen();
   console.log('Microservicio de Usuarios corriendo');
+  process.title = 'ms-users';
 }
 bootstrap();

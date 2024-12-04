@@ -9,18 +9,12 @@ import { MailModule } from './mail/mail.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
-  imports: [
-    NotificationModule,
-    EventEmitterModule.forRoot(),
+  imports: [NotificationModule, EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: ['.env.development'],
       isGlobal: true,
-    }),
-    MongooseModule.forRoot(process.env.URI_MONGODB_NOTIFICATIONS),
-    EventMailModule,
-    MailModule,
-  ],
+    }), MongooseModule.forRoot(process.env.URI_MONGODB), EventMailModule, MailModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

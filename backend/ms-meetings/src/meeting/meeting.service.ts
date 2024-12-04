@@ -19,6 +19,7 @@ export class MeetingService {
   salida: objeto de nueva reunión.  
   */
   async create(meetingDTO: MeetingDTO): Promise<IMeeting> {
+    console.log("meetingDTO:", meetingDTO);
     const newMeeting = new this.model(meetingDTO);
     return await newMeeting.save();
   }
@@ -94,7 +95,7 @@ export class MeetingService {
   salida: objeto de la reunión con el proyecto vinculado.
   */
   async setProject(
-    meetingId: string,
+    meetingId: String,
     projectId: string,
   ): Promise<IMeeting> {
     return await this.model.findByIdAndUpdate(

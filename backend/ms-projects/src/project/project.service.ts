@@ -9,7 +9,7 @@ import { ProjectDTO } from './dto/project.dto';
 export class ProjectService {
   constructor(
     @InjectModel(PROJECT.name) private readonly model: Model<IProject>,
-  ) {}
+  ) { }
 
   /*  
   Método para crear un nueva proyecto a partir de un usuario. 
@@ -20,6 +20,7 @@ export class ProjectService {
   async createProject(projectDTO: any) {
     const newProject = new this.model(projectDTO);
     return await newProject.save();
+
   }
 
   /*  
@@ -35,6 +36,7 @@ export class ProjectService {
   salida: objeto del proyecto encontrada.  
   */
   async findOne(id: string): Promise<IProject> {
+    const projectById = await this.model.findById(id);
     return await this.model.findById(id);
   }
 
@@ -98,6 +100,26 @@ export class ProjectService {
       },
       { new: true },
     );
+  }
+
+  async getPublicInfo(projectId: string) {
+    console.log('service - projectId', projectId);
+    const output = await this.model.findById(projectId);
+
+    /* Solamente mostrar:
+      - name, shortName, description, status
+    */
+
+    if(output == null) {
+      return {};
+    }
+
+    return {
+      name: output.name,
+      shortName: output.shortName,
+      description: output.description,
+      status: output.status
+    };
   }
 
 }

@@ -19,6 +19,10 @@ export const UserSchema = new mongoose.Schema({
   active: { type: Boolean, required: false },
   accessDateLimit: { type: String, required: false },
   createOn: { type: Date, required: false },
+  role: { type: String, required: true }, // Rol de usuario de meeting engine (admin, user, y quizás pmo)
+  links: { type: mongoose.Schema.Types.Mixed, required: false }, // links de acceso a las diferentes secciones de la plataforma {gdrive: String, linkedin: String ...}
+  estadisticas: { type: mongoose.Schema.Types.Mixed, required: false }, // estadisticas del usuario {asistencias, elementos creados, inasistencias, etc.}
+  firma: { type: String, required: false } // firma del usuario (imagen en base64)
 });
 
 export interface UserDocument extends Document {
@@ -40,4 +44,8 @@ export interface UserDocument extends Document {
   active: boolean;
   accessDateLimit: string;
   createOn: Date;
+  role: string;
+  links: any;
+  estadisticas: any;
+  firma: string;
 }

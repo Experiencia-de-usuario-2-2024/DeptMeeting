@@ -3,9 +3,6 @@ export interface IUser {
   name: string; // nombre del usuario
   email: string; // email del usuario
   institution: string; // institución del usuario
-  avatar: string; // avatar del usuario en formato url (imagen almacenada en la nube)
-  asignado: string; // correo del usuario profesor al que esta asignado el usuario estudiante (en caso de que el sea profesor, este campo queda vacio)
-  type: string; // tipo de usuario (profesor, estudiante, invitado)
   password: string; // contraseña del usuario
   color: string; //  tag color que aparece en las siglas del nombre como perfil
   currentProject: string; // nombre del último proyecto visitado

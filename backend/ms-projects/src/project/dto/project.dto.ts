@@ -11,4 +11,12 @@ export class ProjectDTO {
   _id: string; // id
   createdAt: Date; // fecha de creación
   updatedAt: Date; // fecha de actualización
+  kanbanColumns: string[]; // columnas del kanban
+  metrics: any; // Métricas del proyecto
+  status: string; // estado del proyecto
+  options: any; // opciones del proyecto -> isAgile, useKanban, etc
+  sprints: any; // sprints del proyecto, aqui va el puntaje x dia de cada sprint
+  iconUrl: string; // url del icono del proyecto
+  pages: any; // páginas del proyecto
+  projectFrom: string; // Proyecto padre
 }

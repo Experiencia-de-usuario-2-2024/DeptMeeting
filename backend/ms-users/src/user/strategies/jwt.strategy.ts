@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, PayloadTooLargeException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import {Strategy, ExtractJwt } from 'passport-jwt';
 
@@ -13,6 +13,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         
     }
     async validate(payload: any){
-        return {id: payload.id, email: payload.email};
+        return await {id: payload.id, email: payload.email}
     }
 }

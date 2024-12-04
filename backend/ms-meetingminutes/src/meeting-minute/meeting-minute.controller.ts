@@ -1,5 +1,7 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req } from '@nestjs/common';
+import { MeetingMinuteDTO } from './dto/meeting-minute.dto';
 import { MeetingMinuteService } from './meeting-minute.service';
+import { Request } from 'express';
 import { MeetingMinuteMSG } from 'src/common/constants';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
@@ -58,8 +60,11 @@ export class MeetingMinuteController {
     salida: objeto de la acta dialógica actualizada.
     */
     @MessagePattern(MeetingMinuteMSG.UPDATE)
-    update(@Payload() payload: any) {
-        return this.meetingMinuteService.update(payload.id, payload.meetingMinuteDTO);
+    async update(@Payload() payload: any) {
+        console.log('MeetingMinuteController.update() payload: ', payload);
+        const output = await this.meetingMinuteService.update(payload.id, payload.meetingMinuteDTO);
+        console.log('this.meetingMinuteSerivce.update output: ', output);
+        return output;
     }
 
     /*  
@@ -75,7 +80,7 @@ export class MeetingMinuteController {
 
 
     // metodos nuevos
-    @MessagePattern("encontrarPorReunion")
+    @MessagePattern(MeetingMinuteMSG.FIND_BY_MEETING)
     encontrarPorReunion(@Payload() payload: any) {
         return this.meetingMinuteService.encontrarPorReunion(payload);
     }
