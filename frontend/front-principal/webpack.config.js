@@ -24,7 +24,7 @@ module.exports = {
   devServer: {
     port: process.env.REACT_APP_PRINCIPAL_PORT, // Puerto donde se levanta la app -> listo
     historyApiFallback: true, // Necesario para que funcione React Router
-    allowedHosts: process.env.REACT_APP_ALLOWED_HOSTS, // Convierte la variable en un array con un solo host
+    allowedHosts: [process.env.REACT_APP_ALLOWED_HOSTS], // Convierte la variable en un array con un solo host
   },
   module: {
     rules: [
@@ -78,7 +78,7 @@ module.exports = {
 
     new WebpackShellPluginNext({
       onBuildStart: {
-        scripts: ["echo \x1b]0;Front-principal\x07"],
+        scripts: ["echo Front-principal"],
         blocking: true,
         parallel: false,
       },
@@ -89,14 +89,14 @@ module.exports = {
     new ModuleFederationPlugin({
       name: "front_principal", // Aqui se define el nombre de la aplicación -> listo
       remotes: {
-        MF_HOME: `mf_home@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_HOME_PORT}/mf_home/remoteEntry.js`, // Nombre de la aplicación hijo + @http://ip:puertoMFhijo/RemoteEntry.js -> listo
-        MF_LOGIN: `mf_login@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_LOGIN_PORT}/mf_login/remoteEntry.js`,
-        MF_PROYECTOS: `mf_proyectos@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_PROYECTOS_PORT}/mf_proyectos/remoteEntry.js`,
-        MF_PERFIL: `mf_perfil@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_PERFIL_PORT}/mf_perfil/remoteEntry.js`,
-        MF_DESARROLLOREUNION: `mf_desarrolloreunion@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_DESARROLLOREUNION_PORT}/mf_desarrolloreunion/remoteEntry.js`,
-        MF_INFORMACION: `mf_informacion@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_INFORMACION_PORT}/mf_informacion/remoteEntry.js`,
-        MF_TAREAS: `mf_tareas@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_TAREAS_PORT}/mf_tareas/remoteEntry.js`,
-        MF_KANBANPLUS: `mf_kanbanplus@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_KANBANPLUS_PORT}/mf_kanbanplus/remoteEntry.js`,
+        MF_HOME: `mf_home@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_HOME_PORT}/remoteEntry.js`, // Nombre de la aplicación hijo + @http://ip:puertoMFhijo/RemoteEntry.js -> listo
+        MF_LOGIN: `mf_login@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_LOGIN_PORT}/remoteEntry.js`,
+        MF_PROYECTOS: `mf_proyectos@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_PROYECTOS_PORT}/remoteEntry.js`,
+        MF_PERFIL: `mf_perfil@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_PERFIL_PORT}/remoteEntry.js`,
+        MF_DESARROLLOREUNION: `mf_desarrolloreunion@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_DESARROLLOREUNION_PORT}/remoteEntry.js`,
+        MF_INFORMACION: `mf_informacion@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_INFORMACION_PORT}/remoteEntry.js`,
+        MF_TAREAS: `mf_tareas@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_TAREAS_PORT}/remoteEntry.js`,
+        MF_KANBANPLUS: `mf_kanbanplus@http://${process.env.REACT_APP_MF_URL}:${process.env.REACT_APP_MF_KANBANPLUS_PORT}/remoteEntry.js`,
       },
       shared: {
         ...dependencies, // other dependencies
@@ -119,3 +119,5 @@ module.exports = {
     minimize: false,
   },
 };
+
+module.exports.plugins.map((plugin) => {console.log(plugin)});

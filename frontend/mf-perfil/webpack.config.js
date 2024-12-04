@@ -6,10 +6,10 @@ const webpack = require("webpack"); // <-- Añadir esta linea
 const Dotenv = require("dotenv-webpack");
 
 // Cargar dotenv manualmente para verificación //descomentar si se quiere local
-//require('dotenv').config({ path: './.env.development' });
-//console.log('Variables de entorno cargadas:', Object.fromEntries(
-//    Object.entries(process.env).filter(([key]) => key.startsWith('REACT_APP'))
-//  ));
+require('dotenv').config({ path: './.env.development' });
+console.log('Variables de entorno cargadas:', Object.fromEntries(
+  Object.entries(process.env).filter(([key]) => key.startsWith('REACT_APP'))
+));
 
 module.exports = {
     entry: "./src/entry",
