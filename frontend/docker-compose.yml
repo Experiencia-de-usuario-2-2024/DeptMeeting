@@ -1,11 +1,7 @@
-version: '3.8'
-
 networks:
   deptmeeting-network:
 
 services:
-# ******** SERVICIOS FUNDAMENTALES ********
-
   rabbitmq:
     image: rabbitmq:4-management
     container_name: rabbitmq-container
@@ -24,11 +20,10 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongodb_data:/data/db # Volumen persistente para los datos de MongoDB
+      - mongodb_data:/data/db
     networks:
       - deptmeeting-network
 
-  # ******** MICROSERVICIOS CORE ************
   ms-users:
     container_name: deptmeeting-ms-users
     image: jyr20/deptmeeting-ms-users:latest
@@ -48,7 +43,7 @@ services:
       - "3002:3002"
       - "84:84"
     environment:
-      - APP_URL=http://localhost:3003
+      - APP_URL=http://deptmeeting.diinf.usach.cl
       - API_PORT=3002
       - PORT=3002
       - JWT_SECRET=clavesecreta2312
@@ -111,7 +106,6 @@ services:
     networks:
       - deptmeeting-network
 
-  # ******** MICROFRONTENDS MEMFOLLOW ********
   front-principal:
     image: jyr20/deptmeeting-frontend-principal:latest
     container_name: deptmeeting-frontend-principal
@@ -124,7 +118,7 @@ services:
       - deptmeeting-network
     environment:
       - REACT_APP_HELLO_WORLD="Hello World"
-      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
       - REACT_APP_MF_HOME_PORT=3020
       - REACT_APP_MF_LOGIN_PORT=3021
       - REACT_APP_MF_PROYECTOS_PORT=3022
@@ -133,34 +127,9 @@ services:
       - REACT_APP_MF_INFORMACION_PORT=3025
       - REACT_APP_MF_TAREAS_PORT=3026
       - REACT_APP_MF_KANBANPLUS_PORT=3027
-      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
-
-  #mf-textedit:
-   # image: jyr20/deptmeeting-mf-textedit:latest
-   # container_name: text-edit-mf-textedit
-   # ports:
-   #   - 3024:3024
-   # restart: always
-   # depends_on:
-   #   - api-gateway
-   # networks:
-   #   - text-edit-network
-   # environment:
-   #   - REACT_APP_HELLO_WORLD="Hello World"
-   #   - REACT_APP_MF_URL=localhost
-   #   - REACT_APP_MF_HOME_PORT=3020
-   #   - REACT_APP_MF_LOGIN_PORT=3021
-   #   - REACT_APP_MF_PROYECTOS_PORT=3022
-   #   - REACT_APP_MF_PERFIL_PORT=3023
-   #   - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
-   #   - REACT_APP_MF_INFORMACION_PORT=3025
-   #   - REACT_APP_MF_TAREAS_PORT=3026
-   #   - REACT_APP_MF_KANBANPLUS_PORT=3027
-   #   - REACT_APP_BACKEND_IP=localhost
-   #   - REACT_APP_BACKEND_PORT=3002
-   #   - REACT_APP_BACKEND_IO_PORT=84
 
   mf-home:
     image: jyr20/deptmeeting-mf-home:latest
@@ -174,7 +143,7 @@ services:
       - deptmeeting-network
     environment:
       - REACT_APP_HELLO_WORLD="Hello World"
-      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
       - REACT_APP_MF_HOME_PORT=3020
       - REACT_APP_MF_LOGIN_PORT=3021
       - REACT_APP_MF_PROYECTOS_PORT=3022
@@ -183,7 +152,7 @@ services:
       - REACT_APP_MF_INFORMACION_PORT=3025
       - REACT_APP_MF_TAREAS_PORT=3026
       - REACT_APP_MF_KANBANPLUS_PORT=3027
-      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
 
@@ -199,7 +168,7 @@ services:
       - deptmeeting-network
     environment:
       - REACT_APP_HELLO_WORLD="Hello World"
-      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
       - REACT_APP_MF_HOME_PORT=3020
       - REACT_APP_MF_LOGIN_PORT=3021
       - REACT_APP_MF_PROYECTOS_PORT=3022
@@ -208,7 +177,7 @@ services:
       - REACT_APP_MF_INFORMACION_PORT=3025
       - REACT_APP_MF_TAREAS_PORT=3026
       - REACT_APP_MF_KANBANPLUS_PORT=3027
-      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
 
@@ -224,7 +193,7 @@ services:
       - deptmeeting-network
     environment:
       - REACT_APP_HELLO_WORLD="Hello World"
-      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
       - REACT_APP_MF_HOME_PORT=3020
       - REACT_APP_MF_LOGIN_PORT=3021
       - REACT_APP_MF_PROYECTOS_PORT=3022
@@ -233,7 +202,7 @@ services:
       - REACT_APP_MF_INFORMACION_PORT=3025
       - REACT_APP_MF_TAREAS_PORT=3026
       - REACT_APP_MF_KANBANPLUS_PORT=3027
-      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
 
@@ -249,7 +218,7 @@ services:
       - deptmeeting-network
     environment:
       - REACT_APP_HELLO_WORLD="Hello World"
-      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
       - REACT_APP_MF_HOME_PORT=3020
       - REACT_APP_MF_LOGIN_PORT=3021
       - REACT_APP_MF_PROYECTOS_PORT=3022
@@ -258,7 +227,7 @@ services:
       - REACT_APP_MF_INFORMACION_PORT=3025
       - REACT_APP_MF_TAREAS_PORT=3026
       - REACT_APP_MF_KANBANPLUS_PORT=3027
-      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
 
@@ -274,7 +243,7 @@ services:
       - deptmeeting-network
     environment:
       - REACT_APP_HELLO_WORLD="Hello World"
-      - REACT_APP_MF_URL=localhost
+      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
       - REACT_APP_MF_HOME_PORT=3020
       - REACT_APP_MF_LOGIN_PORT=3021
       - REACT_APP_MF_PROYECTOS_PORT=3022
@@ -283,9 +252,23 @@ services:
       - REACT_APP_MF_INFORMACION_PORT=3025
       - REACT_APP_MF_TAREAS_PORT=3026
       - REACT_APP_MF_KANBANPLUS_PORT=3027
-      - REACT_APP_BACKEND_IP=localhost
+      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - front-principal
+    networks:
+      - deptmeeting-network
+
 volumes:
   mongodb_data:
     driver: local

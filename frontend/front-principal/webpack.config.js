@@ -24,7 +24,7 @@ module.exports = {
   devServer: {
     port: process.env.REACT_APP_PRINCIPAL_PORT, // Puerto donde se levanta la app -> listo
     historyApiFallback: true, // Necesario para que funcione React Router
-    allowedHosts: [process.env.REACT_APP_ALLOWED_HOSTS], // Convierte la variable en un array con un solo host
+    allowedHosts: ["deptmeeting.diinf.usach.cl"], // Convierte la variable en un array con un solo host
   },
   module: {
     rules: [

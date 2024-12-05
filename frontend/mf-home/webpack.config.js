@@ -18,7 +18,7 @@ module.exports = {
     mode: "development",
     devServer: {
         port: process.env.REACT_APP_MF_HOME_PORT, // Modificar -> listo
-        allowedHosts: process.env.REACT_APP_ALLOWED_HOSTS, // Convierte la variable en un array con un solo host
+        allowedHosts: ["deptmeeting.diinf.usach.cl"], // Convierte la variable en un array con un solo host
     },
     module: {
         rules: [
