@@ -29,7 +29,7 @@ export class UserService {
    salida: objeto del nuevo usuario.  
   */
   async create(userDTO: UserDTO): Promise<User> {
-    const { tagName, name, email, avatar, asignado, password, type, role } = userDTO;
+    const { tagName, name, email, avatar, asignado, password, type } = userDTO;
     const activationToken = v4();
     const hash = await this.hashPassword(password);
     const userValidate = await this.findByEmail(userDTO.email);
@@ -42,8 +42,7 @@ export class UserService {
         asignado,
         password: hash,
         type,
-        color: 'grey',
-        role
+        color: 'grey'
       });
       return await user.save();
     } else {
@@ -107,14 +106,8 @@ salida: objeto del usuario actualizada.
 */
   async update(ide: string, userDTO: UserDTO): Promise<any> {
     const { name, institution, email, avatar, asignado, tagName, type, currentProject, currentProjectId, currentMeeting, currentMeetingId, proyectoPrincipal, password } = userDTO;
-
-    // Solo hashear la contraseña si se proporciona una nueva
-    let hash: string;
-    if (password){
-      hash = await this.hashPassword(password);
-    }
-
-    const updateData: any = {
+    const hash = await this.hashPassword(userDTO.password);
+    return await this.userModel.findByIdAndUpdate(ide, {
       name,
       institution,
       email,
@@ -127,14 +120,8 @@ salida: objeto del usuario actualizada.
       currentMeeting,
       currentMeetingId,
       proyectoPrincipal,
-    };
-
-    // Solo añadir el hash si la contraseña fue actualizada
-    if (hash){
-      updateData.password = hash;
-    }
-
-    return await this.userModel.findByIdAndUpdate(ide, updateData, { new:true }).exec();
+      password: hash
+    }, { new:true }).exec();
   }
 
   /*  

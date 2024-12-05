@@ -12,6 +12,5 @@ async function bootstrap() {
     },});
   await app.listen();
   console.log("Microservice meeting minutes escuchando...");
-  process.title = 'ms-meetingminutes';
 }
 bootstrap();

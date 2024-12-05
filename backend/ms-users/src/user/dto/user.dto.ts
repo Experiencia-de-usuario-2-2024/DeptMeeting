@@ -3,7 +3,7 @@ export class UserDTO {
   name: string; // nombre del usuario
   email: string; // email del usuario
   avatar: string; // avatar del usuario en formato url (imagen almacenada en la nube)
-  asignado: string; // correo del usuario profesor al que esta asignado el usuario estudiante (en caso de que el sea profesor, este campo queda vacio) (Memfollow)
+  asignado: string; // correo del usuario profesor al que esta asignado el usuario estudiante (en caso de que el sea profesor, este campo queda vacio)
   institution: string; // institución del usuario -> NO SE UTILIZA
   type: string; // tipo de usuario (profesor, estudiante, invitado -> ESTE ULTIMO NO SE ESTA UTILIZANDO)
   password: string; // contraseña del usuario
@@ -18,8 +18,4 @@ export class UserDTO {
   active: boolean; // si usuario esta bloqueado o no bloqueado dentro de la plataforma
   accessDateLimit: string; // fecha limite en que se da acceso a usuario
   createOn: Date; // fecha de creación del usuario
-  role: string; // Rol de usuario de meeting engine (admin, user, y quizás pmo)
-  links: Object; // links de acceso a las diferentes secciones de la plataforma {gdrive: String, linkedin: String ...}
-  estadisticas: Object; // estadisticas del usuario {asistencias, elementos creados, inasistencias, etc.}
-  firma: string; // firma del usuario (imagen en base64)
 }

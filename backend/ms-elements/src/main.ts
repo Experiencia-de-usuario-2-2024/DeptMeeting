@@ -12,6 +12,5 @@ async function bootstrap() {
     },});
   await app.listen();
   console.log("Microservice elements escuchando...");
-  process.title = 'ms-elements';
 }
 bootstrap();

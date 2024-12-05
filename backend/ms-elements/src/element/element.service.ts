@@ -162,9 +162,4 @@ salida: valor booleano de confirmación.
     return await this.model.where({ participants: email, type:['compromiso', 'Compromiso'] }); // mediante el frontend se realiza una nueva verificacion para que solo se muestren los compromisos
   }
 
-  // Metodo para obtener elementos de tipo "compromiso" a partir del id del proyecto
-  async compromisosProyecto(id: string): Promise<any[]> {
-    return await this.model.where({ project: id, type:['compromiso', 'Compromiso'] });
-  }
-
 }

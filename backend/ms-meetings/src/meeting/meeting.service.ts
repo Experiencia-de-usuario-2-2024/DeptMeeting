@@ -19,7 +19,6 @@ export class MeetingService {
   salida: objeto de nueva reunión.  
   */
   async create(meetingDTO: MeetingDTO): Promise<IMeeting> {
-    console.log("meetingDTO:", meetingDTO);
     const newMeeting = new this.model(meetingDTO);
     return await newMeeting.save();
   }

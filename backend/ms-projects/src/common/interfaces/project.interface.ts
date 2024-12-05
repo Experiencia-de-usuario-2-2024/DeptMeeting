@@ -8,6 +8,5 @@ export interface IProject extends Document {
   userOwner: String;
   shortName: string;
   color: string;
-  status: string;
   }
   

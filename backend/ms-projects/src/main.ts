@@ -13,6 +13,5 @@ async function bootstrap() {
   });
   await app.listen();
   console.log('Microservicio de proyectos corriendo');
-  process.title = 'ms-projects';
 }
 bootstrap();

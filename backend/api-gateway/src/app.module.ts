@@ -25,7 +25,6 @@ import { KanbanPlusModule } from './kanban-plus/kanban-plus.module';
 import { CollaborativeChatModule } from './collaborative-chat/collaborative-chat.module';
 import { TextEditorModule } from './text-editor/text-editor.module';
 import { DoodleModule } from './doodle/doodle.module';
-import { UserProjectModule } from './user_project/user_project.module';
 
 @Module({
   imports: [
@@ -55,7 +54,6 @@ import { UserProjectModule } from './user_project/user_project.module';
     CollaborativeChatModule,
     TextEditorModule,
     DoodleModule,
-    UserProjectModule,
   ],
   controllers: [AppController],
   providers: [AppService, ScoketGateway],

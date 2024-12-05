@@ -102,11 +102,4 @@ export class ProjectController {
   ) {
     return this.projectService.addMember(payload.projectId, payload.memberEmail);
   }
-
-  @MessagePattern('/public-info')
-  async getPublicInfo(@Payload() payload: any) {
-    console.log('controller - getPublicInfo', payload);
-    return await this.projectService.getPublicInfo(payload);
-  }
-
 }

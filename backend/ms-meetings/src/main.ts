@@ -13,6 +13,5 @@ async function bootstrap() {
   });
   await app.listen();
   console.log('Microservicio de meeting corriendo');
-  process.title = 'ms-meetings';
 }
 bootstrap();

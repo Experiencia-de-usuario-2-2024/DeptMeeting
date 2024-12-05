@@ -5,11 +5,12 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  MessageBody, //nuevo
 } from '@nestjs/websockets';
 
 import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway(83, {
+@WebSocketGateway(Number(process.env.IO_PORT), {
   cors: {
     origin: '*',
     namespace: 'chat',
@@ -21,50 +22,24 @@ export class ScoketGateway
 
   @WebSocketServer() server: Server;
 
-  // Mantener un registro de usuarios conectados
-  private connectedUsers: { [room: string]: any[] } = {};
-
-  /*
-
-  const connectedUsers: { [room: string]: any[] } = {
-    "room1": [
-        { id: 1, name: "Alice" },
-        { id: 2, name: "Bob" }
-    ],
-    "room2": [
-        { id: 3, name: "Charlie" }
-    ],
-    "room3": []
-  };
-
-  */
-
-  afterInit(server: any) {}
-
+  afterInit(server: any) {
+  }
   handleConnection(client: Socket, ...args: any[]) {
     console.log('Usuario nuevo conectado');
-    console.log('ID del cliente:', client.id);
-    console.log('Salas a las que está suscrito:', client.rooms);
-    console.log('Handshake:', client.handshake);
   }
-
   handleDisconnect(client: any) {
     console.log('Usuario desconectado');
-    // Eliminar usuario de la lista de conectados cuando se desconecta
-    Object.keys(this.connectedUsers).forEach(room => {
-      this.connectedUsers[room] = this.connectedUsers[room].filter(user => user.socketId !== client.id);
-    });
   }
 
   // EVENTO DE ENVIAR MENSAJE 
   @SubscribeMessage('event_message')
   handleIncomingMessage(
     client: Socket,
-    payload: { room: string; user: any, message: any },
+    payload: { room: string; user: any },
   ) {
-    const { room, user, message } = payload;
+    const { room, user } = payload;
     console.log("[socket] mensaje enviado");
-    this.server.to('room_' + room).emit('new_message', {user: user, message: message});
+    this.server.to('room_' + room).emit('new_message', user);
   }
 
   // EVENTO DE RECIBIR MENSAJE DE GUARDAR
@@ -86,9 +61,126 @@ export class ScoketGateway
     payload: { room: string; user: any },
   ) {
     const { room, user } = payload;
-    console.log("[socket] recargar pagina web");
+    console.log("[socket] recargar pagina web para la sala: " + payload.room + " por el usuario " + payload.user.email);
     this.server.to('room_' + room).emit('new_reload', user);
   }
+
+
+
+
+
+
+
+  // ************************************************************
+  // ********************* NUEVO NUEVO NUEVO ********************
+  // ********************* NUEVO NUEVO NUEVO ********************
+  // ************************************************************
+
+  // EVENTO DE RECARGAR PAGINA -> VERSION 2 (requiero que llegando al frontend realice una operacion adicional ademas de recargar la pagina)
+  @SubscribeMessage('event_reload_ver2')
+  handleIncomingMessage3Ver2(
+    client: Socket,
+    payload: { room: string; user: any },
+  ) {
+    const { room, user } = payload;
+    console.log("[socket] recargar VER 2 pagina web para la sala: " + payload.room + " por el usuario " + payload.user.email);
+    this.server.to('room_' + room).emit('new_reload_ver2', user);
+  }
+
+  // EVENTO DE RECARGAR PAGINA -> VERSION 3 (requiero que llegando al frontend realice una operacion adicional ademas de recargar la pagina)
+  @SubscribeMessage('event_reload_ver3')
+  handleIncomingMessage3Ver3(
+    client: Socket,
+    payload: { room: string; user: any },
+  ) {
+    const { room, user } = payload;
+    console.log("[socket] recargar VER 3 pagina web para la sala: " + payload.room + " por el usuario " + payload.user.email);
+    this.server.to('room_' + room).emit('new_reload_ver3', user);
+  }
+
+
+  // EVENTO DE NOTIFICAR PARTICIPANTES DE QUE UNO DE ELLOS ESTA EDITANDO EN POST-REUNION
+  @SubscribeMessage('event_notificar_participante_editando')
+  handleIncomingMessageNotificarParticipantes(
+    client: Socket,
+    payload: { room: string; user: any, tema:any},
+  ) {
+    const { room, user, tema } = payload;
+    console.log("[socket] Usuario edita tema para la sala: " + payload.room + " por el usuario " + payload.user.email);
+    this.server.to('room_' + room).emit('new_notificar_participante_editando', payload);
+  }
+
+
+  // EVENTO ACTUALIZAR LISTA DE PARTICIPANTES
+  @SubscribeMessage('event_lista_participantes')
+  handleIncomingMessageParticipantes(
+    client: Socket,
+    payload: { room: string; lista: any },
+  ) {
+    const { room, lista } = payload;
+    console.log("[socket] LISTA DE PARTICIPANTES EN REUNION: " + payload.room + " LISTA " + payload.lista);
+    this.server.to('room_' + room).emit('new_lista_participantes', lista);
+  }
+
+  // EVENTO ACTUALIZAR LISTA DE PARTICIPANTES
+  @SubscribeMessage('event_lista_participantes_ver2')
+  handleIncomingMessageParticipantesVer2(
+    client: Socket,
+    payload: { room: string; lista: any },
+  ) {
+    const { room, lista } = payload;
+    console.log("[socket] LISTA DE PARTICIPANTES POST REUNION: " + payload.room + " LISTA " + payload.lista);
+    this.server.to('room_' + room).emit('new_lista_participantes_ver2', lista);
+  }
+
+
+  // EVENTO COMENZAR REUNION
+  @SubscribeMessage('event_comenzar_reunion')
+  handleIncomingMessageComenzarReunion(
+    client: Socket,
+    payload: { room: string; valorIniciarReunion: any },
+  ) {
+    const { room, valorIniciarReunion } = payload;
+    console.log("[socket] COMENZAR REUNION EN: " + payload.room + " valorIniciarReunion " + payload.valorIniciarReunion);
+    this.server.to('room_' + room).emit('new_comenzar_reunion', valorIniciarReunion);
+  }
+
+  
+  // PARA EL CHAT COLABORATIVO QUE EXISTE DENTRO DE LA REUNION
+  // funciona separando el chat en salas
+  @SubscribeMessage('messageVer2')
+  handleMessageVer2(
+    client: Socket,
+    payload: { room: string; user: any, message: string},
+  ): void {
+    const { room, user, message } = payload;
+    console.log("[socket] Sala: " + payload.room + " Usuario: " + payload.user + " Mensaje: " + payload.message);
+    this.server.to('room_' + payload.room).emit('messageVer2', { room: payload.room, user: payload.user, message: payload.message});
+  }
+
+
+  // ESTE FUNCIONA PERO NO SEPARA LOS CHAT POR SALAS
+  @SubscribeMessage('message')
+  handleMessage(
+    client: Socket,
+    @MessageBody() message: string,
+  ): void {
+    console.log("[socket] Mensaje: " + message);
+    this.server.emit('message', message);
+  }
+
+  // ************************************************************
+  // ************************************************************
+  // ************************************************************
+  // ************************************************************
+
+
+
+
+
+
+
+  
 
   // EVENTO DE CREAR REUNIÓN
   @SubscribeMessage('event_meet')
@@ -116,11 +208,11 @@ export class ScoketGateway
   @SubscribeMessage('event_topic')
   handleIncomingMessage6(
     client: Socket,
-    payload: { room: string; user: any, topic: string },
+    payload: { room: string; user: any },
   ) {
-    const { room, user, topic } = payload;
+    const { room, user } = payload;
     console.log("[socket] se ha creado un tema");
-    this.server.to('room_' + room).emit('new_topic', { user, topic });
+    this.server.to('room_' + room).emit('new_topic', user);
   }
 
   // EVENTO DE CREAR PROYECTO
@@ -148,71 +240,18 @@ export class ScoketGateway
   // EVENTO DE USUARIO SALIENDO DE LA SECCIÖN
   @SubscribeMessage('event_leave')
   handleRoomLeave(client: Socket, payload2: { room: string; user: any }) {
-    console.log("[socket] usuario: " + payload2.user.name + ' ha salido de la sección: ' + payload2.room);
+    // console.log("[socket] usuario: " + payload2.user.name + ' ha salido de la sección: ' + payload2.room);
+    console.log("[socket] usuario: " + payload2.user + ' ha salido de la sección: ' + payload2.room);
     client.leave('room_' + payload2.room);
-
-    // Eliminar usuario de la lista de conectados
-    if(this.connectedUsers[payload2.room]){
-      this.connectedUsers[payload2.room] = this.connectedUsers[payload2.room].filter(user => user.socketId !== client.id);
-      this.server.to('room_' + payload2.room).emit('left_user', payload2.user);
-    }
     this.server.to('room_' + payload2.room).emit('left_user', payload2.user);
   }
 
   // EVENTO DE USUARIO UNIENDOSE A LA SECCIÖN
   @SubscribeMessage('event_join')
   handleJoinRoom(client: Socket, payload: { room: string; user: any }) {
-    console.log("[socket] usuario: " + payload.user.name + ' ha unido a la sección: ' + payload.room);
+    // console.log("[socket] usuario: " + payload.user.name + ' ha unido a la sección: ' + payload.room);
+    console.log("[socket] usuario: " + payload.user.email + ' ha unido a la sección: ' + payload.room);
     client.join('room_' + payload.room);
-    // Guardar el usuario conectado
-    if (!this.connectedUsers[payload.room]) {  // Si no existe la sala, crearla
-      this.connectedUsers[payload.room] = [];
-    }
-    this.connectedUsers[payload.room].push({ user: payload.user, socketId: client.id });
-    // Enviar la lista de usuarios conectados al nuevo usuario
-    client.emit('connected_users', this.connectedUsers[payload.room].map(entry => entry.user));
-
     this.server.to('room_' + payload.room).emit('new_user', payload.user);
-  }
-
-  // EVENTO DE USUARIO CAMBIANDO EL ESTADO DE LA REUNIÓN
-  @SubscribeMessage('event_set_new_state')
-  handlePreMeeting(client: Socket, payload: { room: string, user: any}) {
-    console.log("[socket] usuario: " + payload.user.name + ' ha cambiado actualizado el estado de la reunión');
-    this.server.to('room_' + payload.room).emit('new_state', payload.user);
-  }
-
-  // EVENTO DE USUARIO AÑADIENDO UN ELEMENTO DIALÓGICO
-  @SubscribeMessage('event_add_element')
-  handleAddElement(client: Socket, payload: { room: string, user: any, element: any }) {
-    this.server.to('room_' + payload.room).emit('new_element', payload.element);
-  }
-
-  // EVENTO DE USUARIO ACTUALIZANDO UN ELEMENTO DIALÓGICO
-  @SubscribeMessage('event_update_element')
-  handleUpdateElement(client: Socket, payload: { room: string, user: any, element: any }) {
-    console.log("[socket] usuario: " + payload.user.name + ' ha actualizado un elemento');
-    this.server.to('room_' + payload.room).emit('element_updated', {element: payload.element, user: payload.user});
-  }
-
-  // EVENTO DE USUARIO ELIMINANDO UN ELEMENTO DIALÓGICO
-  @SubscribeMessage('event_delete_element')  // Evento que escucha el servidor y que emite el cliente
-  handleDeleteElement(client: Socket, payload: { room: string, user: any, element: any }) {
-    console.log("[socket] usuario: " + payload.user.name + ' ha eliminado un elemento');
-    this.server.to('room_' + payload.room).emit('element_deleted', {element: payload.element, user: payload.user});  // Los clientes escuchan este evento
-  }
-
-  // EVENTO DE USUARIO BLOQUEANDO UN ELEMENTO DIALÓGICO
-  @SubscribeMessage('event_block_element')
-  handleBlockElement(client: Socket, payload: { room: string, user: any, element: any }) {
-    console.log("[socket] usuario: " + payload.user.name + ' ha bloqueado un elemento');
-    this.server.to('room_' + payload.room).emit('element_blocked', {element: payload.element, user: payload.user});
-  }
-
-  // EVENTO DE USUARIO DESBLOQUEANDO UN ELEMENTO DIALÓGICO
-  @SubscribeMessage('event_unblock_element')
-  handleUnblockElement(client: Socket, payload: { room: string, user: any, element: any }) {
-    console.log("[socket] usuario: " + payload.user.name + ' ha desbloqueado un elemento');
-    this.server.to('room_' + payload.room).emit('element_unblocked', {element: payload.element, user: payload.user});
   }
 }

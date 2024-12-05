@@ -30,7 +30,6 @@ export class MeetingController {
   */
   @MessagePattern(MeetingMSG.CREATE)
   async create(@Payload() meetingDTO: MeetingDTO) {
-    console.log("meetingDTO:", meetingDTO);
     return await this.meetingService.create(meetingDTO);
   }
 
