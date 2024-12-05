@@ -10,7 +10,7 @@ const webpack = require("webpack"); // <-- Añadir esta linea
 const WebpackShellPluginNext = require("webpack-shell-plugin-next");
 
 // Cargar dotenv manualmente para verificación
-require("dotenv").config({ path: "./.env.development" });
+// require("dotenv").config({ path: "./.env.development" });
 console.log(
   "Variables de entorno cargadas:",
   Object.fromEntries(
