@@ -3,9 +3,9 @@ const { ModuleFederationPlugin } = require("webpack").container;
 const { dependencies } = require("./package.json");
 const Dotenv = require("dotenv-webpack");
 const WebpackShellPluginNext = require('webpack-shell-plugin-next');
-const webpack = require("webpack"); // <-- Añadir esta linea
+const webpack = require("webpack"); // <-- Añadir esta linea
 // Cargar dotenv manualmente para verificación //descomentar si se quiere local
-require("dotenv").config({ path: "./.env.development" });
+//require("dotenv").config({ path: "./.env.development" });
 console.log(
     "Variables de entorno cargadas:",
     Object.fromEntries(
