@@ -14,7 +14,7 @@ export enum RabbitMQ {
   
   export enum ProjectMSG {
       CREATE = 'CREATE_PROJECT',
-      FIND_ALL = 'FIND_ALL_PROJECTS',
+      FIND_ALL = 'FIND_PROJECTS',
       FIND_ONE = 'FIND_PROJECT',
       UPDATE = 'UPDATE_PROJECT',
       DELETE = 'DELETE_PROJECT',

@@ -102,24 +102,4 @@ export class ProjectService {
     );
   }
 
-  async getPublicInfo(projectId: string) {
-    console.log('service - projectId', projectId);
-    const output = await this.model.findById(projectId);
-
-    /* Solamente mostrar:
-      - name, shortName, description, status
-    */
-
-    if(output == null) {
-      return {};
-    }
-
-    return {
-      name: output.name,
-      shortName: output.shortName,
-      description: output.description,
-      status: output.status
-    };
-  }
-
 }

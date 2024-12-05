@@ -51,7 +51,6 @@ export class MeetingMinuteService {
     id: string,
     meetingMinuteDTO: MeetingMinuteDTO,
   ): Promise<IMeetingMinute> {
-    console.log('MeetingMinuteService.update() id: ', id, 'meetingMinuteDTO: ', meetingMinuteDTO);
     return await this.model.findByIdAndUpdate(id, meetingMinuteDTO, {
       new: true,
     });
@@ -73,7 +72,7 @@ export class MeetingMinuteService {
 
   // metodos nuevos
   async encontrarPorReunion(idReunion: string): Promise<any> {
-    const meetingMinute = await this.model.findOne({ meeting: idReunion });
+    const meetingMinute = await this.model.find({ meeting: idReunion });
     return meetingMinute;
   }
 

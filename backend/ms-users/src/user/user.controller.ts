@@ -31,7 +31,6 @@ export class UserController {
   */
   @MessagePattern(UserMSG.CREATE)
   async create(@Payload() userDTO: UserDTO) {
-    console.log("Creando usuario: ", userDTO);
     const user = await this.userService.create(userDTO);
     if (user) {
       return user;

@@ -60,11 +60,8 @@ export class MeetingMinuteController {
     salida: objeto de la acta dialógica actualizada.
     */
     @MessagePattern(MeetingMinuteMSG.UPDATE)
-    async update(@Payload() payload: any) {
-        console.log('MeetingMinuteController.update() payload: ', payload);
-        const output = await this.meetingMinuteService.update(payload.id, payload.meetingMinuteDTO);
-        console.log('this.meetingMinuteSerivce.update output: ', output);
-        return output;
+    update(@Payload() payload: any) {
+        return this.meetingMinuteService.update(payload.id, payload.meetingMinuteDTO);
     }
 
     /*  
@@ -80,7 +77,7 @@ export class MeetingMinuteController {
 
 
     // metodos nuevos
-    @MessagePattern(MeetingMinuteMSG.FIND_BY_MEETING)
+    @MessagePattern("encontrarPorReunion")
     encontrarPorReunion(@Payload() payload: any) {
         return this.meetingMinuteService.encontrarPorReunion(payload);
     }
