@@ -1,11 +1,11 @@
 import React from 'react';
-import AuthForms from './components/AuthForms';
+import Auth from './components/Auth';
 import './App.css';
 
 function App() {
     return (
         <div className="app">
-            <AuthForms />
+            <Auth />
         </div>
     );
 }

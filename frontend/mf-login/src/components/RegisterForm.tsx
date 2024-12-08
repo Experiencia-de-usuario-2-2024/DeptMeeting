@@ -7,6 +7,7 @@ interface RegisterFormProps {
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
     const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
     const [rut, setRut] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -78,6 +79,20 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
                         />
                     </div>
                     <div className={styles.inputGroup}>
+                        <label htmlFor="email" className={styles.label}>
+                            Correo electrónico
+                        </label>
+                        <input
+                            type="text"
+                            id="email"
+                            className={styles.input}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="juan.fernandez@mail.cl"
+                            required
+                        />
+                    </div>
+                    <div className={styles.inputGroup}>
                         <label htmlFor="rut" className={styles.label}>
                             RUT
                         </label>
@@ -106,7 +121,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
                         <div className={styles.passwordStrength}>
                             <div
                                 className={styles.passwordStrengthBar}
-                                style={{ width: `${(passwordStrength / 4) * 100}%` }}
+                                style={{width: `${(passwordStrength / 4) * 100}%`}}
                             ></div>
                         </div>
                     </div>
