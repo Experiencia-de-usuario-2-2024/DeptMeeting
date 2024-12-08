@@ -1,4 +1,3 @@
-/* Estilos globales mínimos */
 body {
     margin: 0;
     padding: 0;
@@ -9,9 +8,9 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Estilos para el contenedor principal de la aplicación */
-.app-container {
+.app {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
+

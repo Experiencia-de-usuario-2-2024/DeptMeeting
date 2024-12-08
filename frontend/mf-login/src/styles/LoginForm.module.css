@@ -1,54 +1,59 @@
-* {
-    box-sizing: border-box;
-}
-
 .loginContainer {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f2f5; /* Color de fondo plano */
+    background-color: #f0f2f5;
     padding: 20px;
 }
 
 .loginFormWrapper {
     background-color: white;
-    padding: 2rem;
+    padding: 2.5rem;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
 }
 
 .appName {
     text-align: center;
-    color: #333;
+    color: #4a3419;
     font-size: 2rem;
-    margin-bottom: 1rem;
+    font-weight: 600;
+    margin: 0 0 1rem;
 }
 
 .loginTitle {
     text-align: center;
-    color: #333;
-    margin-bottom: 1.5rem;
+    color: #4a3419;
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0 0 2rem;
 }
 
-.inputGroup {
-    margin-bottom: 1rem;
+.formGroup {
+    margin-bottom: 1.25rem;
 }
 
-.label {
+.formGroup label {
     display: block;
+    color: #4a3419;
     margin-bottom: 0.5rem;
-    color: #333;
+    font-weight: normal;
 }
 
-.input {
-    width: 100%;
+.formGroup input {
+    width: 95%;
     padding: 0.75rem;
-    border: 1px solid #ddd;
+    border: 1px solid #e0e0e0;
     border-radius: 4px;
     font-size: 1rem;
+    outline: none;
+}
+
+.formGroup input:focus {
+    border-color: #1877f2;
 }
 
 .forgotPassword {
@@ -56,7 +61,8 @@
     text-align: right;
     color: #1877f2;
     text-decoration: none;
-    margin-bottom: 1rem;
+    margin: 0.5rem 0 1.5rem;
+    font-size: 0.875rem;
 }
 
 .submitButton {
@@ -68,28 +74,43 @@
     border-radius: 4px;
     font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s;
 }
 
 .submitButton:hover {
     background-color: #166fe5;
 }
 
-.errorMessage {
-    color: #d32f2f;
+.registerSection {
+    margin-top: 1.5rem;
     text-align: center;
-    margin-bottom: 1rem;
 }
 
-.registerSection {
-    margin-top: 1rem;
-    text-align: center;
+.registerSection p {
+    margin: 0;
+    color: #4a3419;
+    font-size: 0.875rem;
 }
 
 .registerLink {
     color: #1877f2;
     text-decoration: none;
     font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.registerLink:hover {
+    text-decoration: underline;
+}
+
+.errorMessage {
+    color: #d32f2f;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
 }
 
 @media (max-width: 480px) {
@@ -98,19 +119,11 @@
     }
 
     .appName {
-        font-size: 1.5rem;
+        font-size: 1.75rem;
     }
 
     .loginTitle {
-        font-size: 1.2rem;
-    }
-
-    .input {
-        padding: 0.5rem;
-    }
-
-    .submitButton {
-        padding: 0.5rem;
+        font-size: 1.25rem;
     }
 }
 

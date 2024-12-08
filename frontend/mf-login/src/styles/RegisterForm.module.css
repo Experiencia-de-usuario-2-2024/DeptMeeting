@@ -1,0 +1,143 @@
+.registerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  padding: 20px;
+}
+
+.registerFormWrapper {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.appName {
+  text-align: center;
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.registerTitle {
+  text-align: center;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.inputGroup {
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.input {
+  width: 95%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.passwordStrength {
+  height: 5px;
+  background-color: #e0e0e0;
+  margin-top: 5px;
+  border-radius: 2px;
+}
+
+.passwordStrengthBar {
+  height: 100%;
+  background-color: #4caf50;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.termsGroup {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.termsLabel {
+  margin-left: 0.5rem;
+}
+
+.termsLink {
+  color: #1877f2;
+  text-decoration: none;
+}
+
+.submitButton {
+  width: 100%;
+  padding:0.75rem;
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+  background-color: #166fe5;
+}
+
+.errorMessage {
+  color: #d32f2f;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.loginSection {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.loginLink {
+  color: #1877f2;
+  text-decoration: none;
+  font-weight: bold;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.passwordMismatch {
+  color: #d32f2f;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 480px) {
+  .registerFormWrapper {
+    padding: 1.5rem;
+  }
+
+  .appName {
+    font-size: 1.5rem;
+  }
+
+  .registerTitle {
+    font-size: 1.2rem;
+  }
+
+  .input {
+    padding: 0.5rem;
+  }
+
+  .submitButton {
+    padding: 0.5rem;
+  }
+}
+
