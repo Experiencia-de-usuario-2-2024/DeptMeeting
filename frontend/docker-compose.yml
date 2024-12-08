@@ -256,19 +256,6 @@ services:
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
 
-  nginx:
-    image: nginx:latest
-    container_name: nginx-proxy
-    restart: always
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-    depends_on:
-      - front-principal
-    networks:
-      - deptmeeting-network
-
 volumes:
   mongodb_data:
     driver: local

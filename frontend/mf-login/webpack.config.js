@@ -5,7 +5,7 @@ const Dotenv = require("dotenv-webpack");
 const WebpackShellPluginNext = require('webpack-shell-plugin-next');
 const webpack = require("webpack"); // <-- Añadir esta linea
 // Cargar dotenv manualmente para verificación //descomentar si se quiere local
-//require("dotenv").config({ path: "./.env.development" });
+require("dotenv").config({ path: "./.env.development" });
 console.log(
     "Variables de entorno cargadas:",
     Object.fromEntries(
@@ -19,6 +19,7 @@ module.exports = {
     devServer: {
         port: process.env.REACT_APP_MF_LOGIN_PORT, // Modificar (listo)
         // port: 3001, // Modificar (listo)
+        hot: false,
         allowedHosts: ["deptmeeting.diinf.usach.cl"], // Convierte la variable en un array con un solo host
     },
     module: {
