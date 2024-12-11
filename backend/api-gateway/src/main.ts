@@ -17,10 +17,9 @@ async function bootstrap() {
 
   // configuracion de Swagger para documentar API
   const options = new DocumentBuilder()
-  .setTitle('API textedit')
-  // .setDescription('Framework para agilizar la creación de aplicaciones que menjan actas dialogicas.')
-  .setDescription('Aplicativo web para realizar una gestión del seguimiento de proyectos de título construido a partir del framework D-MeetFlow.')
-  .setVersion('1.1')
+  .setTitle('API Meetflow')
+  .setDescription('Framework para agilizar la creación de aplicaciones que menjan actas dialogicas.')
+  .setVersion('1.0')
   .addBearerAuth() // autentication 
   .build();
 

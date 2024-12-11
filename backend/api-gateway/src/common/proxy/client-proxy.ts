@@ -42,6 +42,15 @@ export class ClientProxyMeetflow {
       },
     });
   }
+  clientProxyProject2(): ClientProxy {
+    return ClientProxyFactory.create({
+      transport: Transport.RMQ,
+      options: {
+        urls: this.config.get('AMQP_URL'),
+        queue: RabbitMQ.UserQueue,
+      },
+    });
+  }
 
   clientProxyMeeting(): ClientProxy {
     return ClientProxyFactory.create({
@@ -189,6 +198,17 @@ export class ClientProxyMeetflow {
       options: {
         urls: this.config.get('AMQP_URL'),
         queue: RabbitMQ.CollaborativeChat,
+      },
+    });
+  }
+
+
+  clientProxyMetrics(): ClientProxy {
+    return ClientProxyFactory.create({
+      transport: Transport.RMQ,
+      options: {
+        urls: this.config.get('AMQP_URL'),
+        queue: RabbitMQ.MetricsQueue,
       },
     });
   }
