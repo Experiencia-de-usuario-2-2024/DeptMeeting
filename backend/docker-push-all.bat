@@ -1,24 +1,22 @@
-docker push pipetboy/text-edit-ms-api-gateway 
+docker push jyr20/deptmeeting-api-gateway
 echo "api-gateway pusheado!"
 
-docker push pipetboy/text-edit-ms-elements
+docker push jyr20/deptmeeting-ms-elements
 echo "ms-elements pusheado!"
 
-docker push pipetboy/text-edit-ms-meetingminutes
+docker push jyr20/deptmeeting-ms-meetingminutes
 echo "ms-meetingminutes pusheado!"
 
-
-docker push pipetboy/text-edit-ms-meetings
+docker push jyr20/deptmeeting-ms-meetings
 echo "ms-meetings pusheado!"
 
-
-docker push pipetboy/text-edit-ms-notifications
+docker push jyr20/deptmeeting-ms-notifications
 echo "ms-notifications pusheado!"
 
-docker push pipetboy/text-edit-ms-users
+docker push jyr20/deptmeeting-ms-users
 echo "ms-users pusheado!"
 
-docker push pipetboy/text-edit-ms-projects
+docker push jyr20/deptmeeting-ms-projects
 echo "ms-projects pusheado!"
 
 
