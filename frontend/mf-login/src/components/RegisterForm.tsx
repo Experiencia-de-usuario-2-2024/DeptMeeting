@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import styles from '../styles/RegisterForm.module.css';
 
 interface RegisterFormProps {
@@ -15,13 +16,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
     const [passwordStrength, setPasswordStrength] = useState(0);
     const [error, setError] = useState('');
     const [passwordsMatch, setPasswordsMatch] = useState(true);
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-        // Calcular la fortaleza de la contraseña
         const strength = calculatePasswordStrength(password);
         setPasswordStrength(strength);
-
-        // Verificar si las contraseñas coinciden
         setPasswordsMatch(password === confirmPassword || confirmPassword === '');
     }, [password, confirmPassword]);
 
@@ -34,7 +35,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
         return strength;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!fullName || !rut || !password || !confirmPassword) {
             setError('Por favor, complete todos los campos.');
@@ -52,9 +53,36 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
             setError('Debe aceptar los términos y condiciones.');
             return;
         }
-        // Aquí iría la lógica de registro
-        console.log('Intento de registro con:', { fullName, rut, password });
-        setError('');
+
+        const tagName = fullName.split(' ').map(word => word[0]).join('');
+        try {
+            const config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: `http://deptmeeting.diinf.usach.cl/api/auth/signup`,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify({
+                    name: fullName,
+                    email: email,
+                    password: password,
+                    type: 'user', // Assuming 'user' as a default type
+                    tagName: tagName
+                })
+            };
+
+            const response = await axios.request(config);
+            console.log(JSON.stringify(response.data));
+            setIsSuccessModalOpen(true);
+            setTimeout(() => {
+                onSwitchToLogin();
+            }, 5000);
+        } catch (error) {
+            setErrorMessage(error.response.data.error.message);
+            setIsErrorModalOpen(true);
+            console.log(error);
+        }
     };
 
     return (
@@ -169,4 +197,3 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
 };
 
 export default RegisterForm;
-

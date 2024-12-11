@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from '../styles/LoginForm.module.css';
+import axios from "axios";
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
@@ -9,6 +10,57 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  const handleLogin = async (event: { preventDefault: () => void; }) => {
+    event.preventDefault();
+    console.log('process.env.REACT_APP_BACKEND_IP:', process.env.REACT_APP_BACKEND_IP)
+    console.log('process.env.REACT_APP_BACKEND_PORT:', process.env.REACT_APP_BACKEND_PORT)
+
+    try {
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: `http://deptmeeting.diinf.usach.cl/api/auth/signin`, //MODIFICAR (listo, falta probar)
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data : JSON.stringify({
+          email: email,
+          password: password
+        })
+      };
+
+      axios.request(config)
+          .then((response) => {
+            console.log("Imprimiendo el token en el login");
+            console.log(JSON.stringify(response.data));
+            // Guardar el token en el local storage y se envia a todos los microfrontends (y front principal) que lo requieren
+            localStorage.setItem('tokenUser', response.data.token);
+            localStorage.setItem('primerInicio', 'true');
+            window.location.href = "/home";
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    } catch (error) {}
+  }
+
+  const recuperarPassword = () => {
+    let config = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/resetpass/${email}`, //MODIFICAR (listo, falta probar)
+      headers: { }
+    };
+
+    axios.request(config)
+        .then((response) => {
+          console.log(JSON.stringify(response.data));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +103,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
                   required
               />
             </div>
-            <a href="#" className={styles.forgotPassword}>
+            <a href="#" className={styles.forgotPassword} onClick={recuperarPassword}>
               ¿Olvidaste tu contraseña?
             </a>
             <button type="submit" className={styles.submitButton}>
@@ -70,4 +122,3 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
 };
 
 export default LoginForm;
-
