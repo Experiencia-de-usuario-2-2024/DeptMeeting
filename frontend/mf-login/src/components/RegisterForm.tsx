@@ -16,9 +16,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
     const [passwordStrength, setPasswordStrength] = useState(0);
     const [error, setError] = useState('');
     const [passwordsMatch, setPasswordsMatch] = useState(true);
-    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         const strength = calculatePasswordStrength(password);
@@ -74,13 +71,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
 
             const response = await axios.request(config);
             console.log(JSON.stringify(response.data));
-            setIsSuccessModalOpen(true);
             setTimeout(() => {
                 onSwitchToLogin();
             }, 5000);
         } catch (error) {
-            setErrorMessage(error.response.data.error.message);
-            setIsErrorModalOpen(true);
             console.log(error);
         }
     };
