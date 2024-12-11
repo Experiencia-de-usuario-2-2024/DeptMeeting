@@ -20,7 +20,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: `http://deptmeeting.diinf.usach.cl/api/auth/signin/`, //MODIFICAR (listo, falta probar)
+        url: `http://deptmeeting.diinf.usach.cl/api/api/auth/signin/`, //MODIFICAR (listo, falta probar)
         headers: {
           'Content-Type': 'application/json'
         },
@@ -49,7 +49,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
     let config = {
       method: 'get',
       maxBodyLength: Infinity,
-      url: `http://deptmeeting.diinf.usach.cl/api/auth/resetpass/${email}/`, //MODIFICAR (listo, falta probar)
+      url: `http://deptmeeting.diinf.usach.cl/api/api/auth/resetpass/${email}/`, //MODIFICAR (listo, falta probar)
       headers: { }
     };
 

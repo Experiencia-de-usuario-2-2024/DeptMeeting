@@ -56,7 +56,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
             const config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: `http://deptmeeting.diinf.usach.cl/api/auth/signup/`,
+                url: `http://deptmeeting.diinf.usach.cl/api/api/auth/signup/`,
                 headers: {
                     'Content-Type': 'application/json'
                 },
