@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const backendUrl = `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/signin`;
+const backendUrl = `http://deptmeeting.diinf.usach.cl/api/auth/signin`;
 
 export const authenticateUser = async (email: string, password: string) => {
   if (!email || !password) {
