@@ -7,3 +7,4 @@ start cmd /k "cd /d .\mf-login && docker build --no-cache -t jyr20/deptmeeting-m
 start cmd /k "cd /d .\mf-perfil && docker build --no-cache -t jyr20/deptmeeting-mf-perfil ."
 start cmd /k "cd /d .\mf-proyectos && docker build --no-cache -t jyr20/deptmeeting-mf-proyectos ."
 start cmd /k "cd /d .\mf-tareas && docker build --no-cache -t jyr20/deptmeeting-mf-tareas ."
+start cmd /k "cd /d .\mf-desarrolloreunion && docker build --no-cache -t jyr20/deptmeeting-mf-desarrolloreunion ."

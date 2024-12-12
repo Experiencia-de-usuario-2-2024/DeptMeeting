@@ -256,6 +256,31 @@ services:
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
 
+  mf-desarrolloreunion:
+    image: jyr20/deptmeeting-mf-desarrolloreunion:latest
+    container_name: deptmeeting-mf-desarrolloreunion
+    ports:
+      - 3024:3024
+    restart: always
+    depends_on:
+      - api-gateway
+    networks:
+      - deptmeeting-network
+    environment:
+      - REACT_APP_HELLO_WORLD="Hello World"
+      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
+      - REACT_APP_MF_HOME_PORT=3020
+      - REACT_APP_MF_LOGIN_PORT=3021
+      - REACT_APP_MF_PROYECTOS_PORT=3022
+      - REACT_APP_MF_PERFIL_PORT=3023
+      - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
+      - REACT_APP_MF_INFORMACION_PORT=3025
+      - REACT_APP_MF_TAREAS_PORT=3026
+      - REACT_APP_MF_KANBANPLUS_PORT=3027
+      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
+      - REACT_APP_BACKEND_PORT=3002
+      - REACT_APP_BACKEND_IO_PORT=84
+
 volumes:
   mongodb_data:
     driver: local

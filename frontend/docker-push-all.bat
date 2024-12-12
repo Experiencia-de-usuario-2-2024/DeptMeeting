@@ -14,3 +14,5 @@ docker push jyr20/deptmeeting-mf-proyectos
 echo "mf-proyectos pusheado!"
 docker push jyr20/deptmeeting-mf-tareas
 echo "mf-tareas pusheado!"
+docker push jyr20/deptmeeting-mf-desarrolloreunion
+echo "mf-tareas pusheado!"
