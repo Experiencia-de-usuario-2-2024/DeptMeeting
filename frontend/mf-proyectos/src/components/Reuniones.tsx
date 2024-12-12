@@ -123,7 +123,7 @@ const Reuniones: React.FC = () => {
         async function obtenerProyectoPorId() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/getProjectbyID/` + idProyecto, {
+                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/project/getProjectbyID/` + idProyecto, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -140,7 +140,7 @@ const Reuniones: React.FC = () => {
         async function reunionesDeProyecto() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting/project/` + idProyecto, {
+                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/meeting/project/` + idProyecto, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }

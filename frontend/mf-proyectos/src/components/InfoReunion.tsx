@@ -80,7 +80,7 @@ const InfoReunion: React.FC = () => {
         async function obtenerReunionPorId() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting/` + idReunion, {
+                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/meeting/` + idReunion, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -132,7 +132,7 @@ const InfoReunion: React.FC = () => {
         async function obtenerMeetingMinute() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/reunion/` + idReunion, {
+                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/meeting-minute/reunion/` + idReunion, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -158,7 +158,7 @@ const InfoReunion: React.FC = () => {
     // Funcion para cambiar el estado de una reunion a "pre-reunión"
     async function cambiarEstado(idReunion: string) {
         try {            
-            const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting/` + idReunion, {
+            const response = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/meeting/` + idReunion, {
                 state: "Pre-reunión"
             },{
                 headers: {
@@ -202,7 +202,7 @@ const InfoReunion: React.FC = () => {
             // window.alert("Entre a la funcion obtenerMeetingMinute");
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/reunion/` + aux, {
+                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/meeting-minute/reunion/` + aux, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }

@@ -64,7 +64,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
                     name: fullName,
                     email: email,
                     password: password,
-                    type: 'user', // Assuming 'user' as a default type
+                    type: 'estudiante',
                     tagName: tagName
                 })
             };

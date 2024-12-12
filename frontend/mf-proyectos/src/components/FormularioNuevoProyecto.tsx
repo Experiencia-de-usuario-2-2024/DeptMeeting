@@ -62,7 +62,7 @@ const FormularioNuevoProyecto: React.FC = () => {
         async function obtenerDatosUsuario() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/perfil/` + idPerfil, {
+                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/user/perfil/` + idPerfil, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -86,7 +86,7 @@ const FormularioNuevoProyecto: React.FC = () => {
                 const correoElectronico = decodedToken.email;
                 console.log("email traido desde el token: ", correoElectronico);
             
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/list/email/` + correoElectronico, {
+                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/user/list/email/` + correoElectronico, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -187,7 +187,7 @@ const FormularioNuevoProyecto: React.FC = () => {
         //  1. Realizar peticion para crear proyecto
         async function peticionCrearProyecto() {
             try {            
-                const responseProyecto = await axios.post(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/create`, {
+                const responseProyecto = await axios.post(`http://deptmeeting.diinf.usach.cl/api/api/project/create`, {
                     shortName: shortNameValue,
                     name: nameValue,
                     description: descriptionValueVer2,
@@ -215,7 +215,7 @@ const FormularioNuevoProyecto: React.FC = () => {
             console.log("correo del estudiante: ", correoEstudiante);
             try {    
                 const responseEstudiante = await axios.post(
-                    `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/` + idProyecto + '/add/member/' + correoEstudiante,
+                    `http://deptmeeting.diinf.usach.cl/api/api/project/` + idProyecto + '/add/member/' + correoEstudiante,
                     {},
                     {
                         headers: {
@@ -233,7 +233,7 @@ const FormularioNuevoProyecto: React.FC = () => {
         // 2.1 Realizar peticion para actualizar atributos del participante: id de proyecto y nombre abreviado del proyecto -> se creara un nuevo metodo que permita actualizar usuario por correo electronico
         async function ActualizarParticipantes(correoEstudiante: string, idProyecto: string, nombreAbreviadoProyecto: string) {
             try {            
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/update/`+correoEstudiante+'/usuarioperfil', {
+                const response = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/user/update/`+correoEstudiante+'/usuarioperfil', {
                     currentProjectId: idProyecto,
                     currentProject: nombreAbreviadoProyecto,
                     proyectoPrincipal: nombreAbreviadoProyecto
@@ -252,7 +252,7 @@ const FormularioNuevoProyecto: React.FC = () => {
         // 2.2: se actualiza el proyecto de tal forma guardar en el atributo userMembersOriginal lo mismo que existe en userMembers
         async function ActualizarProyecto(idProyecto: string, listaOriginal:string[]) {
             try {            
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/`+idProyecto, {
+                const response = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/project/`+idProyecto, {
                     userMembersOriginal: listaOriginal
                 },{
                     headers: {

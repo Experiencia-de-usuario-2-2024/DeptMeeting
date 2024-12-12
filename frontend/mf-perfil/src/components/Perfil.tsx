@@ -101,7 +101,7 @@ const Perfil: React.FC = () => {
         async function obtenerDatosUsuario() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/perfil/` + idPerfil, {
+                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/user/perfil/` + idPerfil, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -125,7 +125,7 @@ const Perfil: React.FC = () => {
                 const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
                 const correoElectronico = decodedToken.email;
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/perfil/email/` + correoElectronico, {
+                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/user/perfil/email/` + correoElectronico, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -143,7 +143,7 @@ const Perfil: React.FC = () => {
         // funcion para obtener las tareas del usuario 
         async function obtenerCompromisosUsuario() {
             try {
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/element/participants/` + emailUsuarioPerfil, {
+                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/element/participants/` + emailUsuarioPerfil, {
                 // const response = await axios.get('http://191.239.118.117:${process.env.REACT_APP_BACKEND_PORT}/api/element/participants/walter.white@usach.cl', {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -211,7 +211,7 @@ const Perfil: React.FC = () => {
         async function peticionActualizar() {
             try {            
                 
-                const responsePerfil = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/update/` + usuarioPerfil?._id + '/profile', {
+                const responsePerfil = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/user/update/` + usuarioPerfil?._id + '/profile', {
                     avatar: fotoAvatarValue,
                     name: nameValue,
                     tagName: tagnameValue,
@@ -241,7 +241,7 @@ const Perfil: React.FC = () => {
         async function peticionActualizarEstadoTarea() {
             try {            
                 
-                const responsePerfil = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/element/update/` + idCompromiso, {
+                const responsePerfil = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/element/update/` + idCompromiso, {
                     state: nuevoEstado,
                 }, {
                     headers: {

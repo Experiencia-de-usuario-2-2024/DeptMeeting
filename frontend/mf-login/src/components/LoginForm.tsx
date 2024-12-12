@@ -106,7 +106,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
             <a href="#" className={styles.forgotPassword} onClick={recuperarPassword}>
               ¿Olvidaste tu contraseña?
             </a>
-            <button type="submit" className={styles.submitButton}>
+            <button type="submit" className={styles.submitButton} onClick={handleLogin}>
               Iniciar Sesión
             </button>
             <div className={styles.registerSection}>

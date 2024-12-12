@@ -142,7 +142,7 @@ const EstructuraPagina = () =>{
                 const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
                 const correoElectronico = decodedToken.email;
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/perfil/email/` + correoElectronico, {
+                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/user/perfil/email/` + correoElectronico, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
