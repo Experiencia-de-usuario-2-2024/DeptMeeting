@@ -1,14 +1,13 @@
-import {
-  Controller,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { MeetingMSG } from 'src/common/constants';
 import { MeetingDTO } from './dto/meeting.dto';
 import { MeetingService } from './meeting.service';
+import {DeptMEventDto} from "./dto/deptmeeting/event.dto";
 
 @Controller()
 export class MeetingController {
-  constructor(private readonly meetingService: MeetingService) { }
+  constructor(private readonly meetingService: MeetingService) {}
 
   /* 
     Modelo estructural de datos:
@@ -52,6 +51,15 @@ export class MeetingController {
     return await this.meetingService.findAll();
   }
 
+  @MessagePattern(MeetingMSG.CREATE_EVENT)
+  async deptMCreateEvent(@Payload() event: any) {
+    console.log('event:', event);
+    return await this.meetingService.deptMCreateEvent(
+      event.data.eventDetails,
+      event.data.accessToken,
+    );
+  }
+
   /*  
   Método para  obtener una reunión a partir del id.
   entrada: id de la reunión. 
@@ -59,7 +67,6 @@ export class MeetingController {
   */
   @MessagePattern(MeetingMSG.FIND_ONE)
   async findOne(@Payload() id: string) {
-
     return await this.meetingService.findOne(id);
   }
 
@@ -90,7 +97,10 @@ export class MeetingController {
   */
   @MessagePattern(MeetingMSG.ADD_PROJECT)
   async setProject(@Payload() payload) {
-    return await this.meetingService.setProject(payload.meetingId, payload.projectId);
+    return await this.meetingService.setProject(
+      payload.meetingId,
+      payload.projectId,
+    );
   }
 
   /*  
@@ -108,18 +118,20 @@ export class MeetingController {
   entrada: el id del proyecto. 
   salida: objeto de las reuniones encontrada para el proyecto.  
   */
-  @MessagePattern("FIND_BY_PROJECT_NUMBER")
+  @MessagePattern('FIND_BY_PROJECT_NUMBER')
   async findByProjectNumber(@Payload() payload: any) {
-    return await this.meetingService.findByProjectNumber(payload.idProject, payload.numberMeet);
+    return await this.meetingService.findByProjectNumber(
+      payload.idProject,
+      payload.numberMeet,
+    );
   }
 
   /*  
   Metodo para calcular la cantidad de reuniones totales en la plataforma.
   salida: cantidad de reuniones totales
   */
-  @MessagePattern("countmeetings")
+  @MessagePattern('countmeetings')
   async countMeetings(@Payload() payload: any) {
     return await this.meetingService.countMeetings();
   }
-
 }

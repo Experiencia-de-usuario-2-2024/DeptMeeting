@@ -8,19 +8,17 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       useFactory: () => {
         return {
           transport: {
-         /*    host: process.env.MAIL_HOST, */
             service: process.env.EMAIL_SERVICE,
             host: process.env.EMAIL_HOST,
             port: parseInt(process.env.EMAIL_PORT),
             secure: 'true',
-          /*   port: process.env.MAIL_PORT, */
             auth: {
               user: process.env.EMAIL_USER,
               pass: process.env.EMAIL_PASS,
             },
           },
           defaults: {
-            from: '"nest-modules" <${meetingflowing@gmail.com}>',
+            from: '"nest-modules" <${jairosantiespino@gmail.com}>',
           },
           template: {
             dir: __dirname + '/templates',

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, UnprocessableEntityException, UseGuards } from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, Req, Res, UnprocessableEntityException, UseGuards} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserMSG } from 'src/common/constants';
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
@@ -9,6 +9,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Observable } from 'rxjs';
+import {AuthGuard} from "@nestjs/passport";
 
 @ApiTags('Autentificación (auth)')
 @Controller('api/auth')
@@ -64,7 +65,7 @@ export class AuthController {
         }
         else {
             console.log("Correo ya registrado")
-            throw new UnprocessableEntityException('Ya existe un usuario con ese correo electronico.');
+            throw new UnprocessableEntityException('Usuario ya registrado, favor de iniciar sesión:w.');
         }
     }
 

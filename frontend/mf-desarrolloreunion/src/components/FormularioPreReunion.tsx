@@ -8,6 +8,7 @@ import Button, { ButtonGroup } from '@atlaskit/button';
 import LoadingButton from '@atlaskit/button/loading-button';
 import Select, { ActionMeta, MultiValue, PropsValue } from 'react-select';
 import axios from "axios";
+import { v4 as uuidv4 } from 'uuid';
 import { jwtDecode } from 'jwt-decode';
 import { ProgressTracker, Stages } from '@atlaskit/progress-tracker';
 import { CreatableSelect, OptionType, ValueType } from '@atlaskit/select';
@@ -38,6 +39,7 @@ import Messages from "./Messages";
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
+const accessToken = localStorage.getItem('accessToken');
 
 // Se obtiene el tipo de usuario logeado
 const tipoDeUsuario = localStorage.getItem('tipoUsuario');
@@ -605,6 +607,8 @@ const FormularioPreReunion: React.FC = () => {
     // Funcion que se encarga de guardar los datos del formulario 1 en variables globales
     const guardarFormulario1 = () => {
 
+
+        console.log("Me caigo1? No");
         const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
         correoElectronico = decodedToken.email;
 
@@ -711,21 +715,52 @@ const FormularioPreReunion: React.FC = () => {
         // listaAnfitrionesValueFinal.push(correoElectronico);
 
         // console.log("Participantes: ", listaParticipantesValue);
-        try {
-            const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting/`, {
-                state: "En-reunión"
-            }, {
-                headers: {
-                    Authorization: `Bearer ${tokenUser}`
-                }
-            });
-            console.log("Evento creado exitosamente en Google Calendar");
-            console.log(response.data);
-        } catch (error) {
-            console.error(error);
+
+        console.log("Me caigo2? No");
+        const data = {
+            accessToken: accessToken,
+            eventDetails: {
+                summary: objetivoValue,
+                start: {
+                    dateTime: fechaInicio + "T" + horaInicio.split("-")[0] + ":00",
+                    timeZone: "America/Santiago",
+                },
+                end: {
+                    dateTime: fechaTermino + "T" + horaTermino.split("-")[0] + ":00",
+                    timeZone: "America/Santiago",
+                },
+                location: lugarValue,
+                attendees: listaParticipantesValueFinal.map(email => ({ email })),
+                conferenceData: {
+                    createRequest: {
+                        conferenceSolutionKey: {
+                            type: "hangoutsMeet",
+                        },
+                        requestId: uuidv4(),
+                    },
+                },
+            }
         }
+        console.log("Me caigo3? No");
+        console.log("HOLA", data);
 
+        const createEvent = async () => {
+            try {
+                console.log("Me caigo4? No");
+                const response = await axios.post(`http://localhost:3002/api/meeting/event`, {data}, {
+                    headers: {
+                        Authorization: `Bearer ${tokenUser}`
+                    }
+                });
+                console.log("Evento creado exitosamente en Google Calendar");
+                console.log(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        createEvent();
 
+        console.log("Me caí");
         window.alert("Informacion guardada correctamente");
     }
 

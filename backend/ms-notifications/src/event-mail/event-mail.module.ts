@@ -37,7 +37,7 @@ export class EventMailModule {
         this.mailService.sendMail({
           to: meetingMinuteDTO.secretaries[s],
           from: process.env.EMAIL_USER,
-          template: 'actacreada',
+          template: 'testing',
           // subject: 'Soporte MemFollow: Has sido invitado a una nueva reunión con el rol de secretario/a el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
           subject: 'Soporte MemFollow: Has sido invitado a la reunion número ' + meetingMinuteDTO.number.toString() + ' del proyecto ' + meetingMinuteDTO.nombreCortoProyecto + ' con el rol de secretario/a el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
           context: {

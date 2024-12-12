@@ -132,4 +132,5 @@ export class NotificationController {
     async sendInviteNewUser(@Payload() newUser: any) {
         return this.notificationService.sendInviteNewUser(newUser.userEmailInvited, newUser.passTemp);
     }
+
 }

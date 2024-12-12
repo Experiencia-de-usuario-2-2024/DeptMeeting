@@ -4,14 +4,19 @@ import { Model } from 'mongoose';
 import { IMeeting } from 'src/common/interfaces/meeting.interface';
 import { MEETING } from 'src/common/models/models';
 import { MeetingDTO } from './dto/meeting.dto';
+import { DeptMEventDto } from './dto/deptmeeting/event.dto';
+import { google } from 'googleapis';
+import * as path from 'path';
+import * as puppeteer from 'puppeteer';
+import axios from "axios";
 
 @Injectable()
 export class MeetingService {
-
+  private calendar;
   constructor(
     @InjectModel(MEETING.name)
     private readonly model: Model<IMeeting>,
-  ) { }
+  ) {}
 
   /*  
   Método para crear una nueva reunión.
@@ -31,11 +36,7 @@ export class MeetingService {
   async updateState(id: string, statee: any): Promise<IMeeting> {
     const meeting: any = await this.model.findById(id);
     meeting.state = statee.state;
-    return await this.model.findByIdAndUpdate(
-      id,
-      meeting,
-      { new: true },
-    );
+    return await this.model.findByIdAndUpdate(id, meeting, { new: true });
   }
 
   /*  
@@ -61,7 +62,7 @@ export class MeetingService {
   salida: objeto de las reuniones encontrada para el proyecto.  
   */
   async findByProject(id: string): Promise<IMeeting[]> {
-    return await this.model.where({ project: [id] })
+    return await this.model.where({ project: [id] });
   }
 
   /*  
@@ -93,10 +94,7 @@ export class MeetingService {
   entrada: id del proyecto, id de la reunión
   salida: objeto de la reunión con el proyecto vinculado.
   */
-  async setProject(
-    meetingId: String,
-    projectId: string,
-  ): Promise<IMeeting> {
+  async setProject(meetingId: string, projectId: string): Promise<IMeeting> {
     return await this.model.findByIdAndUpdate(
       meetingId,
       {
@@ -111,8 +109,11 @@ export class MeetingService {
   entrada: el id del proyecto. 
   salida: objeto de las reuniones encontrada para el proyecto.  
   */
-  async findByProjectNumber(idProject: string, numberMeet): Promise<IMeeting[]> {
-    return await this.model.where({ project: [idProject], number: numberMeet })
+  async findByProjectNumber(
+    idProject: string,
+    numberMeet,
+  ): Promise<IMeeting[]> {
+    return await this.model.where({ project: [idProject], number: numberMeet });
   }
 
   /*  
@@ -123,4 +124,32 @@ export class MeetingService {
     return await this.model.countDocuments().exec();
   }
 
+  async deptMCreateEvent(
+    eventDetails: DeptMEventDto,
+    accessToken: any,
+  ): Promise<any> {
+    try {
+      console.log(eventDetails);
+      console.log(accessToken);
+      const response = await axios.post(
+        'https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1', // Añadir conferenceDataVersion=1 en la URL
+        eventDetails,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      console.log('Evento creado con éxito:', response.data);
+      return response.data;
+    } catch (error) {
+      console.log(
+        `Error al crear el evento: ${
+          error.response ? JSON.stringify(error.response.data) : error.message
+        }`,
+      );
+      throw error;
+    }
+  }
 }

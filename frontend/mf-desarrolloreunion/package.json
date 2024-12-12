@@ -33,6 +33,7 @@
     "socket.io-client": "^4.7.5",
     "style-loader": "^3.3.1",
     "typescript": "^3.7.5",
+    "uuid": "^11.0.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

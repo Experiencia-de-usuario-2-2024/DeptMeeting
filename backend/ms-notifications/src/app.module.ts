@@ -9,7 +9,9 @@ import { MailModule } from './mail/mail.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
-  imports: [NotificationModule, EventEmitterModule.forRoot(),
+  imports: [
+    NotificationModule,
+    EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: ['.env.development'],
       isGlobal: true,
