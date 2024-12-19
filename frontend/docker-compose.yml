@@ -26,7 +26,7 @@ services:
 
   ms-users:
     container_name: deptmeeting-ms-users
-    image: jyr20/deptmeeting-ms-users:latest
+    image: jyr20/ms-users:latest
     environment:
       - JWT_SECRET=clavesecreta2312
       - EXPIRES_IN=12h
@@ -38,12 +38,12 @@ services:
       - deptmeeting-network
 
   api-gateway:
-    image: jyr20/deptmeeting-api-gateway:latest
+    image: jyr20/api-gateway:latest
     ports:
       - "3002:3002"
       - "84:84"
     environment:
-      - APP_URL=http://deptmeeting.diinf.usach.cl
+      - APP_URL=http://jyrproject.com
       - API_PORT=3002
       - PORT=3002
       - JWT_SECRET=clavesecreta2312
@@ -56,7 +56,7 @@ services:
 
   ms-projects:
     container_name: deptmeeting-ms-projects
-    image: jyr20/deptmeeting-ms-projects:latest
+    image: jyr20/ms-projects:latest
     environment:
       - JWT_SECRET=clavesecreta2312
       - EXPIRES_IN=12h
@@ -69,7 +69,7 @@ services:
 
   ms-meetings:
     container_name: deptmeeting-ms-meetings
-    image: jyr20/deptmeeting-ms-meetings:latest
+    image: jyr20/ms-meetings:latest
     environment:
       - JWT_SECRET=clavesecreta2312
       - EXPIRES_IN=12h
@@ -80,9 +80,29 @@ services:
     networks:
       - deptmeeting-network
 
+  ms-notifications:
+    container_name: deptmeeting-ms-notifications
+    image: jyr20/ms-notifications:latest
+    environment:
+      - JWT_SECRET=clavesecreta2312
+      - EXPIRES_IN=12h
+      - AMQP_URL=amqp://user:password@rabbitmq:5672
+      - URI_MONGODB=mongodb://mongodb:27017/deptmeeting_notifications
+      - IO_PORT=84
+      - EMAIL_USER=jairosantiespino@gmail.com
+      - EMAIL_PASS="farp asej fhsw dwni"
+      - EMAIL_SERVICE=gmail
+      - EMAIL_HOST=smtp.gmail.com
+      - EMAIL_PORT=8000
+    depends_on:
+      - rabbitmq
+    networks:
+      - deptmeeting-network
+
+
   ms-elements:
     container_name: deptmeeting-ms-elements
-    image: jyr20/deptmeeting-ms-elements:latest
+    image: jyr20/ms-elements:latest
     environment:
       - JWT_SECRET=clavesecreta2312
       - EXPIRES_IN=12h
@@ -95,7 +115,7 @@ services:
 
   ms-meetingminutes:
     container_name: deptmeeting-ms-meetingminutes
-    image: jyr20/deptmeeting-ms-meetingminutes:latest
+    image: jyr20/ms-meetingminutes:latest
     environment:
       - JWT_SECRET=clavesecreta2312
       - EXPIRES_IN=12h
@@ -107,8 +127,8 @@ services:
       - deptmeeting-network
 
   front-principal:
-    image: jyr20/deptmeeting-frontend-principal:latest
-    container_name: deptmeeting-frontend-principal
+    image: jyr20/front-principal:latest
+    container_name: deptmeeting-front-principal
     ports:
       - 3003:3003
     restart: always
@@ -118,7 +138,8 @@ services:
       - deptmeeting-network
     environment:
       - REACT_APP_HELLO_WORLD="Hello World"
-      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
+      - REACT_APP_MF_URL=jyrproject.com
+      - REACT_APP_PRINCIPAL_PORT=3003
       - REACT_APP_MF_HOME_PORT=3020
       - REACT_APP_MF_LOGIN_PORT=3021
       - REACT_APP_MF_PROYECTOS_PORT=3022
@@ -127,12 +148,12 @@ services:
       - REACT_APP_MF_INFORMACION_PORT=3025
       - REACT_APP_MF_TAREAS_PORT=3026
       - REACT_APP_MF_KANBANPLUS_PORT=3027
-      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
+      - REACT_APP_BACKEND_IP=jyrproject.com
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
 
   mf-home:
-    image: jyr20/deptmeeting-mf-home:latest
+    image: jyr20/mf-home:latest
     container_name: deptmeeting-mf-home
     ports:
       - 3020:3020
@@ -143,7 +164,7 @@ services:
       - deptmeeting-network
     environment:
       - REACT_APP_HELLO_WORLD="Hello World"
-      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
+      - REACT_APP_MF_URL=jyrproject.com
       - REACT_APP_MF_HOME_PORT=3020
       - REACT_APP_MF_LOGIN_PORT=3021
       - REACT_APP_MF_PROYECTOS_PORT=3022
@@ -152,12 +173,12 @@ services:
       - REACT_APP_MF_INFORMACION_PORT=3025
       - REACT_APP_MF_TAREAS_PORT=3026
       - REACT_APP_MF_KANBANPLUS_PORT=3027
-      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
+      - REACT_APP_BACKEND_IP=jyrproject.com
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
 
   mf-informacion:
-    image: jyr20/deptmeeting-mf-informacion:latest
+    image: jyr20/mf-informacion:latest
     container_name: deptmeeting-mf-informacion
     ports:
       - 3025:3025
@@ -168,7 +189,7 @@ services:
       - deptmeeting-network
     environment:
       - REACT_APP_HELLO_WORLD="Hello World"
-      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
+      - REACT_APP_MF_URL=jyrproject.com
       - REACT_APP_MF_HOME_PORT=3020
       - REACT_APP_MF_LOGIN_PORT=3021
       - REACT_APP_MF_PROYECTOS_PORT=3022
@@ -177,12 +198,12 @@ services:
       - REACT_APP_MF_INFORMACION_PORT=3025
       - REACT_APP_MF_TAREAS_PORT=3026
       - REACT_APP_MF_KANBANPLUS_PORT=3027
-      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
+      - REACT_APP_BACKEND_IP=jyrproject.com
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
 
   mf-login:
-    image: jyr20/deptmeeting-mf-login:latest
+    image: jyr20/mf-login:latest
     container_name: deptmeeting-mf-login
     ports:
       - 3021:3021
@@ -193,7 +214,7 @@ services:
       - deptmeeting-network
     environment:
       - REACT_APP_HELLO_WORLD="Hello World"
-      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
+      - REACT_APP_MF_URL=jyrproject.com
       - REACT_APP_MF_HOME_PORT=3020
       - REACT_APP_MF_LOGIN_PORT=3021
       - REACT_APP_MF_PROYECTOS_PORT=3022
@@ -202,12 +223,13 @@ services:
       - REACT_APP_MF_INFORMACION_PORT=3025
       - REACT_APP_MF_TAREAS_PORT=3026
       - REACT_APP_MF_KANBANPLUS_PORT=3027
-      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
+      - REACT_APP_BACKEND_IP=jyrproject.com
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
+      - REACT_APP_GOOGLE_CLIENT_ID=463721565707-n85gsgtqtggm16pp87884uslc0p56t6d.apps.googleusercontent.com
 
   mf-perfil:
-    image: jyr20/deptmeeting-mf-perfil:latest
+    image: jyr20/mf-perfil:latest
     container_name: deptmeeting-mf-perfil
     ports:
       - 3023:3023
@@ -218,7 +240,7 @@ services:
       - deptmeeting-network
     environment:
       - REACT_APP_HELLO_WORLD="Hello World"
-      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
+      - REACT_APP_MF_URL=jyrproject.com
       - REACT_APP_MF_HOME_PORT=3020
       - REACT_APP_MF_LOGIN_PORT=3021
       - REACT_APP_MF_PROYECTOS_PORT=3022
@@ -227,12 +249,12 @@ services:
       - REACT_APP_MF_INFORMACION_PORT=3025
       - REACT_APP_MF_TAREAS_PORT=3026
       - REACT_APP_MF_KANBANPLUS_PORT=3027
-      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
+      - REACT_APP_BACKEND_IP=jyrproject.com
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
 
   mf-proyectos:
-    image: jyr20/deptmeeting-mf-proyectos:latest
+    image: jyr20/mf-proyectos:latest
     container_name: deptmeeting-mf-proyectos
     ports:
       - 3022:3022
@@ -243,7 +265,7 @@ services:
       - deptmeeting-network
     environment:
       - REACT_APP_HELLO_WORLD="Hello World"
-      - REACT_APP_MF_URL=deptmeeting.diinf.usach.cl
+      - REACT_APP_MF_URL=jyrproject.com
       - REACT_APP_MF_HOME_PORT=3020
       - REACT_APP_MF_LOGIN_PORT=3021
       - REACT_APP_MF_PROYECTOS_PORT=3022
@@ -252,7 +274,82 @@ services:
       - REACT_APP_MF_INFORMACION_PORT=3025
       - REACT_APP_MF_TAREAS_PORT=3026
       - REACT_APP_MF_KANBANPLUS_PORT=3027
-      - REACT_APP_BACKEND_IP=deptmeeting.diinf.usach.cl
+      - REACT_APP_BACKEND_IP=jyrproject.com
+      - REACT_APP_BACKEND_PORT=3002
+      - REACT_APP_BACKEND_IO_PORT=84
+
+  mf-desarrolloreunion:
+    image: jyr20/mf-desarrolloreunion:latest
+    container_name: deptmeeting-mf-desarrolloreunion
+    ports:
+      - 3024:3024
+    restart: always
+    depends_on:
+      - api-gateway
+    networks:
+      - deptmeeting-network
+    environment:
+      - REACT_APP_HELLO_WORLD="Hello World"
+      - REACT_APP_MF_URL=jyrproject.com
+      - REACT_APP_MF_HOME_PORT=3020
+      - REACT_APP_MF_LOGIN_PORT=3021
+      - REACT_APP_MF_PROYECTOS_PORT=3022
+      - REACT_APP_MF_PERFIL_PORT=3023
+      - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
+      - REACT_APP_MF_INFORMACION_PORT=3025
+      - REACT_APP_MF_TAREAS_PORT=3026
+      - REACT_APP_MF_KANBANPLUS_PORT=3027
+      - REACT_APP_BACKEND_IP=jyrproject.com
+      - REACT_APP_BACKEND_PORT=3002
+      - REACT_APP_BACKEND_IO_PORT=84
+
+  mf-kanbanplus:
+    image: jyr20/mf-kanbanplus:latest
+    container_name: deptmeeting-mf-kanbanplus
+    ports:
+      - 3027:3027
+    restart: always
+    depends_on:
+      - api-gateway
+    networks:
+      - deptmeeting-network
+    environment:
+      - REACT_APP_HELLO_WORLD="Hello World"
+      - REACT_APP_MF_URL=jyrproject.com
+      - REACT_APP_MF_HOME_PORT=3020
+      - REACT_APP_MF_LOGIN_PORT=3021
+      - REACT_APP_MF_PROYECTOS_PORT=3022
+      - REACT_APP_MF_PERFIL_PORT=3023
+      - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
+      - REACT_APP_MF_INFORMACION_PORT=3025
+      - REACT_APP_MF_TAREAS_PORT=3026
+      - REACT_APP_MF_KANBANPLUS_PORT=3027
+      - REACT_APP_BACKEND_IP=jyrproject.com
+      - REACT_APP_BACKEND_PORT=3002
+      - REACT_APP_BACKEND_IO_PORT=84
+
+  mf-tareas:
+    image: jyr20/mf-tareas:latest
+    container_name: deptmeeting-mf-tareas
+    ports:
+      - 3026:3026
+    restart: always
+    depends_on:
+      - api-gateway
+    networks:
+      - deptmeeting-network
+    environment:
+      - REACT_APP_HELLO_WORLD="Hello World"
+      - REACT_APP_MF_URL=jyrproject.com
+      - REACT_APP_MF_HOME_PORT=3020
+      - REACT_APP_MF_LOGIN_PORT=3021
+      - REACT_APP_MF_PROYECTOS_PORT=3022
+      - REACT_APP_MF_PERFIL_PORT=3023
+      - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
+      - REACT_APP_MF_INFORMACION_PORT=3025
+      - REACT_APP_MF_TAREAS_PORT=3026
+      - REACT_APP_MF_KANBANPLUS_PORT=3027
+      - REACT_APP_BACKEND_IP=jyrproject.com
       - REACT_APP_BACKEND_PORT=3002
       - REACT_APP_BACKEND_IO_PORT=84
 

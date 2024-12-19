@@ -6,10 +6,10 @@ const WebpackShellPluginNext = require('webpack-shell-plugin-next');
 const webpack = require("webpack"); // <-- Añadir esta linea
 
 // Cargar dotenv manualmente para verificación //descomentar si se quiere local
-require('dotenv').config({ path: './.env.development' });
-console.log('Variables de entorno cargadas:', Object.fromEntries(
-    Object.entries(process.env).filter(([key]) => key.startsWith('REACT_APP'))
-  ));
+//require('dotenv').config({ path: './.env.development' });
+//console.log('Variables de entorno cargadas:', Object.fromEntries(
+//    Object.entries(process.env).filter(([key]) => key.startsWith('REACT_APP'))
+//  ));
 
 
 
@@ -18,7 +18,7 @@ module.exports = {
     mode: "development",
     devServer: {
         port: process.env.REACT_APP_MF_HOME_PORT, // Modificar -> listo
-        allowedHosts: ["deptmeeting.diinf.usach.cl"], // Convierte la variable en un array con un solo host
+        allowedHosts: process.env.REACT_APP_MF_URL ? [process.env.REACT_APP_MF_URL] : [], // Convierte la variable en un array con un solo host
     },
     module: {
         rules: [

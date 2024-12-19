@@ -97,6 +97,8 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
     const openModal = useCallback(() => setIsOpen(true), []);
     const closeModal = useCallback(() => setIsOpen(false), []);
 
+    const googleId = process.env.REACT_APP_GOOGLE_ID;
+
     const signin = async () => {
         try {
             let config = {
@@ -223,7 +225,7 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
         try{
             const start = () => {
             gapi.auth2.init({
-                clientId: "463721565707-n85gsgtqtggm16pp87884uslc0p56t6d.apps.googleusercontent.com",
+                clientId: googleId,
                 scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.profile',
             })
         }
@@ -480,7 +482,7 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
                                     <br/>
                                     <div className={styles.centerIt}>
                                         <GoogleLogin
-                                            clientId={"463721565707-n85gsgtqtggm16pp87884uslc0p56t6d.apps.googleusercontent.com"}
+                                            clientId={googleId}
                                             onSuccess={registerWithGoogle}
                                             onFailure={onFailure}
                                             cookiePolicy={'single_host_policy'}
@@ -682,7 +684,7 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
                                     <br/>
                                     <div className={styles.centerIt}>
                                         <GoogleLogin
-                                            clientId={"463721565707-n85gsgtqtggm16pp87884uslc0p56t6d.apps.googleusercontent.com"}
+                                            clientId={googleId}
                                             onSuccess={loginWithGoogle}
                                             onFailure={onFailure}
                                             cookiePolicy={'single_host_policy'}

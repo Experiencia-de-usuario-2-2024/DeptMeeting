@@ -132,7 +132,7 @@ export class MeetingService {
       console.log(eventDetails);
       console.log(accessToken);
       const response = await axios.post(
-        'https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1', // Añadir conferenceDataVersion=1 en la URL
+        'https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1&sendUpdates=all', // Añadir conferenceDataVersion=1 en la URL
         eventDetails,
         {
           headers: {

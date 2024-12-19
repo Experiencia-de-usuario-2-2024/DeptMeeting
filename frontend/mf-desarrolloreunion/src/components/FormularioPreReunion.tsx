@@ -325,6 +325,7 @@ const FormularioPreReunion: React.FC = () => {
 
     // Para determinar si se muestra en la parte central el acta dialogica o no (en cualquiera que sea su etapa, pre, in, post o finalizada)
     const [verActaDialogica, setVerActaDialogica] = React.useState(false);
+    const [url, setUrl] = React.useState<string>(null);
 
     // Para determinar si completo el primer formulario
     const [iniciarFormulario, setIniciarFormulario] = React.useState(false);
@@ -747,7 +748,7 @@ const FormularioPreReunion: React.FC = () => {
         const createEvent = async () => {
             try {
                 console.log("Me caigo4? No");
-                const response = await axios.post(`http://localhost:3002/api/meeting/event`, {data}, {
+                const response = await axios.post(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting/event`, {data}, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -759,6 +760,7 @@ const FormularioPreReunion: React.FC = () => {
             }
         }
         createEvent();
+
 
         console.log("Me caí");
         window.alert("Informacion guardada correctamente");
@@ -1399,8 +1401,7 @@ const FormularioPreReunion: React.FC = () => {
     const [isOpenEnlacesBorrar, setIsOpenEnlacesBorrar] = useState(false);
     const openModalEnlacesBorrar = useCallback(() => setIsOpenEnlacesBorrar(true), []);
     const closeModalEnlacesBorrar = useCallback(() => setIsOpenEnlacesBorrar(false), []);
-
-
+    
     //**********************************************************************
     //**********************************************************************
     //**********************************************************************
@@ -1441,15 +1442,21 @@ const FormularioPreReunion: React.FC = () => {
                                 {/* <Button iconBefore={<WarningIcon label="" size="large" />} appearance="warning" style={{ height: "100%", width: "170px" }} {...tooltipProps}> IMPORTANTE </Button> */}
                                 {/* <ProgressTracker items={items} /> */}
                                 {/* PARTE FIJA DEL MICROFRONTEND: AVATAR GROUP, CHAT y BARRA DE PROGRESO DE LA REUNION */}
-                                <div style={{position: "fixed", top: 96, width: "100%", zIndex:10}}>                                    
+                                <div style={{position: "fixed", top: 96, width: "100%", zIndex:10}}>
                                     <Inline>
                                         {/* CONTENIDO DE LA IZQUIERDA: fotos de los participantes de la reunion y boton que da acceso al chat */}
                                         {/* <div style={{textAlign: "left", height: '100px', width: '450px', backgroundColor: 'white'}}> */}
-                                        <div style={{textAlign: "left", height: '100px', width: '550px', backgroundColor: 'white'}}>
+                                        <div style={{
+                                            textAlign: "left",
+                                            height: '100px',
+                                            width: '550px',
+                                            backgroundColor: 'white'
+                                        }}>
                                             <Inline space="space.200">
                                                 {/* fotos de los integrantes conectados */}
                                                 <div style={{marginTop: '28px'}}>
-                                                    <AvatarGroup appearance="stack" data={data} borderColor="#388BFF" size="large" maxCount={4}/>
+                                                    <AvatarGroup appearance="stack" data={data} borderColor="#388BFF"
+                                                                 size="large" maxCount={4}/>
                                                 </div>
 
                                                 {/* popup para colocar un chat en la reunion */}
@@ -1460,21 +1467,22 @@ const FormularioPreReunion: React.FC = () => {
                                                         placement="bottom-start"
 
                                                         // aqui colocar el componente del chat
-                                                        content={() =>  <Box xcss={contentStyles}>
-                                                                            <MessagesInput send={send}/>
-                                                                            <Messages messages={messages}/>
-                                                                        </Box>}
+                                                        content={() => <Box xcss={contentStyles}>
+                                                            <MessagesInput send={send}/>
+                                                            <Messages messages={messages}/>
+                                                        </Box>}
 
                                                         trigger={(triggerProps) => (
                                                             <Button
                                                                 style={{height: 44}}
-                                                                iconBefore={<CommentIcon label="" size="medium" />}
+                                                                iconBefore={<CommentIcon label="" size="medium"/>}
                                                                 {...triggerProps}
                                                                 appearance="primary"
                                                                 isSelected={isOpen}
                                                                 onClick={() => setIsOpen(!isOpen)}
-                                                                >
-                                                                {isOpen ? '' : ''} <p style={{marginTop:3, marginBottom:0}}>chat</p>{' '}
+                                                            >
+                                                                {isOpen ? '' : ''} <p
+                                                                style={{marginTop: 3, marginBottom: 0}}>chat</p>{' '}
                                                             </Button>
                                                         )}
                                                     />
@@ -1483,19 +1491,33 @@ const FormularioPreReunion: React.FC = () => {
                                         </div>
 
                                         {/* CONTENIDO DEL MEDIO: barra de progreso */}
-                                        <div style={{textAlign: "center", height: '100px', width: '60%', backgroundColor: 'white'}}>
+                                        <div style={{
+                                            textAlign: "center",
+                                            height: '100px',
+                                            width: '60%',
+                                            backgroundColor: 'white'
+                                        }}>
                                             {/* barra de progreso en la renuion fija en pantalla*/}
-                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                                <ProgressTracker items={items} />
+                                            <div style={{display: 'flex', justifyContent: 'center'}}>
+                                                <ProgressTracker items={items}/>
                                             </div>
                                         </div>
 
                                         {/* CONTENIDO DE LA DERECHA: no utilizada en esta fase*/}
-                                        <div style={{textAlign: "left", height: '100px', width: '550px', backgroundColor: 'white'}}>
-                                            <Button iconBefore={<WarningIcon label="" size="large" />} appearance="warning" style={{width: "170px", marginTop:'30px' }} {...tooltipProps}> IMPORTANTE </Button>
+                                        <div style={{
+                                            textAlign: "left",
+                                            height: '100px',
+                                            width: '550px',
+                                            backgroundColor: 'white'
+                                        }}>
+                                            <Button iconBefore={<WarningIcon label="" size="large"/>}
+                                                    appearance="warning" style={{
+                                                width: "170px",
+                                                marginTop: '30px'
+                                            }} {...tooltipProps}> IMPORTANTE </Button>
                                         </div>
                                     </Inline>
-                                </div> 
+                                </div>
 
                             </>
                         )}
