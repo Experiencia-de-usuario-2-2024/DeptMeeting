@@ -4,9 +4,21 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { AllExceptionFilter } from './common/filters/http-exception.filter';
 import { TimeOutInterceptor } from './common/interceptors/timeout.interceptor';
+import * as fs from 'fs';
+import * as https from 'https';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  let app;
+  // Para habilitar HTTPS
+  if (process.env.PRIVATE_KEY_PATH && process.env.CERTIFICATE_PATH) {
+    const httpsOptions = {
+      key: fs.readFileSync(process.env.PRIVATE_KEY_PATH), // Ruta a tu clave privada
+      cert: fs.readFileSync(process.env.CERTIFICATE), // Ruta a tu certificado
+    };
+    app = await NestFactory.create(AppModule, { httpsOptions });
+  } else {
+    app = await NestFactory.create(AppModule);
+  }
   // manejo de excepciones globales
 
   app.useGlobalFilters(new AllExceptionFilter());
@@ -17,10 +29,10 @@ async function bootstrap() {
 
   // configuracion de Swagger para documentar API
   const options = new DocumentBuilder()
-  .setTitle('API Meetflow')
-  .setDescription('Framework para agilizar la creación de aplicaciones que menjan actas dialogicas.')
+  .setTitle('API Deptmeeting')
+  .setDescription('Framework para agilizar la creación de aplicaciones que manejan actas dialogicas.')
   .setVersion('1.0')
-  .addBearerAuth() // autentication 
+  .addBearerAuth() // autentication
   .build();
 
   const document = SwaggerModule.createDocument(app, options);
@@ -34,6 +46,6 @@ async function bootstrap() {
   // PERMITE CORS
   app.enableCors();
   await app.listen(parseInt(process.env.API_PORT));
-  console.log('API Gateway de meetflow corriendo en el puerto: ', parseInt(process.env.API_PORT));
+  console.log('API Gateway de Deptmeeting corriendo en el puerto: ', parseInt(process.env.API_PORT));
 }
 bootstrap();

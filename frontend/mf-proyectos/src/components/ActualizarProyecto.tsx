@@ -62,7 +62,7 @@ const ActualizarProyecto: React.FC = () => {
         async function obtenerProyectoPorId() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/getProjectbyID/` + idProyecto, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/project/getProjectbyID/` + idProyecto, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -83,7 +83,7 @@ const ActualizarProyecto: React.FC = () => {
                 const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
                 const correoElectronico = decodedToken.email;
                 console.log("email traido desde el token: ", correoElectronico);
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/list/email/` + correoElectronico, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/list/email/` + correoElectronico, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -154,7 +154,7 @@ const ActualizarProyecto: React.FC = () => {
         async function peticionActualizar() {
             try {            
                 
-                const responseProyecto = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/` + idProyecto, {
+                const responseProyecto = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/project/` + idProyecto, {
                     shortName: shortNameValue,
                     name: nameValue,
                     description: descriptionValueVer2,
@@ -175,7 +175,7 @@ const ActualizarProyecto: React.FC = () => {
         async function incluirParticipantes(correoEstudiante: string) {
             try {    
                 const responseEstudiante = await axios.post(
-                    `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/` + idProyecto + '/add/member/' + correoEstudiante,
+                    `${process.env.REACT_APP_BACKEND_URL}/api/project/` + idProyecto + '/add/member/' + correoEstudiante,
                     {},
                     {
                         headers: {
@@ -194,7 +194,7 @@ const ActualizarProyecto: React.FC = () => {
         // 3.1 Realizar peticion para actualizar atributos del participante: id de proyecto y nombre abreviado del proyecto -> se creara un nuevo metodo que permitira actualizar a los usuarios por el correo electronico
         async function ActualizarParticipantes(correoEstudiante: string, idProyecto: string, nombreAbreviadoProyecto: string) {
             try {            
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/update/` + correoEstudiante + '/usuarioperfil', {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/user/update/` + correoEstudiante + '/usuarioperfil', {
                     currentProjectId: idProyecto,
                     currentProject: nombreAbreviadoProyecto,
                     proyectoPrincipal: nombreAbreviadoProyecto
@@ -213,7 +213,7 @@ const ActualizarProyecto: React.FC = () => {
         // 3.2: Añadir los nuevos miembros del proyecto al atributo "userMembersOriginal"
         async function ActualizarProyecto(idProyecto: string, nuevosIntegrantes:string[]) {
             try {            
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/`+idProyecto, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/project/`+idProyecto, {
                     userMembersOriginal: listaMiembrosOriginal.concat(nuevosIntegrantes)
                 },{
                     headers: {

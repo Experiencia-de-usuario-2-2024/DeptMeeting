@@ -81,7 +81,7 @@ const Tareas: React.FC = () => {
             try {
                 const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
                 const correoElectronico = decodedToken.email;
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/element/participants/` + correoElectronico, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/element/participants/` + correoElectronico, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -106,7 +106,7 @@ const Tareas: React.FC = () => {
         async function peticionActualizarEstadoTarea() {
             try {            
                 
-                const responsePerfil = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/element/update/` + idCompromiso, {
+                const responsePerfil = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/element/update/` + idCompromiso, {
                     state: nuevoEstado,
                 }, {
                     headers: {

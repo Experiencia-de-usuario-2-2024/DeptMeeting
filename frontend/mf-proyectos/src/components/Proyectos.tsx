@@ -85,7 +85,7 @@ const Proyectos: React.FC = () => {
         async function obtenerProyectosUser() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/get/findByUser`, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/project/get/findByUser`, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }

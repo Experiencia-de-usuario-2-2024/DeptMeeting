@@ -124,7 +124,7 @@ const HomeProfesor: React.FC = () => {
 
             // Realiza la solicitud HTTP con el correo obtenido
             const response = await axios.get(
-              `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/list/email/` +
+              `${process.env.REACT_APP_BACKEND_URL}/api/user/list/email/` +
                 correoElectronico,
               {
                 headers: {

@@ -46,12 +46,9 @@ services:
       - APP_URL=https://jyrproject.com
       - API_PORT=3002
       - PORT=3002
-      - IO_PORT=84
       - JWT_SECRET=clavesecreta2312
       - EXPIRES_IN=12h
       - AMQP_URL=amqp://user:password@rabbitmq:5672
-      - PRIVATE_KEY_PATH=/etc/letsencrypt/live/jyrproject.com/privkey.pem
-      - CERTIFICATE_PATH=/etc/letsencrypt/live/jyrproject.com/fullchain.pem
     networks:
       - deptmeeting-network
     depends_on:
@@ -241,8 +238,9 @@ services:
     environment:
       - REACT_APP_ALLOWED_HOSTS=jyrproject.com
       - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
-      - REACT_APP_BACKEND_GATEWAY=https://jyrproject.com/gateway
-      - REACT_APP_BACKEND_IO=http://jyrproject.com:84
+      - REACT_APP_BACKEND_URL=https://jyrproject.com
+      - REACT_APP_BACKEND_GATEWAY=/gateway
+      - REACT_APP_BACKEND_IO=/socket.io
 
   mf-kanbanplus:
     image: jyr20/mf-kanbanplus:latest

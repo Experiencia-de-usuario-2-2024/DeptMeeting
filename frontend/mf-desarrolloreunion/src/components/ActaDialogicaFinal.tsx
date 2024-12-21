@@ -92,7 +92,7 @@ const ActaDialogicaFinal: React.FC = () => {
 
     useEffect(() => {
         // websocket
-        const newSocket = io(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_IO_PORT}`);
+        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`);
         setSocket(newSocket);
 
         // Obtener los datos del usuario logeado
@@ -101,7 +101,7 @@ const ActaDialogicaFinal: React.FC = () => {
                 const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
                 const correoElectronico = decodedToken.email;
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/perfil/email/` + correoElectronico, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/perfil/email/` + correoElectronico, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -240,7 +240,7 @@ const ActaDialogicaFinal: React.FC = () => {
         async function obtenerCompromisosUsuario(correoUsuario: string) {
             try {
                 const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/element/participants/` + correoUsuario, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/element/participants/` + correoUsuario, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -270,7 +270,7 @@ const ActaDialogicaFinal: React.FC = () => {
         async function obtenerMeetingMinutePorId() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/`+ idMeetingMinute, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/`+ idMeetingMinute, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -297,7 +297,7 @@ const ActaDialogicaFinal: React.FC = () => {
         // const idReunion = localStorage.getItem('idReunion') ?? ''; // id de la reunion traido desde local storage -> ya no se obtiene de local storage, se obtiene a partir de la minuta
         async function datosReunion() {
             try {            
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting/`+ localStorage.getItem('idReunion'),{
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/`+ localStorage.getItem('idReunion'),{
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -318,7 +318,7 @@ const ActaDialogicaFinal: React.FC = () => {
             // window.alert("id de la reunion: " + idReunion);
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/getProjectbyID/`+ localStorage.getItem('idProyecto'), {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/project/getProjectbyID/`+ localStorage.getItem('idProyecto'), {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }

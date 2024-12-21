@@ -16,7 +16,7 @@ mode: "development",
 devServer: {
     //port: 3017, // Modificar -> LISTO
     port: process.env.REACT_APP_MF_KANBANPLUS_PORT, // Modificar -> listo
-    allowedHosts: process.env.REACT_APP_MF_URL ? [process.env.REACT_APP_MF_URL] : [], // Convierte la variable en un array con un solo host
+    allowedHosts: process.env.REACT_APP_ALLOWED_HOSTS ? [process.env.REACT_APP_ALLOWED_HOSTS] : [], // Convierte la variable en un array con un solo host
 },
 module: {
     rules: [
@@ -56,17 +56,8 @@ plugins: [
 
     // Añadir DefinePlugin para inyectar variables de entorno //comentar si sequiere local
         new webpack.DefinePlugin({
-            "process.env.REACT_APP_BACKEND_IP": JSON.stringify(
-                process.env.REACT_APP_BACKEND_IP
-            ),
-            "process.env.REACT_APP_BACKEND_PORT": JSON.stringify(
-                process.env.REACT_APP_BACKEND_PORT
-            ),
-            "process.env.REACT_APP_MF_LOGIN_PORT": JSON.stringify(
-                process.env.REACT_APP_MF_LOGIN_PORT
-            ),
-            "process.env.REACT_APP_MF_DESARROLLOREUNION_PORT": JSON.stringify(
-                process.env.REACT_APP_MF_DESARROLLOREUNION_PORT
+            "process.env.REACT_APP_BACKEND_URL": JSON.stringify(
+                process.env.REACT_APP_BACKEND_URL
             ),
         }),
     

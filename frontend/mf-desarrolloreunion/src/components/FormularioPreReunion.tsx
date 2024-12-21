@@ -380,7 +380,7 @@ const FormularioPreReunion: React.FC = () => {
 
 
         // websocket
-        const newSocket = io(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_IO_PORT}`);
+        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`);
         setSocket(newSocket);
 
         // Identificar al nuevo usuario conectado
@@ -430,7 +430,7 @@ const FormularioPreReunion: React.FC = () => {
         async function obtenerDatosUsuario() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/perfil/` + idPerfil, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/perfil/` + idPerfil, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -452,7 +452,7 @@ const FormularioPreReunion: React.FC = () => {
         // Obtener datos de la reunion a partir del id, de tal forma el numero de la reunion pueda quedar almacenado en el acta dialogica
         async function datosReunion() {
             try {
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting/` + idReunion, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/` + idReunion, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -480,7 +480,7 @@ const FormularioPreReunion: React.FC = () => {
         // Se cambia el estado de la reunión a "pre-reunión"
         async function cambiarEstado() {
             try {
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting/` + idReunion, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/` + idReunion, {
                     state: "Pre-reunión"
                 }, {
                     headers: {
@@ -504,7 +504,7 @@ const FormularioPreReunion: React.FC = () => {
                 // console.log("email traido desde el token: ", correoElectronico);
 
 
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/list/email/` + correoUserOwner, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/list/email/` + correoUserOwner, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -525,7 +525,7 @@ const FormularioPreReunion: React.FC = () => {
             // window.alert("id del proyecto: " + idProyectoDeReunion)
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/getProjectbyID/` + idProyectoDeReunion, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/project/getProjectbyID/` + idProyectoDeReunion, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -568,7 +568,7 @@ const FormularioPreReunion: React.FC = () => {
                     // setEstudiantesNoProyecto([...estudiantesNoProyecto, estudiante]);
                 }
             });
-            
+
             setEstudiantesEnProyecto(estudiantesProyectoAux);
             setSelectedInvitados(listaAux);
             // console.log("Estudiantes en proyecto PPPPPPPPPPPPPPPPPPPPPPPPP: ", estudiantesProyectoAux);
@@ -748,7 +748,7 @@ const FormularioPreReunion: React.FC = () => {
         const createEvent = async () => {
             try {
                 console.log("Me caigo4? No");
-                const response = await axios.post(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting/event`, {data}, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/event`, {data}, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -886,7 +886,7 @@ const FormularioPreReunion: React.FC = () => {
         const idReunion = localStorage.getItem('idReunion') ?? ''; // id de la reunion traido desde local storage
         async function cambiarEstadoEnReunion() {
             try {
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting/` + idReunion, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/` + idReunion, {
                     state: "En-reunión"
                 }, {
                     headers: {
@@ -909,7 +909,7 @@ const FormularioPreReunion: React.FC = () => {
                 // eliminar todos los elementos vacios de la lista de participantes -> en caso de que no se hayan añadido invitados externos al proyecto
                 listaParticipantesValueFinal = listaParticipantesValueFinal.filter((participante) => participante !== '');
                 listaAnfitrionesValueFinal = listaAnfitrionesValueFinal.filter((anfitrion) => anfitrion !== '');
-                const response = await axios.post(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute`, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute`, {
                     title: objetivoValue,
                     place: lugarValue,
                     startTime: fechaInicio,
@@ -947,7 +947,7 @@ const FormularioPreReunion: React.FC = () => {
         // paso 2.3: actualizar al usuario -> para que se indique el id del acta (utlima reunion que tuvo o que esta activa)
         async function ActualizarParticipantes(correoEstudiante: string, idActa: string, estadoReu: string) {
             try {
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/update/` + correoEstudiante + '/usuarioperfil', {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/update/` + correoEstudiante + '/usuarioperfil', {
                     currentMeetingId: idActa,
                     currentMeeting: estadoReu,
                     lastLink: idReunion,
@@ -969,7 +969,7 @@ const FormularioPreReunion: React.FC = () => {
         async function obtenerDatosUsuarioInvitado(correoEstudiante:string) {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/perfil/email/` + correoEstudiante, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/perfil/email/` + correoEstudiante, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -1003,7 +1003,7 @@ const FormularioPreReunion: React.FC = () => {
         // 3.2: Añadir los nuevos miembros del proyecto al atributo "userMembersOriginal"
         async function ActualizarProyecto(idProyecto: string, nuevosIntegrantes: string[]) {
             try {
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/` + idProyecto, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/project/` + idProyecto, {
                     userMembers: listaMiembrosOriginal.concat(nuevosIntegrantes)
                 }, {
                     headers: {
@@ -1026,7 +1026,7 @@ const FormularioPreReunion: React.FC = () => {
                 // eliminar todos los elementos vacios de la lista de participantes -> en caso de que no se hayan añadido invitados externos al proyecto
                 listaParticipantesValueFinal = listaParticipantesValueFinal.filter((participante) => participante !== '');
                 listaAnfitrionesValueFinal = listaAnfitrionesValueFinal.filter((anfitrion) => anfitrion !== '');
-                const response = await axios.post(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/notify/state/change`, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/notify/state/change`, {
                     meetingMinuteDTO: {
                         title: objetivoValue,
                         place: lugarValue,

@@ -385,7 +385,7 @@ const FormularioEnReunion: React.FC = () => {
 
     useEffect(() => {
         // websocket
-        const newSocket = io(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_IO_PORT}`);
+        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`);
         setSocket(newSocket);
 
         newSocket.on('new_reload', () => {
@@ -447,7 +447,7 @@ const FormularioEnReunion: React.FC = () => {
                 const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
                 const correoElectronico = decodedToken.email;
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/perfil/email/` + correoElectronico, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/perfil/email/` + correoElectronico, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -497,7 +497,7 @@ const FormularioEnReunion: React.FC = () => {
         async function obtenerCompromisosUsuario(correoUsuario: string) {
             try {
                 const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/element/participants/` + correoUsuario, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/element/participants/` + correoUsuario, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -525,7 +525,7 @@ const FormularioEnReunion: React.FC = () => {
         async function obtenerMeetingMinutePorId() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/` + localStorage.getItem('idMeetingMinute'), {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + localStorage.getItem('idMeetingMinute'), {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -558,7 +558,7 @@ const FormularioEnReunion: React.FC = () => {
         async function datosReunion() {
             try {
                 // window.alert("id de la reunion EN REUNION: " + localStorage.getItem('idReunion'));            
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting/` + localStorage.getItem('idReunion'),{
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/` + localStorage.getItem('idReunion'),{
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -579,7 +579,7 @@ const FormularioEnReunion: React.FC = () => {
             // window.alert("id de la reunion: " + idReunion);
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/project/getProjectbyID/` + localStorage.getItem('idProyecto'), {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/project/getProjectbyID/` + localStorage.getItem('idProyecto'), {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -632,7 +632,7 @@ const FormularioEnReunion: React.FC = () => {
         const idReunion = localStorage.getItem('idReunion') ?? ''; // id de la reunion traido desde local storage
         async function cambiarEstadoEnReunion() {
             try {            
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting/` + idReunion, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/` + idReunion, {
                     state: "Post-reunión"
                 },{
                     headers: {
@@ -663,7 +663,7 @@ const FormularioEnReunion: React.FC = () => {
             });
 
             try {           
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/` + idMeetingMinute, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
                     realEndTime: new Date().toLocaleString('es-CL'),
                     // se añaden los asistentes
                     assistants: listaParticipantesString,
@@ -685,7 +685,7 @@ const FormularioEnReunion: React.FC = () => {
         // paso 2.3: actualizar los atributos de los participantes de la reunion
         async function ActualizarParticipantes(correoEstudiante: string, idActa: string, estadoReu: string) {
             try {            
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/update/`+correoEstudiante+'/usuarioperfil', {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/update/`+correoEstudiante+'/usuarioperfil', {
                     currentMeetingId: idActa,
                     currentMeeting: estadoReu,
                     lastLink: idReunion,
@@ -707,7 +707,7 @@ const FormularioEnReunion: React.FC = () => {
         async function obtenerDatosUsuarioInvitado(correoEstudiante:string) {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/perfil/email/` + correoEstudiante, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/perfil/email/` + correoEstudiante, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -748,7 +748,7 @@ const FormularioEnReunion: React.FC = () => {
         // se envia correo a los participantes de la reunion, indicandoles que la reunion ya finalizo
         async function EnviarCorreo() {
             try {            
-                const response = await axios.post(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/notify/state/change`, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/notify/state/change`, {
                     meetingMinuteDTO: {
                         title: meetingminute?.title,
                         place: meetingminute?.place,
@@ -821,7 +821,7 @@ const FormularioEnReunion: React.FC = () => {
         const idMeetingMinute = localStorage.getItem('idMeetingMinute');
         async function actualizarActa() {
             try {           
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/` + idMeetingMinute, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
                     realStartTime: new Date().toLocaleString('es-CL'),
                     comenzoReunion: true
                 },{
@@ -842,7 +842,7 @@ const FormularioEnReunion: React.FC = () => {
         // se envia correo a los participantes de la reunion, indicandoles que la reunion ya inicio
         async function EnviarCorreo() {
             try {            
-                const response = await axios.post(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/notify/state/change`, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/notify/state/change`, {
                     meetingMinuteDTO: {
                         title: meetingminute?.title,
                         place: meetingminute?.place,
@@ -1026,7 +1026,7 @@ const FormularioEnReunion: React.FC = () => {
         const idMeetingMinute = localStorage.getItem('idMeetingMinute') ?? '';
         async function crearCompromiso() {
             try {            
-                const response = await axios.post(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/element`, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/element`, {
                     description: compromisoValue,
                     type: "Compromiso",
                     participants: listaEncargadosCompromiso,
@@ -1072,7 +1072,7 @@ const FormularioEnReunion: React.FC = () => {
         // realizar peticion al backend para actualizar el acta dialogica, entregando una nueva lista de topics
         async function actualizarActa() {
             try {            
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/` + idMeetingMinute, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
                     topics: listaTemas,
                     cantElementos: (meetingminute?.cantElementos ?? 0) + 1,
                 },{
@@ -1139,7 +1139,7 @@ const FormularioEnReunion: React.FC = () => {
         const idMeetingMinute = localStorage.getItem('idMeetingMinute') ?? '';
         async function crearAcuerdo() {
             try {            
-                const response = await axios.post(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/element`, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/element`, {
                     description: acuerdoValue,
                     type: "Acuerdo",
                     participants: [],
@@ -1183,7 +1183,7 @@ const FormularioEnReunion: React.FC = () => {
         // realizar peticion al backend para actualizar el acta dialogica, entregando una nueva lista de topics
         async function actualizarActa() {
             try {            
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/` + idMeetingMinute, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
                     topics: listaTemas,
                     cantElementos: (meetingminute?.cantElementos ?? 0) + 1,
                 },{
@@ -1265,7 +1265,7 @@ const FormularioEnReunion: React.FC = () => {
         const idMeetingMinute = localStorage.getItem('idMeetingMinute') ?? '';
         async function crearDesacuerdo() {
             try {            
-                const response = await axios.post(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/element`, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/element`, {
                     description: origenDesacuerdoValue,
                     type: "Desacuerdo",
                     participants: [],
@@ -1317,7 +1317,7 @@ const FormularioEnReunion: React.FC = () => {
         // realizar peticion al backend para actualizar el acta dialogica, entregando una nueva lista de topics
         async function actualizarActa() {
             try {            
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/` + idMeetingMinute, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
                     topics: listaTemas,
                     cantElementos: (meetingminute?.cantElementos ?? 0) + 1,
                 },{
@@ -1385,7 +1385,7 @@ const FormularioEnReunion: React.FC = () => {
         const idMeetingMinute = localStorage.getItem('idMeetingMinute') ?? '';
         async function crearDuda() {
             try {            
-                const response = await axios.post(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/element`, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/element`, {
                     description: dudaValue,
                     type: "Duda",
                     participants: listaParticipantesDudaValue,
@@ -1425,7 +1425,7 @@ const FormularioEnReunion: React.FC = () => {
         // realizar peticion al backend para actualizar el acta dialogica, entregando una nueva lista de topics
         async function actualizarActa() {
             try {            
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/` + idMeetingMinute, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
                     topics: listaTemas,
                     cantElementos: (meetingminute?.cantElementos ?? 0) + 1,
                 },{
@@ -1497,7 +1497,7 @@ const FormularioEnReunion: React.FC = () => {
         const idMeetingMinute = localStorage.getItem('idMeetingMinute') ?? '';
         async function actualizarActa() {
             try {            
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/` + idMeetingMinute, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
                     topics: listaTemas,
                 },{
                     headers: {
@@ -1566,7 +1566,7 @@ const FormularioEnReunion: React.FC = () => {
         const idMeetingMinute = localStorage.getItem('idMeetingMinute') ?? '';
         async function crearTextoLibre() {
             try {            
-                const response = await axios.post(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/element`, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/element`, {
                     description: textoLibreValue,
                     type: "Texto libre",
                     participants: listaParticipantesTextoLibreValue,
@@ -1610,7 +1610,7 @@ const FormularioEnReunion: React.FC = () => {
         // realizar peticion al backend para actualizar el acta dialogica, entregando una nueva lista de topics
         async function actualizarActa() {
             try {            
-                const response = await axios.put(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/meeting-minute/` + idMeetingMinute, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
                     topics: listaTemas,
                     cantElementos: (meetingminute?.cantElementos ?? 0) + 1,
                 },{

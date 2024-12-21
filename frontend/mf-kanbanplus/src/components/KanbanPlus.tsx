@@ -96,7 +96,7 @@ const KanbanPlus: React.FC = () => {
         console.log("email traido desde el token: ", correoElectronico);
 
         const response = await axios.get(
-          `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/user/list/email/` +
+          `${process.env.REACT_APP_BACKEND_URL}/api/user/list/email/` +
             correoElectronico,
           {
             headers: {
@@ -128,7 +128,7 @@ const KanbanPlus: React.FC = () => {
   async function obtenerCompromisosUsuario(email: string) {
     try {
       const response = await axios.get(
-        `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/element/participants/` +
+        `${process.env.REACT_APP_BACKEND_URL}/api/element/participants/` +
           email,
         {
           headers: {

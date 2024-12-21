@@ -97,14 +97,14 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
     const openModal = useCallback(() => setIsOpen(true), []);
     const closeModal = useCallback(() => setIsOpen(false), []);
 
-    const googleId = process.env.REACT_APP_GOOGLE_ID;
+    const googleId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
     const signin = async () => {
         try {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/signin`, //MODIFICAR (listo, falta probar)
+                url: `${process.env.REACT_APP_BACKEND_URL}/api/auth/signin`, //MODIFICAR (listo, falta probar)
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -136,9 +136,7 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
 
     const handleLogin = async (event: { preventDefault: () => void; }) => {
         event.preventDefault();
-        console.log('process.env.REACT_APP_BACKEND_IP:', process.env.REACT_APP_BACKEND_IP)
-        console.log('process.env.REACT_APP_BACKEND_PORT:', process.env.REACT_APP_BACKEND_PORT)
-        signin();
+        await signin();
     }
 
 
@@ -163,7 +161,7 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/signup`, //MODIFICAR (listo, falta probar)
+                url: `${process.env.REACT_APP_BACKEND_URL}/api/auth/signup`, //MODIFICAR (listo, falta probar)
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -203,7 +201,7 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/resetpass/${correoRecover}`, //MODIFICAR (listo, falta probar)
+            url: `${process.env.REACT_APP_BACKEND_URL}/api/auth/resetpass/${correoRecover}`, //MODIFICAR (listo, falta probar)
             headers: { }
         };
 
@@ -251,7 +249,7 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/signin`, //MODIFICAR (listo, falta probar)
+                url: `${process.env.REACT_APP_BACKEND_URL}/api/auth/signin`, //MODIFICAR (listo, falta probar)
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -290,7 +288,7 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: `http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/signup`, //MODIFICAR (listo, falta probar)
+                url: `${process.env.REACT_APP_BACKEND_URL}/api/auth/signup`, //MODIFICAR (listo, falta probar)
                 headers: {
                     'Content-Type': 'application/json'
                 },
