@@ -1,0 +1,16 @@
+.terms-dialog-content {
+  max-width: 425px;
+}
+
+.terms-dialog-body {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.terms-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
