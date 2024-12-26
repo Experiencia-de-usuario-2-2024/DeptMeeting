@@ -11,3 +11,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+/* Override Atlaskit button styles */
+button[class*="Button-"] {
+  background-color: #00A499 !important;
+  color: #000000 !important;
+}
+
+button[class*="Button-"]:hover,
+button[class*="Button-"]:active,
+button[class*="Button-"]:focus {
+  background-color: #00A499 !important;
+  color: #000000 !important;
+}
+
+/* Override any transition effects */
+button[class*="Button-"] {
+  transition: none !important;
+}

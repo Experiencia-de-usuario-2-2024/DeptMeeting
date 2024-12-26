@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .header {
+      background-color: #007bff;
+      color: #ffffff;
+      text-align: center;
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .content {
+      padding: 8px 20px;
+      color: #333333;
+      line-height: 1.6;
+    }
+    .content h1 {
+      font-size: 20px;
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+    .content p {
+      margin-bottom: 10px;
+    }
+    .button {
+       display: inline-block;
+       padding: 10px 20px;
+       background-color: #007bff;
+       color: #ffffff;
+       text-decoration: none;
+       font-size: 16px;
+       font-weight: bold;
+       border-radius: 5px;
+       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+       transition: background-color 0.3s ease;
+    }
+    .footer {
+      background-color: #f4f4f4;
+      text-align: center;
+      color: #666666;
+      font-size: 14px;
+      padding: 10px;
+      border-top: 1px solid #dddddd;
+    }
+    .footer a {
+      color: #007bff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Encabezado -->
+    <div class="header">
+      DeptMeeting
+    </div>
+
+    <!-- Contenido -->
+    <div class="content">
+        <div style="text-align: center; margin-top: 20px;">
+        <h1>Hola, {{name}}!</h1>
+        </div>
+      <p>Te informamos que has sido asignado como secretario/a en la reunión número <strong>{{meet}}</strong> del proyecto <strong>DeptMeeting</strong>.</p>
+      <p><strong>Detalles de la reunión:</strong></p>
+      <ul>
+        <li><strong>Acta:</strong> {{acta}}</li>
+        <li><strong>Lugar:</strong> {{lugar}}</li>
+        <li><strong>Fase:</strong> {{fase}}</li>
+      </ul>
+      <p>Puedes acceder a más detalles a través del siguiente enlace:</p>
+      <div style="text-align: center; margin-top: 20px;">
+        <a href="{{linky}}" class="button">Ver Acta</a>
+      </div>
+    </div>
+
+    <!-- Pie de página -->
+    <div class="footer">
+      <p>Este es un mensaje automatizado. Por favor, no respondas a este correo.</p>
+      <p>¿Necesitas ayuda? Contáctanos en <a href="mailto:meetingware.support@usach.cl">meetingware.support@usach.cl</a>.</p>
+    </div>
+  </div>
+</body>
+</html>

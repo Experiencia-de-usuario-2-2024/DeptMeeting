@@ -18,6 +18,7 @@ import { IProject } from 'src/common/interfaces/project.interface';
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
 import { ProjectDTO } from './dto/project.dto';
 import { Observable } from 'rxjs';
+import { Public } from 'src/common/public.decorator';
 
 @ApiTags('Microservicio de proyectos (microservice-projects)')
 @UseGuards(JwtAuthGuard)
@@ -176,6 +177,13 @@ salida: objeto de la acta dialógica actualizada.
       user: req.user
     }
     return this._clientProxyNotifications.send('SEND_INVITE_MEMBER', params);
+  }
+
+  // Método público que no requiere de JWT
+  @Public()
+  @Get('/public-info/:projectId')
+  async publicInfo(@Param('projectId') projectId: string) {
+    return this._clientProxyProject.send('/public-info', projectId);
   }
 
 }

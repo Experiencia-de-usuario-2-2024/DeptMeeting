@@ -62,7 +62,7 @@ const FormularioNuevoProyecto: React.FC = () => {
         async function obtenerDatosUsuario() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/user/perfil/` + idPerfil, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/perfil/` + idPerfil, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -86,7 +86,7 @@ const FormularioNuevoProyecto: React.FC = () => {
                 const correoElectronico = decodedToken.email;
                 console.log("email traido desde el token: ", correoElectronico);
             
-                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/user/list/email/` + correoElectronico, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/list/email/` + correoElectronico, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -161,17 +161,17 @@ const FormularioNuevoProyecto: React.FC = () => {
 
         // caso no se haya seleccionado ningun estudiante
         if ((userMemberElements[0] as HTMLInputElement).value == ""){
-            window.alert("Al parecer hay campos obligatorios (*) incompletos en el formulario, debes llenarlos para finalizar la creación del proyecto.");
+            window.alert("Al parecer hay campos obligatorios (*) incompletos en el formulario, debes llenarlos para finalizar la creación del período.");
             return;
         }
 
         // resto de comprobaciones
         if (shortNameValue === "" || nameValue === "" || descriptionValueVer2 === "" || userOwnerValue === "") {
-            window.alert("Al parecer hay campos obligatorios (*) incompletos en el formulario, debes llenarlos para finalizar la creación del proyecto.");
+            window.alert("Al parecer hay campos obligatorios (*) incompletos en el formulario, debes llenarlos para finalizar la creación del período.");
             return;
         }
         miembrosOriginales = [];
-        // se añade el dueño del proyecto a la lista de miembros originales (mas adelante se añade a los demas)
+        // se añade el dueño del periodo a la lista de miembros originales (mas adelante se añade a los demas)
         miembrosOriginales.push(userOwnerValue);
         
         // Imprimir por consola los valores ingresados en el formulario
@@ -187,7 +187,7 @@ const FormularioNuevoProyecto: React.FC = () => {
         //  1. Realizar peticion para crear proyecto
         async function peticionCrearProyecto() {
             try {            
-                const responseProyecto = await axios.post(`http://deptmeeting.diinf.usach.cl/api/api/project/create`, {
+                const responseProyecto = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/project/create`, {
                     shortName: shortNameValue,
                     name: nameValue,
                     description: descriptionValueVer2,
@@ -197,7 +197,7 @@ const FormularioNuevoProyecto: React.FC = () => {
                         Authorization: `Bearer ${tokenUser}`
                     }
                 });
-                console.log("Proyecto creado");
+                console.log("Período creado");
                 console.log(responseProyecto.data);
                 // Almacenar idProyecto en el localStorage
                 const idProyecto = responseProyecto.data._id;
@@ -215,7 +215,7 @@ const FormularioNuevoProyecto: React.FC = () => {
             console.log("correo del estudiante: ", correoEstudiante);
             try {    
                 const responseEstudiante = await axios.post(
-                    `http://deptmeeting.diinf.usach.cl/api/api/project/` + idProyecto + '/add/member/' + correoEstudiante,
+                    `${process.env.REACT_APP_BACKEND_URL}/api/project/` + idProyecto + '/add/member/' + correoEstudiante,
                     {},
                     {
                         headers: {
@@ -233,7 +233,7 @@ const FormularioNuevoProyecto: React.FC = () => {
         // 2.1 Realizar peticion para actualizar atributos del participante: id de proyecto y nombre abreviado del proyecto -> se creara un nuevo metodo que permita actualizar usuario por correo electronico
         async function ActualizarParticipantes(correoEstudiante: string, idProyecto: string, nombreAbreviadoProyecto: string) {
             try {            
-                const response = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/user/update/`+correoEstudiante+'/usuarioperfil', {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/user/update/`+correoEstudiante+'/usuarioperfil', {
                     currentProjectId: idProyecto,
                     currentProject: nombreAbreviadoProyecto,
                     proyectoPrincipal: nombreAbreviadoProyecto
@@ -252,7 +252,7 @@ const FormularioNuevoProyecto: React.FC = () => {
         // 2.2: se actualiza el proyecto de tal forma guardar en el atributo userMembersOriginal lo mismo que existe en userMembers
         async function ActualizarProyecto(idProyecto: string, listaOriginal:string[]) {
             try {            
-                const response = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/project/`+idProyecto, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/project/`+idProyecto, {
                     userMembersOriginal: listaOriginal
                 },{
                     headers: {
@@ -298,7 +298,7 @@ const FormularioNuevoProyecto: React.FC = () => {
             aria-required={true}
             name="shortName"
             defaultValue=""
-            label="Nombre abreviado del proyecto"
+            label="Nombre abreviado del período"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -309,7 +309,7 @@ const FormularioNuevoProyecto: React.FC = () => {
             aria-required={true}
             name="name"
             defaultValue=""
-            label="Nombre del proyecto"
+            label="Nombre del período"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -321,7 +321,7 @@ const FormularioNuevoProyecto: React.FC = () => {
             aria-required={true}
             name="descriptionVer2"
             defaultValue=""
-            label="Descripción del proyecto"
+            label="Descripción del período"
             isRequired
         >
             {({ fieldProps }) => <TextArea {...fieldProps} onChange={(event) => fieldProps.onChange(event.target.value)} />}
@@ -333,7 +333,7 @@ const FormularioNuevoProyecto: React.FC = () => {
             aria-required={true}
             name="description"
             defaultValue=""
-            label="Descripción del proyecto"
+            label="Descripción del período"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -344,7 +344,7 @@ const FormularioNuevoProyecto: React.FC = () => {
             aria-required={true}
             name="userOwner"
             defaultValue={emailUsuarioPerfil}
-            label="Dueño/a del proyecto (correo electrónico)"
+            label="Dueño/a del período (correo electrónico)"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -358,7 +358,7 @@ const FormularioNuevoProyecto: React.FC = () => {
                 aria-required={true}
                 name="userMember"
                 defaultValue=""
-                label="Miembros del proyecto"
+                label="Miembros del período"
                 isRequired
             >
                 {({ fieldProps, error, valid }) => 
@@ -400,7 +400,7 @@ const FormularioNuevoProyecto: React.FC = () => {
                             flexDirection: 'column',
                         }}
                     >
-                    <h1>Creación de nuevo proyecto</h1>
+                    <h1>Creación de nuevo período</h1>
                         <Form<{ username: string }>
                             onSubmit={(data) => {
                                 return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
@@ -421,16 +421,23 @@ const FormularioNuevoProyecto: React.FC = () => {
                                     <FormFooter>
                                         <ButtonGroup>
                                             {/* <Button onClick={() => cancelarOperacion()}>Cancelar operación</Button> */}
-                                            <Button iconBefore={<ArrowLeftIcon label="" size="medium" />} onClick={() => cancelarOperacion()} style={{ marginRight: '5x' }}> Regresar </Button>
+                                            <Button 
+                                                iconBefore={<ArrowLeftIcon label="" size="medium" />} 
+                                                onClick={() => cancelarOperacion()} 
+                                                style={{ marginRight: '5x' }} 
+                                                appearance="subtle"
+                                                className="botonReunion"
+                                            > 
+                                                Regresar 
+                                            </Button>
                                             {/* EN ESTE BOTON SE TIENE PRIMERO QUE CREAR EL PROYECTO Y DESPUES AÑADIR LOS PARTICIPANTES AL PROYECTOS, EN ESE ORDEN SE TIENEN QUE HACER LAS PETICIONES */}
                                             <LoadingButton
-                                                type="submit"
                                                 appearance="primary"
-                                                isLoading={submitting}
+                                                isLoading={false}
                                                 onClick={() => crearProyecto()}
-                                                style={{ marginLeft: '5px' }}
+                                                className="botonNuevoProyecto"
                                             >
-                                                Crear proyecto
+                                                Crear período
                                             </LoadingButton>
                                         </ButtonGroup>
                                     </FormFooter>

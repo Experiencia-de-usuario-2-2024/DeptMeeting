@@ -36,7 +36,7 @@ return (
             xcss={boxStyles}
         >
 
-            <h1 style={{ textAlign: 'center' }}>Bienvenido a MemFollow</h1>
+            <h1 style={{ textAlign: 'center' }}>Bienvenido a DeptMeeting</h1>
             <br />
 
             <h1>¿Qué son las actas dialógicas?</h1>

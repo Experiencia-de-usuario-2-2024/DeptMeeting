@@ -63,7 +63,7 @@ export class NotificationController {
     /*  
     Metodo para  obtener una notificación a partir del id.
     entrada: id de la notificación. 
-    salida: objeto de la notificación encontrada.  
+    salida: objeto de la notificación encontrada.
     */
     @Get('/getNotificationByID/:id')
     @ApiOperation({ summary: 'Obtener notificación por id' })

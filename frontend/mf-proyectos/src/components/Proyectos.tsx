@@ -4,43 +4,11 @@ import axios from "axios";
 import Button from '@atlaskit/button';
 import FormularioNuevoProyecto from './FormularioNuevoProyecto';
 import Reuniones from "./Reuniones";
-
+import '../styles/proyectos.css';
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
 const tipoDeUsuario = localStorage.getItem('tipoUsuario');
-
-const listStyles = xcss({
-    paddingInlineStart: 'space.0',
-});
-const boxStyles = xcss({
-    color: 'color.text',
-    backgroundColor: 'color.background.selected',
-    borderWidth: 'border.width',
-    borderStyle: 'solid',
-    borderColor: 'color.border.selected',
-    borderRadius: 'border.radius.100',
-    transitionDuration: '200ms',
-    listStyle: 'none',
-    textAlign: 'center',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: '15px', // Add margin left
-    marginRight: '15px', // Add margin right
-    '::before': {
-        paddingInlineEnd: 'space.050',
-    },
-    '::after': {
-        paddingInlineStart: 'space.050',
-    },
-    ':hover': {
-        backgroundColor: 'color.background.selected.bold.hovered',
-        color: 'color.text.inverse',
-        transform: 'scale(1.02)',
-    },
-});
-
 
 const Proyectos: React.FC = () => {
 
@@ -64,7 +32,7 @@ const Proyectos: React.FC = () => {
 
     // Obtener todos los proyectos del usuario al inicio
     const [proyectosUser, setProyectosUser] = React.useState<ProyectosUser[]>([]);
-
+    const [loading, setLoading] = React.useState(true);
 
     useEffect(() => {
         // Obtener valor de variable almacenada en el localStorage (para saber si se tiene que mostrar o no el formulario apenas carga la pagina)
@@ -85,15 +53,16 @@ const Proyectos: React.FC = () => {
         async function obtenerProyectosUser() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/project/get/findByUser`, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/project/get/findByUser`, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
                 });
-                console.log("Proyectos del usuario:");
+                console.log("Períodos del usuario:");
                 console.log(response.data);
                 // se invierte la lista de proyectos del usuario, de tal forma se mostraran primero los proyectos mas nuevos
                 setProyectosUser(response.data.reverse());
+                setLoading(false);
 
             } catch (error) {
                 console.error(error);
@@ -102,7 +71,6 @@ const Proyectos: React.FC = () => {
 
         obtenerProyectosUser();
     }, []);
-
 
     // Función para seleccionar un proyecto
     // Entrada: id del proyecto y nombre del proyecto
@@ -126,7 +94,7 @@ const Proyectos: React.FC = () => {
     // Entrada: Ninguna
     // Salida: Mostrar el formulario para crear un nuevo proyecto
     const nuevoProyecto = () => {
-        console.log("Creando nuevo proyecto");
+        console.log("Creando nuevo período");
         const newValue = !mostrarFormulario;
         // Guardar valor de la variable en local storage
         localStorage.setItem('mostrarFormulario', JSON.stringify(newValue));
@@ -145,45 +113,65 @@ const Proyectos: React.FC = () => {
             {mostrarFormulario ? (
                 <FormularioNuevoProyecto />
             ) : (
-                // ELSE: mostrar informacion del proyecto seleccionado por el usuario (incluye mostrar las reuniones y boton para crear nueva reunion)
-                <>
-                    {verProyecto ? (
-                        <Reuniones />
+                // ELSE: mostrar los proyectos del usuario
+                <div className="proyectosContainer">
+                    {loading ? (
+                        <div className="mensaje">
+                            <p>Cargando períodos...</p>
+                        </div>
                     ) : (
-                        // ELSE: mostrar los proyectos del usuario
-                        <>
-                            <h1>Proyectos</h1>
-                            {/* opcion de crear nuevo proyecto al principio: sera solo visible cuando la cantidad de proyectos supere los 15 */}
-                            {/* Actualizacion: La opcion de crear un nuevo proyecto solamente estara disponible para los usuarios de tipo profesor */}
-                            {tipoDeUsuario === "profesor" && (
-                                <>
-                                    {proyectosUser.length > 12 && (
-                                        <Button className="botonNuevoProyecto" appearance="primary" onClick={() => nuevoProyecto()} style={{ marginLeft: '15px', marginRight: '15px' }}>+ Añadir nuevo proyecto</Button>
-                                    )}
-                                </>
-                            )}
-                            {/* asi estaba antes, a todos los usuarios se les permitia crear proyectos */}
-                            
-                            {proyectosUser.map((proyectoUser) => (
-                                <Box xcss={boxStyles} as="li" key={proyectoUser._id} onClick={() => seleccionProyecto(proyectoUser._id, proyectoUser.name, proyectoUser.shortName)}>
-                                    <h4 style={{ marginTop: "13.5px", marginBottom:"13.5px" }}>{proyectoUser.shortName}</h4>
-                                </Box>
-                            ))}
-                            {/* opcion de crear nuevo proyecto al final */}
-                            {/* Actualizacion: La opcion de crear un nuevo proyecto solamente estara disponible para los usuarios de tipo profesor */}
-                            {tipoDeUsuario === "profesor" && (            
-                                <Button className="botonNuevoProyecto" appearance="primary" onClick={() => nuevoProyecto()} style={{ marginLeft: '15px', marginRight: '15px' }}>+ Añadir nuevo proyecto</Button>
-                            )}
-                            {/* asi estaba antes, a todos los usuarios se les permitia crear proyectos */}
-                            {/* <Button className="botonNuevoProyecto" appearance="primary" onClick={() => nuevoProyecto()} style={{ marginLeft: '15px', marginRight: '15px' }}>+ Añadir nuevo proyecto</Button> */}
-                        </>
+                        verProyecto ? (
+                            <Reuniones />
+                        ) : (
+                            <div className="proyectosContainer">
+                                <h1>Períodos</h1>
+                                {tipoDeUsuario === "profesor" && (
+                                    <>
+                                        {proyectosUser.length > 12 && (
+                                            <Button 
+                                                className="botonNuevoProyecto" 
+                                                appearance="primary" 
+                                                onClick={() => nuevoProyecto()}
+                                            >
+                                                + Añadir nuevo período
+                                            </Button>
+                                        )}
+                                    </>
+                                )}
+
+                                {/* mostrar los proyectos */}
+                                {proyectosUser.map((proyectoUser) => (
+                                    <div 
+                                        key={proyectoUser._id} 
+                                        className="proyectoCard"
+                                        onClick={() => seleccionProyecto(proyectoUser._id, proyectoUser.name, proyectoUser.shortName)}
+                                    >
+                                        <h3>{proyectoUser.shortName}</h3>
+                                        <div className="descripcion">
+                                            <p><strong>Nombre completo:</strong> {proyectoUser.name}</p>
+                                            <p><strong>Descripción:</strong> {proyectoUser.description}</p>
+                                            <p><strong>Responsable:</strong> {proyectoUser.userOwner}</p>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {/* opcion de crear nuevo proyecto al final */}
+                                {tipoDeUsuario === "profesor" && (            
+                                    <Button 
+                                        className="botonNuevoProyecto" 
+                                        appearance="primary" 
+                                        onClick={() => nuevoProyecto()}
+                                    >
+                                        + Añadir nuevo período
+                                    </Button>
+                                )}
+                            </div>
+                        )
                     )}
-                </>
+                </div>
             )}
         </Stack>
     );
-
-
 };
 
 export default Proyectos;

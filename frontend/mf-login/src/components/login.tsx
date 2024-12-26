@@ -1,161 +1,482 @@
-'use client'
+import React, { useState, useEffect } from 'react';
+import { FaEye, FaEyeSlash, FaGoogle } from 'react-icons/fa';
+import GoogleLogin from 'react-google-login';
+import {gapi} from "gapi-script";
+import { validateEmail, validatePassword, validateRut } from '../utils/validation';
+import axios from 'axios';
+import {
+  Container,
+  FormCard,
+  Title,
+  FormGroup,
+  Label,
+  Input,
+  Button,
+  PasswordWrapper,
+  PasswordToggle,
+  PasswordStrengthBar,
+  ErrorText,
+  LinkText,
+} from '../styles/login.styles';
 
-import React, { useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Checkbox } from "@/components/ui/checkbox"
-import PasswordStrengthBar from './password-strength-bar'
-import TermsAndConditions from './terms-and-conditions'
-import './login.css'
+const Login: React.FC<LoginProps> = ({ onLogin }) => {
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    rut: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [passwordStrength, setPasswordStrength] = useState<'weak' | 'medium' | 'strong'>('weak');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsViewed, setTermsViewed] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
-const Login = () => {
-  const [showPassword, setShowPassword] = useState(false)
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [termsAccepted, setTermsAccepted] = useState(false)
-  const [showTerms, setShowTerms] = useState(false)
-
-  const togglePasswordVisibility = () => setShowPassword(!showPassword)
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value)
+  interface LoginProps {
+    onLogin: (token: string) => void;
   }
+  
+  const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/api/auth`;
+  
+  useEffect(() => {
+          const start = () => {
+          gapi.auth2.init({
+              clientId: googleId,
+              scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.profile',
+          })
+      }
+      gapi.load("client:auth2", start);
+      }, [])
+  
+  const googleId = process.env.REACT_APP_GOOGLE_CLIENT_ID || '';
 
-  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmPassword(e.target.value)
-  }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
 
-  const handleTermsAccept = (checked: boolean) => {
-    setTermsAccepted(checked)
-  }
+    // Limpiar errores al escribir
+    setErrors(prev => ({ ...prev, [name]: '' }));
 
-  return (
-    <div className="login-container">
-      <Card className="login-card">
-        <CardHeader>
-          <CardTitle className="login-title">DeptMeeting</CardTitle>
-          <CardDescription className="login-description">Inicia sesión o regístrate para continuar</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="login">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Iniciar sesión</TabsTrigger>
-              <TabsTrigger value="register">Registrarse</TabsTrigger>
-            </TabsList>
-            <TabsContent value="login">
-              <form className="login-form">
-                <div className="login-input-group">
-                  <Label htmlFor="email">Correo universitario</Label>
-                  <Input id="email" placeholder="tu.correo@usach.cl" required type="email" />
-                </div>
-                <div className="login-input-group">
-                  <Label htmlFor="password">Contraseña</Label>
-                  <div className="password-input-wrapper">
-                    <Input
-                      id="password"
-                      required
-                      type={showPassword ? "text" : "password"}
-                    />
-                    <button
-                      type="button"
-                      onClick={togglePasswordVisibility}
-                      className="password-toggle-button"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-gray-400" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-gray-400" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-                <Button className="login-button" type="submit">
-                  Iniciar sesión
-                </Button>
-              </form>
-              <Button variant="outline" className="login-google-button">
-                Iniciar sesión con Google
-              </Button>
-            </TabsContent>
-            <TabsContent value="register">
-              <form className="login-form">
-                <div className="login-input-group">
-                  <Label htmlFor="fullName">Nombre completo</Label>
-                  <Input id="fullName" placeholder="Juan Pérez" required />
-                </div>
-                <div className="login-input-group">
-                  <Label htmlFor="rut">RUT</Label>
-                  <Input id="rut" placeholder="20058348-5" required />
-                </div>
-                <div className="login-input-group">
-                  <Label htmlFor="email">Correo electrónico</Label>
-                  <Input id="email" placeholder="juan.perez@usach.cl" required type="email" />
-                </div>
-                <div className="login-input-group">
-                  <Label htmlFor="password">Contraseña</Label>
-                  <div className="password-input-wrapper">
-                    <Input
-                      id="password"
-                      required
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={handlePasswordChange}
-                    />
-                    <button
-                      type="button"
-                      onClick={togglePasswordVisibility}
-                      className="password-toggle-button"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-gray-400" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-gray-400" />
-                      )}
-                    </button>
-                  </div>
-                  <PasswordStrengthBar password={password} />
-                </div>
-                <div className="login-input-group">
-                  <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
-                  <Input
-                    id="confirmPassword"
-                    required
-                    type="password"
-                    value={confirmPassword}
-                    onChange={handleConfirmPasswordChange}
-                  />
-                </div>
-                <div className="terms-checkbox">
-                  <Checkbox id="terms" checked={termsAccepted} onCheckedChange={handleTermsAccept} />
-                  <label
-                    htmlFor="terms"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Acepto los{" "}
-                    <button type="button" className="terms-link" onClick={() => setShowTerms(true)}>
-                      términos y condiciones
-                    </button>
-                  </label>
-                </div>
-                <Button className="login-button" type="submit" disabled={!termsAccepted || password !== confirmPassword}>
-                  Registrarse
-                </Button>
-              </form>
-              <Button variant="outline" className="login-google-button">
-                Registrarse con Google
-              </Button>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-      {showTerms && <TermsAndConditions onClose={() => setShowTerms(false)} onAccept={() => { setTermsAccepted(true); setShowTerms(false); }} />}
-    </div>
-  )
+    // Validar contraseña en tiempo real
+    if (name === 'password') {
+      const validation = validatePassword(value);
+      setPasswordStrength(validation.strength);
+      
+      // Validar si las contraseñas coinciden
+      if (formData.confirmPassword && value !== formData.confirmPassword) {
+        setErrors(prev => ({ ...prev, confirmPassword: 'Las contraseñas no coinciden' }));
+      } else {
+        setErrors(prev => ({ ...prev, confirmPassword: '' }));
+      }
+    }
+
+    // Validar confirmación de contraseña en tiempo real
+    if (name === 'confirmPassword' && isRegisterMode) {
+      if (value && value !== formData.password) {
+        setErrors(prev => ({ ...prev, confirmPassword: 'Las contraseñas no coinciden' }));
+      } else {
+        setErrors(prev => ({ ...prev, confirmPassword: '' }));
+      }
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (isRegisterMode) {
+      if (!formData.fullName) newErrors.fullName = 'El nombre completo es requerido';
+      if (!validateRut(formData.rut)) newErrors.rut = 'RUT inválido';
+    }
+
+    if (!validateEmail(formData.email)) {
+      newErrors.email = 'Correo inválido. Debe ser un correo @usach.cl';
+    }
+
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.isValid) {
+      newErrors.password = passwordValidation.message;
+    }
+
+    if (isRegisterMode && !termsViewed) {
+      newErrors.terms = 'Debe leer los términos y condiciones primero';
+    }
+
+    if (isRegisterMode && !termsAccepted) {
+      newErrors.terms = 'Debe aceptar los términos y condiciones';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (validateForm()) {
+      try {
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: isRegisterMode ? `${backendUrl}/signup` : `${backendUrl}/signin`,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: JSON.stringify({
+            ...formData,
+            type: isRegisterMode ? "estudiante" : undefined // Set default type for registration
+          }),
+        };
+
+        const response = await axios.request(config);
+        if (response.data.token) {
+          localStorage.setItem('tokenUser', response.data.token);
+          localStorage.setItem('primerInicio', 'true');
+          window.location.href = "/home";
+        }
+      } catch (error) {
+        setErrors({ submit: error.response?.data?.error?.message || "Error de conexión" });
+      }
+    }
+  };
+
+  const handlePasswordRecovery = async () => {
+    if (!formData.email) {
+      setErrors({ submit: "Por favor ingrese un correo electrónico" });
+      return;
+    }
+
+    try {
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: `${backendUrl}/reset-password`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: JSON.stringify({
+          email: formData.email
+        }),
+      };
+
+      const response = await axios.request(config);
+      setSuccessMessage("Se ha enviado un correo con instrucciones para restablecer su contraseña");
+      // Optionally close any modal or show success message
+    } catch (error) {
+      setErrors({ submit: error.response?.data?.error?.message || "Error al recuperar contraseña" });
+    }
+  };
+
+  const viewTerms = () => {
+    // Abrir PDF de términos y condiciones
+    window.open('/terms.pdf', '_blank');
+    setTermsViewed(true);
+  };
+
+  const handleGoogleSuccess = (response: any) => {
+    if (response.profileObj) {
+      const { email, name } = response.profileObj;
+      // Store user info in localStorage or handle as needed
+      localStorage.setItem('tokenUser', response.tokenId);
+      localStorage.setItem('primerInicio', 'true');
+      window.location.href = "/home";
+    }
+  };
+
+  const handleGoogleFailure = (error: any) => {
+    console.error('Google Sign In Error:', error);
+    setErrors({ submit: 'Error al iniciar sesión con Google' });
+  };
+
+  const loginWithGoogle = (session)=> {
+    try {
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${process.env.REACT_APP_BACKEND_URL}/api/auth/signin`, //MODIFICAR (listo, falta probar)
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data : JSON.stringify({
+                email: session.profileObj.email,
+                password: session.profileObj.googleId,
+            })
+        };
+
+        axios.request(config)
+            .then((response) => {
+                console.log("Imprimiendo el token en el login");
+                console.log(JSON.stringify(response.data));
+                // Guardar el token en el local storage y se envia a todos los microfrontends (y front principal) que lo requieren
+                localStorage.setItem('tokenUser', response.data.token);
+                localStorage.setItem('primerInicio', 'true');
+                localStorage.setItem('accessToken', session.tokenObj.access_token);
+                window.location.href = "/home";
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    } catch (error) {
+    }
+    localStorage.setItem('accessToken', session.tokenObj.accessToken);
+    console.log("Login correcto", session);
 }
 
-export default Login
+const registerWithGoogle = (response)=> {
+    const tagName = response.profileObj.name.split(' ').map(word => word[0]).join('');
+    try {
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${process.env.REACT_APP_BACKEND_URL}/api/auth/signup`, //MODIFICAR (listo, falta probar)
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data : JSON.stringify({
+                name: response.profileObj.name,
+                email: response.profileObj.email,
+                password: response.profileObj.googleId,
+                type: "profesor",
+                tagName: tagName,
+            })
+        };
 
+        axios.request(config)
+            .then((response) => {
+                console.log(JSON.stringify(response.data));
+                //Cambio de vista ocurre con delay para evitar perder la notificación
+                setTimeout(() => {
+                    setIsRegisterMode(false); //Vuelve a la pantalla de inicio de sesión
+                }, 5000); //Delay de 5 segundos
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+  return (
+    <Container>
+      <FormCard>
+        <Title>DeptMeeting</Title>
+        <form onSubmit={handleSubmit}>
+          {isRegisterMode && (
+            <>
+              <FormGroup>
+                <Label>Nombre completo</Label>
+                <Input
+                  type="text"
+                  name="fullName"
+                  placeholder="Juan Pérez González"
+                  value={formData.fullName}
+                  onChange={handleInputChange}
+                />
+                {errors.fullName && <ErrorText>{errors.fullName}</ErrorText>}
+              </FormGroup>
+
+              <FormGroup>
+                <Label>RUT</Label>
+                <Input
+                  type="text"
+                  name="rut"
+                  placeholder="20058348-5"
+                  value={formData.rut}
+                  onChange={handleInputChange}
+                />
+                {errors.rut && <ErrorText>{errors.rut}</ErrorText>}
+              </FormGroup>
+            </>
+          )}
+
+          <FormGroup>
+            <Label>Correo electrónico</Label>
+            <Input
+              type="email"
+              name="email"
+              placeholder="nicolas.rojas.g@usach.cl"
+              value={formData.email}
+              onChange={handleInputChange}
+            />
+            {errors.email && <ErrorText>{errors.email}</ErrorText>}
+          </FormGroup>
+
+          <FormGroup>
+            <Label>Contraseña</Label>
+            <PasswordWrapper>
+              <Input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+              />
+              <PasswordToggle
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </PasswordToggle>
+            </PasswordWrapper>
+            {isRegisterMode && formData.password && (
+              <>
+                <PasswordStrengthBar strength={passwordStrength} />
+                <ErrorText>
+                  {passwordStrength === 'weak' && 'La contraseña es débil. Debe incluir mayúsculas, minúsculas, números y caracteres especiales.'}
+                  {passwordStrength === 'medium' && 'La contraseña es moderada. Añade más variedad para mayor seguridad.'}
+                  {passwordStrength === 'strong' && 'La contraseña es fuerte.'}
+                </ErrorText>
+              </>
+            )}
+            {errors.password && <ErrorText>{errors.password}</ErrorText>}
+          </FormGroup>
+
+          {isRegisterMode && (
+            <>
+              <FormGroup>
+                <Label>Confirmar contraseña</Label>
+                <PasswordWrapper>
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                  />
+                </PasswordWrapper>
+                {formData.confirmPassword && errors.confirmPassword && (
+                  <ErrorText>{errors.confirmPassword}</ErrorText>
+                )}
+              </FormGroup>
+
+              <FormGroup>
+                <Label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Input
+                    type="checkbox"
+                    checked={termsAccepted}
+                    onChange={() => setTermsAccepted(!termsAccepted)}
+                    disabled={!termsViewed}
+                    style={{ margin: 0 }}
+                  />
+                  <span>
+                    Acepto los términos y condiciones
+                  </span>
+                </Label>
+                <Button type="button" onClick={viewTerms}>
+                  Ver términos y condiciones
+                </Button>
+                {errors.terms && <ErrorText>{errors.terms}</ErrorText>}
+              </FormGroup>
+            </>
+          )}
+
+          <Button type="submit" style={{ width: '100%', marginTop: '1rem' }}>
+            {isRegisterMode ? 'Registrarse' : 'Iniciar sesión'}
+          </Button>
+
+          {!isRegisterMode && (
+            <Button
+              type="button"
+              onClick={handlePasswordRecovery}
+              style={{
+                backgroundColor: 'transparent',
+                color: '#4285f4',
+                border: 'none',
+                marginTop: '0.5rem'
+              }}
+            >
+              Recuperar contraseña
+            </Button>
+          )}
+
+          {/* Separator */}
+          <div style={{ 
+            textAlign: 'center', 
+            margin: '1rem 0', 
+            position: 'relative' 
+          }}>
+            <span style={{ 
+              backgroundColor: 'white', 
+              padding: '0 10px',
+              color: '#666',
+              position: 'relative',
+              zIndex: 1
+            }}>
+              O
+            </span>
+            <hr style={{ 
+              margin: '-0.7rem 0 1rem',
+              borderColor: '#ddd'
+            }} />
+          </div>
+
+          {/* Google Login Button */}
+          {!isRegisterMode && (
+            <GoogleLogin
+              clientId={googleId}
+              render={renderProps => (
+                <Button 
+                  type="button"
+                  onClick={renderProps.onClick}
+                  disabled={renderProps.disabled}
+                  style={{ 
+                    backgroundColor: '#4285f4',
+                    marginBottom: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <FaGoogle /> Iniciar sesión con Google
+                </Button>
+              )}
+              onSuccess={loginWithGoogle}
+              onFailure={handleGoogleFailure}
+              cookiePolicy={'single_host_origin'}
+            />
+          )}
+
+          {/* Google Register Button */}
+          {isRegisterMode && (
+            <GoogleLogin
+              clientId={googleId}
+              render={renderProps => (
+                <Button 
+                  type="button"
+                  onClick={renderProps.onClick}
+                  disabled={renderProps.disabled}
+                  style={{ 
+                    backgroundColor: '#4285f4',
+                    marginBottom: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <FaGoogle /> Registrarse con Google
+                </Button>
+              )}
+              onSuccess={registerWithGoogle}
+              onFailure={handleGoogleFailure}
+              cookiePolicy={'single_host_origin'}
+            />
+          )}
+        </form>
+
+        <LinkText>
+          {isRegisterMode ? '¿Ya tienes una cuenta?' : '¿No tienes una cuenta?'}
+          <br />
+          <a href="#" onClick={() => setIsRegisterMode(!isRegisterMode)}>
+            {isRegisterMode ? 'Inicia sesión ahora' : 'Regístrate aquí'}
+          </a>
+        </LinkText>
+        {successMessage && <ErrorText style={{ color: 'green' }}>{successMessage}</ErrorText>}
+      </FormCard>
+    </Container>
+  );
+};
+
+export default Login;

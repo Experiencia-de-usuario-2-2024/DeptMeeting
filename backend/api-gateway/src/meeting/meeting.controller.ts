@@ -54,6 +54,7 @@ export class MeetingController {
   @Post()
   @ApiOperation({ summary: 'Crear una reunión' })
   async create(@Body() meetingDTO: MeetingDTO): Promise<Observable<IMeeting>> {
+    console.log("meetingDTO:", meetingDTO);
     return await this._clientProxyMeeting.send(MeetingMSG.CREATE, meetingDTO);
   }
 
@@ -71,6 +72,12 @@ export class MeetingController {
     }
     return this._clientProxyMeeting.send(MeetingMSG.SET_STATE, params);
   }
+
+  @Post('event')
+  @ApiOperation({ summary: 'Crear un evento en Google Calendar' })
+    async deptMCreateEvent(@Body() event: any): Promise<Observable<any>> {
+        return await this._clientProxyMeeting.send(MeetingMSG.CREATE_EVENT, event);
+    }
 
   /*  
   Método para obtener todas las reuniones.

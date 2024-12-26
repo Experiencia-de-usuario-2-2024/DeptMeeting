@@ -1,20 +1,20 @@
-# Usa una imagen base adecuada para tu proyecto
-FROM node:20
+# Use Bun base image
+FROM oven/bun:1
 
-# Establece el directorio de trabajo dentro del contenedor  ----> MODIFICAR POR CADA DOCKERFILE
-WORKDIR /mf-home
+# Set working directory
+WORKDIR /mf-login
 
-# Copia los archivos de tu proyecto al directorio de trabajo
+# Copy package files
 COPY package*.json ./
 
-# Instala las dependencias del proyecto
-RUN npm install
+# Install dependencies using Bun
+RUN bun install
 
-# Copia el resto de los archivos del proyecto al directorio de trabajo
+# Copy the rest of the application
 COPY . .
 
-# Expone el puerto en el que se ejecuta tu aplicación ---> MODIFICAR POR CADA DOCKERFILE
+# Expose the port
 EXPOSE 3020
 
-# Comando para iniciar tu aplicación
-CMD [ "npm", "start" ]
+# Start the application using Bun
+CMD ["bun", "start"]

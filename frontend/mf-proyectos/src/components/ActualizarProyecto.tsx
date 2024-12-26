@@ -62,7 +62,7 @@ const ActualizarProyecto: React.FC = () => {
         async function obtenerProyectoPorId() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/project/getProjectbyID/` + idProyecto, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/project/getProjectbyID/` + idProyecto, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -83,7 +83,7 @@ const ActualizarProyecto: React.FC = () => {
                 const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
                 const correoElectronico = decodedToken.email;
                 console.log("email traido desde el token: ", correoElectronico);
-                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/user/list/email/` + correoElectronico, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/list/email/` + correoElectronico, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -121,7 +121,7 @@ const ActualizarProyecto: React.FC = () => {
     // Entrada: ninguna
     // Salida: ninguna, se muestra una alerta indicando que el proyecto fue actualizado con exito
     const finalizarOperacion = () => {
-        window.alert("Proyecto actualizado con éxito");
+        window.alert("Período actualizado con éxito");
         const newValue = !editarProyecto;
         // Guardar valor de la variable en local storage
         localStorage.setItem('editarProyecto', JSON.stringify(newValue));
@@ -154,7 +154,7 @@ const ActualizarProyecto: React.FC = () => {
         async function peticionActualizar() {
             try {            
                 
-                const responseProyecto = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/project/` + idProyecto, {
+                const responseProyecto = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/project/` + idProyecto, {
                     shortName: shortNameValue,
                     name: nameValue,
                     description: descriptionValueVer2,
@@ -175,7 +175,7 @@ const ActualizarProyecto: React.FC = () => {
         async function incluirParticipantes(correoEstudiante: string) {
             try {    
                 const responseEstudiante = await axios.post(
-                    `http://deptmeeting.diinf.usach.cl/api/api/project/` + idProyecto + '/add/member/' + correoEstudiante,
+                    `${process.env.REACT_APP_BACKEND_URL}/api/project/` + idProyecto + '/add/member/' + correoEstudiante,
                     {},
                     {
                         headers: {
@@ -194,7 +194,7 @@ const ActualizarProyecto: React.FC = () => {
         // 3.1 Realizar peticion para actualizar atributos del participante: id de proyecto y nombre abreviado del proyecto -> se creara un nuevo metodo que permitira actualizar a los usuarios por el correo electronico
         async function ActualizarParticipantes(correoEstudiante: string, idProyecto: string, nombreAbreviadoProyecto: string) {
             try {            
-                const response = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/user/update/` + correoEstudiante + '/usuarioperfil', {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/user/update/` + correoEstudiante + '/usuarioperfil', {
                     currentProjectId: idProyecto,
                     currentProject: nombreAbreviadoProyecto,
                     proyectoPrincipal: nombreAbreviadoProyecto
@@ -213,14 +213,14 @@ const ActualizarProyecto: React.FC = () => {
         // 3.2: Añadir los nuevos miembros del proyecto al atributo "userMembersOriginal"
         async function ActualizarProyecto(idProyecto: string, nuevosIntegrantes:string[]) {
             try {            
-                const response = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/project/`+idProyecto, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/project/`+idProyecto, {
                     userMembersOriginal: listaMiembrosOriginal.concat(nuevosIntegrantes)
                 },{
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
                 });
-                console.log("Proyecto actualizado correctamente: Se realizo copia de miembros originales del proyecto");
+                console.log("Período actualizado correctamente: Se realizo copia de miembros originales del período");
                 console.log(response.data);
                 nuevosMiembros = [];
             } catch (error) {
@@ -268,7 +268,7 @@ const ActualizarProyecto: React.FC = () => {
             aria-required={true}
             name="shortName"
             defaultValue={proyectoUser?.shortName}
-            label="Nombre abreviado del proyecto"
+            label="Nombre abreviado del período"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -279,7 +279,7 @@ const ActualizarProyecto: React.FC = () => {
             aria-required={true}
             name="name"
             defaultValue={proyectoUser?.name}
-            label="Nombre del proyecto"
+            label="Nombre del período"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -291,7 +291,7 @@ const ActualizarProyecto: React.FC = () => {
             aria-required={true}
             name="descriptionVer2"
             defaultValue={proyectoUser?.description}
-            label="Descripción del proyecto"
+            label="Descripción del período"
             isRequired
         >
             {({ fieldProps }) => <TextArea {...fieldProps} onChange={(event) => fieldProps.onChange(event.target.value)} />}
@@ -303,7 +303,7 @@ const ActualizarProyecto: React.FC = () => {
             aria-required={true}
             name="description"
             defaultValue=""
-            label="Descripción del proyecto"
+            label="Descripción del período"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -314,7 +314,7 @@ const ActualizarProyecto: React.FC = () => {
             aria-required={true}
             name="userOwner"
             defaultValue={proyectoUser?.userOwner}
-            label="Dueño del proyecto (correo electrónico registrado)"
+            label="Dueño del período (correo electrónico registrado)"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -376,7 +376,7 @@ const ActualizarProyecto: React.FC = () => {
                             flexDirection: 'column',
                         }}
                     >
-                    <h1>Editar proyecto</h1>
+                    <h1>Editar período</h1>
                         <Form<{ username: string }>
                             onSubmit={(data) => {
                                 return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
@@ -393,7 +393,7 @@ const ActualizarProyecto: React.FC = () => {
                                     <DescripcionVer2 />
                                     <UserOwner />                                
                                     {/* seccion dedicada a mostrar los miembros actuales del proyecto*/}
-                                    <p style={{marginTop:'8px', marginBottom:'8px'}}>Miembros actuales del proyecto</p>
+                                    <p style={{marginTop:'8px', marginBottom:'8px'}}>Miembros actuales del período</p>
                                     <div style={{backgroundColor:'white', paddingLeft: '15px', paddingRight:'15px', paddingTop:'1px', paddingBottom:'1px', marginBottom:'8px'}}>
                                         
                                         {proyectoUser?.userMembers.map((miembro) => (
@@ -418,7 +418,7 @@ const ActualizarProyecto: React.FC = () => {
                                                 onClick={() => actualizarInformacion()}
                                                 style={{ marginLeft: '5px' }}
                                             >
-                                                Actualizar proyecto
+                                                Actualizar período
                                             </LoadingButton>
                                         </ButtonGroup>
                                     </FormFooter>

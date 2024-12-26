@@ -1,5 +1,5 @@
 # Usa una imagen base adecuada para tu proyecto
-FROM node:18
+FROM oven/bun:1
 
 # Establece el directorio de trabajo dentro del contenedor  ----> MODIFICAR POR CADA DOCKERFILE
 WORKDIR /mf-desarrolloreunion
@@ -8,7 +8,7 @@ WORKDIR /mf-desarrolloreunion
 COPY package*.json ./
 
 # Instala las dependencias del proyecto
-RUN npm install
+RUN bun install
 
 # Copia el resto de los archivos del proyecto al directorio de trabajo
 COPY . .
@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3014
 
 # Comando para iniciar tu aplicación
-CMD [ "npm", "start" ]
+CMD [ "bun", "start" ]

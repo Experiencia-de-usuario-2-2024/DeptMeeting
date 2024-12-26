@@ -23,11 +23,12 @@
     "axios": "^1.6.7",
     "dotenv": "^16.4.5",
     "dotenv-webpack": "^8.1.0",
+    "gapi-script": "^1.2.0",
     "jwt-decode": "^4.0.0",
     "react": "16.8",
     "react-dom": "16.8",
     "react-router-dom": "^6.21.3",
-    "react-scripts": "3.4.1",
+    "react-scripts": "^5.0.1",
     "style-loader": "^3.3.1",
     "typescript": "^3.7.5",
     "web-vitals": "^2.1.4"

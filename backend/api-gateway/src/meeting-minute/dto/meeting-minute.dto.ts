@@ -6,6 +6,7 @@ import { IsDate, IsNotEmpty, IsString } from "class-validator";
 export class MeetingMinuteDTO{
    title: string; // Objetivo del acta
    place: string; // lugar
+   fase: string; // fase
    startTime: string; // fecha de llamado
    endTime: string; // fecha estimada de termino
    startHour: string; // hora estimada de inicio
@@ -24,7 +25,5 @@ export class MeetingMinuteDTO{
    _id: string; // id
    createdAt: Date; // fecha de creación
    updatedAt: Date; // fecha de actualización
-   cantElementos: number; // cantidad de elementos añadidos 
-   nombreCortoProyecto: string; // nombre corto del proyecto asociado
-   comenzoReunion: boolean; // indica si la reunión ya comenzó
+
 }

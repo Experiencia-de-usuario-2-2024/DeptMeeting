@@ -97,6 +97,17 @@ export class ElementController {
   }
 
   /*  
+    Metodo para  obtener elementos a partir del id del proyecto.
+    entrada: id del proyecto vinculado. 
+    salida: objeto del elemento encontrado.  
+   */
+  @Get('/compromiso/project/:id')
+  @ApiOperation({ summary: 'Obtener los compromisos por id de proyecto vinculado' })
+  findCompromisosByProject(@Param('id') id: string) {
+    return this._clientProxyElement.send('find_compromisos_by_project', id);
+  }
+
+  /*  
   Método para  obtener un elemento a partir del id del proyecto, email de usuario y estado del elemento.
   entrada: id del proyecto vinculado. 
   salida: objeto del elemento encontrado.  
@@ -155,22 +166,4 @@ export class ElementController {
   delete(@Param('id') id: string) {
     return this._clientProxyElement.send(ElementMSG.DELETE, id);
   }
-
-
-
-  // NUEVOS METODOS PARA ELEMENTOS
-
-  // Metodo para obtener elementos de tipo "compromiso" a partir del email de usuarios encargados.
-  @Get('/participants/:email')
-  @ApiOperation({ summary: 'Obtener elementos de tipo ** compromiso ** por email de usuario responsable' })
-  async compromisosUsuarios(@Param('email') email: string) {
-    return await this._clientProxyElement.send('ElementCompromisosUsuarios', email);
-  }
-
-
-
-
 }
-
-
-

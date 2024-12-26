@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import EstructuraPagina from "./components/EstructuraPagina";
 import LoginView from "./microfrontends/LoginView";
+import './styles/buttonOverride.css';  // Import the button override styles
 
 const RedirectIfNotAuthenticated = () => {
   const navigate = useNavigate();

@@ -37,9 +37,9 @@ export class EventMailModule {
         this.mailService.sendMail({
           to: meetingMinuteDTO.secretaries[s],
           from: process.env.EMAIL_USER,
-          template: 'actacreada',
-          // subject: 'Soporte MemFollow: Has sido invitado a una nueva reunión con el rol de secretario/a el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
-          subject: 'Soporte MemFollow: Has sido invitado a la reunion número ' + meetingMinuteDTO.number.toString() + ' del proyecto ' + meetingMinuteDTO.nombreCortoProyecto + ' con el rol de secretario/a el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
+          template: 'testing',
+          // subject: 'Soporte DeptMeeting: Has sido invitado a una nueva reunión con el rol de secretario/a el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
+          subject: 'Soporte DeptMeeting: Has sido invitado a la reunion número ' + meetingMinuteDTO.number.toString() + ' del proyecto ' + meetingMinuteDTO.nombreCortoProyecto + ' con el rol de secretario/a el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
           context: {
             name: user.email,
             acta: meetingMinuteDTO.title,
@@ -59,8 +59,8 @@ export class EventMailModule {
           to: meetingMinuteDTO.leaders[l],
           from: process.env.EMAIL_USER,
           template: 'actacreada',
-          // subject: 'Soporte MemFollow: Has sido invitado a una nueva reunión con el rol de anfitrión/a el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
-          subject: 'Soporte MemFollow: Has sido invitado a la reunion número ' + meetingMinuteDTO.number.toString() + ' del proyecto ' + meetingMinuteDTO.nombreCortoProyecto + ' con el rol de anfitrión/a el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
+          // subject: 'Soporte DeptMeeting: Has sido invitado a una nueva reunión con el rol de anfitrión/a el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
+          subject: 'Soporte DeptMeeting: Has sido invitado a la reunion número ' + meetingMinuteDTO.number.toString() + ' del proyecto ' + meetingMinuteDTO.nombreCortoProyecto + ' con el rol de anfitrión/a el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
           context: {
             name: user.email,
             acta: meetingMinuteDTO.title,
@@ -80,8 +80,8 @@ export class EventMailModule {
           to: meetingMinuteDTO.participants[u],
           from: process.env.EMAIL_USER,
           template: 'actacreada',
-          // subject: 'Soporte MemFollow: Has sido invitado a una nueva reunión el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
-          subject: 'Soporte MemFollow: Has sido invitado a la reunion número ' + meetingMinuteDTO.number.toString() + ' del proyecto ' + meetingMinuteDTO.nombreCortoProyecto + ' el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
+          // subject: 'Soporte DeptMeeting: Has sido invitado a una nueva reunión el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
+          subject: 'Soporte DeptMeeting: Has sido invitado a la reunion número ' + meetingMinuteDTO.number.toString() + ' del proyecto ' + meetingMinuteDTO.nombreCortoProyecto + ' el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
           context: {
             name: user.email,
             acta: meetingMinuteDTO.title,
@@ -352,7 +352,7 @@ export class EventMailModule {
       to: user.email,
       from: process.env.EMAIL_USER,
       template: 'resetpass',
-      subject: 'Soporte MemFollow: Recuperación de cuenta',
+      subject: 'Soporte DeptMeeting: Recuperación de cuenta',
       context: {
         name: user.email,
         password: user.password

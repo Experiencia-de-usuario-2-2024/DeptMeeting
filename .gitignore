@@ -1,3 +1,4 @@
 .scannerwork/
 .idea/
 **/dist/
+/frontend/mf-login/bun.lockb

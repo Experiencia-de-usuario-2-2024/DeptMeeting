@@ -1,0 +1,131 @@
+.container {
+  padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.studentCard {
+  background-color: rgba(0, 164, 153, 0.1); /* #00A499 with opacity */
+  border: 2px solid #00A499;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 320px;
+  height: auto;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.studentCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border-color: #FF9200;
+  background-color: rgba(255, 146, 0, 0.1);
+}
+
+.projectName {
+  color: #000000;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 15px;
+  text-align: center;
+  width: 100%;
+  word-wrap: break-word;
+  height: auto;
+  min-height: 40px;
+}
+
+.avatarContainer {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 10px 0;
+  border: 3px solid #00A499;
+  transition: all 0.2s ease-in-out;
+}
+
+.studentCard:hover .avatarContainer {
+  border-color: #FF9200;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.studentName {
+  color: #000000;
+  font-size: 1em;
+  margin-top: 15px;
+  text-align: center;
+  width: 100%;
+  word-wrap: break-word;
+}
+
+.studentType {
+  color: #000000;
+  font-size: 0.9em;
+  margin-top: 5px;
+  text-align: center;
+  width: 100%;
+  word-wrap: break-word;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .gridContainer {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .studentCard {
+    min-height: 280px;
+  }
+
+  .avatarContainer {
+    width: 100px;
+    height: 100px;
+  }
+
+  .projectName {
+    font-size: 1em;
+  }
+
+  .studentName {
+    font-size: 0.9em;
+  }
+
+  .studentType {
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: 480px) {
+  .gridContainer {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .studentCard {
+    min-height: 250px;
+  }
+
+  .avatarContainer {
+    width: 80px;
+    height: 80px;
+  }
+}

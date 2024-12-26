@@ -6,10 +6,10 @@ const WebpackShellPluginNext = require('webpack-shell-plugin-next');
 const webpack = require("webpack"); // <-- Añadir esta linea
 
 // Cargar dotenv manualmente para verificación //descomentar si se quiere local
-require('dotenv').config({ path: './.env.development' });
-console.log('Variables de entorno cargadas:', Object.fromEntries(
-    Object.entries(process.env).filter(([key]) => key.startsWith('REACT_APP'))
-  ));
+// require('dotenv').config({ path: './.env.development' });
+//console.log('Variables de entorno cargadas:', Object.fromEntries(
+//    Object.entries(process.env).filter(([key]) => key.startsWith('REACT_APP'))
+//  ));
 
 
 
@@ -18,7 +18,7 @@ module.exports = {
     mode: "development",
     devServer: {
         port: process.env.REACT_APP_MF_HOME_PORT, // Modificar -> listo
-        allowedHosts: ["deptmeeting.diinf.usach.cl"], // Convierte la variable en un array con un solo host
+        allowedHosts: process.env.REACT_APP_ALLOWED_HOSTS ? [process.env.REACT_APP_ALLOWED_HOSTS] : [], // Convierte la variable en un array con un solo host
     },
     module: {
         rules: [
@@ -57,20 +57,11 @@ module.exports = {
     plugins: [
         // Añadir DefinePlugin para inyectar variables de entorno //comentar si sequiere local
         new webpack.DefinePlugin({
-            "process.env.REACT_APP_BACKEND_IP": JSON.stringify(
-                process.env.REACT_APP_BACKEND_IP
-            ),
-            "process.env.REACT_APP_BACKEND_PORT": JSON.stringify(
-                process.env.REACT_APP_BACKEND_PORT
-            ),
-            "process.env.REACT_APP_MF_LOGIN_PORT": JSON.stringify(
-                process.env.REACT_APP_MF_LOGIN_PORT
-            ),
-            "process.env.REACT_APP_MF_DESARROLLOREUNION_PORT": JSON.stringify(
-                process.env.REACT_APP_MF_DESARROLLOREUNION_PORT
+            "process.env.REACT_APP_BACKEND_URL": JSON.stringify(
+                process.env.REACT_APP_BACKEND_URL
             ),
         }),
-        //new Dotenv({ path: "./.env.development" }), //Modificar si se quiere hacer local
+        new Dotenv({ path: "./.env.development" }), //Modificar si se quiere hacer local
 
         new WebpackShellPluginNext({
             onBuildStart: {

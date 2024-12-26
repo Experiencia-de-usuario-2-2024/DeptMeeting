@@ -17,6 +17,7 @@ import { IUser } from 'src/common/interfaces/user.interface';
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
 import { UserDTO } from './dto/user.dto';
 import { Request } from 'express';
+import { firstValueFrom } from 'rxjs';
 
 @ApiTags('Microservicio de usuarios (microservice-users)')
 @UseGuards(JwtAuthGuard)
@@ -106,8 +107,12 @@ export class UserController {
   */
   @Get('/userLogin')
   @ApiOperation({ summary: 'obtener usuario por token JWT' })
-  userLogin(@Req() req: any) {
-    return req.user;
+  async userLogin(@Req() req: any) {
+    console.log('userLogin(): req.user', req.user);
+    const user = await firstValueFrom(this.findOneByEmail(req.user.email));
+    console.log('findOneByEmail: ', user)
+
+    return user;
   }
 
   /*  
@@ -188,39 +193,21 @@ export class UserController {
     return this._clientProxyUser.send('countusers', '');
   }
 
-
-  // ********************** NUEVOS METODOS ***************************
-
-
-  /*  
-  Metodo para  obtener todos los usuarios de un profesor (revisando el correo en atributo asignado)
-  entrada: email del profesor.
-  salida: lista de usuarios encontrados.  
-  */
-  @Get('list/email/:email')
-  @ApiOperation({ summary: 'obtener los usuarios estudiantes que tiene un profesor a partir del email del profesor' })
-  findAllByEmail(@Param('email') email: string): Observable<any>{
+  @Get(`list/email/:email`)
+  @ApiOperation({ summary: 'obtener usuarios vinculados al email' })
+  listByEmail(@Param('email') email: string): Observable<any> {
     return this._clientProxyUser.send('ESTUDIANTES_DE_PROFESOR', email);
   }
 
-
-  /*  
-  Metodo para actualizar usuario segun su correo electronico
-  entrada: correo electronico y nuevos datos del usuario. 
-  salida: objeto del usuario actualizada.
-  */
+  /*
+ Metodo para actualizar usuario segun su correo electronico
+ entrada: correo electronico y nuevos datos del usuario.
+ salida: objeto del usuario actualizada.
+ */
   @Put('/update/:correo/usuarioperfil')
   @ApiOperation({ summary: 'Actualizar usuario por su correo VER 2' })
   updateByEmailVer2(@Param('correo') correo: string, @Body() userDTO: any): Observable<IUser> {
     // console.log("CORREO QUE LLEGA en api gateway: ", correo);
     return this._clientProxyUser.send('ACTUALIZAR_USUARIO_POR_CORREO_VER2', { correo, userDTO });
   }
-
-
-
-
 }
-
-
-
-

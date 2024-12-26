@@ -88,7 +88,7 @@ const FormularioNuevaReunion: React.FC = () => {
         // 3. Realizar peticion para crear la reunión
         async function peticionCrearProyecto() {
             try {            
-                const responseReunion = await axios.post(`http://deptmeeting.diinf.usach.cl/api/api/meeting`, {
+                const responseReunion = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/meeting`, {
                     name: nameValue,
                     description: descriptionValueVer2,
                     number: numberValue,

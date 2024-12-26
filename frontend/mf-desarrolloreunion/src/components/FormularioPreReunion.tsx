@@ -8,6 +8,7 @@ import Button, { ButtonGroup } from '@atlaskit/button';
 import LoadingButton from '@atlaskit/button/loading-button';
 import Select, { ActionMeta, MultiValue, PropsValue } from 'react-select';
 import axios from "axios";
+import { v4 as uuidv4 } from 'uuid';
 import { jwtDecode } from 'jwt-decode';
 import { ProgressTracker, Stages } from '@atlaskit/progress-tracker';
 import { CreatableSelect, OptionType, ValueType } from '@atlaskit/select';
@@ -38,6 +39,7 @@ import Messages from "./Messages";
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
+const accessToken = localStorage.getItem('accessToken');
 
 // Se obtiene el tipo de usuario logeado
 const tipoDeUsuario = localStorage.getItem('tipoUsuario');
@@ -323,6 +325,7 @@ const FormularioPreReunion: React.FC = () => {
 
     // Para determinar si se muestra en la parte central el acta dialogica o no (en cualquiera que sea su etapa, pre, in, post o finalizada)
     const [verActaDialogica, setVerActaDialogica] = React.useState(false);
+    const [url, setUrl] = React.useState<string>(null);
 
     // Para determinar si completo el primer formulario
     const [iniciarFormulario, setIniciarFormulario] = React.useState(false);
@@ -377,7 +380,7 @@ const FormularioPreReunion: React.FC = () => {
 
 
         // websocket
-        const newSocket = io(`http://${process.env.REACT_APP_BACKEND_IP}:${process.env.REACT_APP_BACKEND_IO_PORT}`);
+        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`);
         setSocket(newSocket);
 
         // Identificar al nuevo usuario conectado
@@ -427,7 +430,7 @@ const FormularioPreReunion: React.FC = () => {
         async function obtenerDatosUsuario() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/user/perfil/` + idPerfil, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/perfil/` + idPerfil, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -449,7 +452,7 @@ const FormularioPreReunion: React.FC = () => {
         // Obtener datos de la reunion a partir del id, de tal forma el numero de la reunion pueda quedar almacenado en el acta dialogica
         async function datosReunion() {
             try {
-                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/meeting/` + idReunion, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/` + idReunion, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -477,7 +480,7 @@ const FormularioPreReunion: React.FC = () => {
         // Se cambia el estado de la reunión a "pre-reunión"
         async function cambiarEstado() {
             try {
-                const response = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/meeting/` + idReunion, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/` + idReunion, {
                     state: "Pre-reunión"
                 }, {
                     headers: {
@@ -501,7 +504,7 @@ const FormularioPreReunion: React.FC = () => {
                 // console.log("email traido desde el token: ", correoElectronico);
 
 
-                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/user/list/email/` + correoUserOwner, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/list/email/` + correoUserOwner, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -522,7 +525,7 @@ const FormularioPreReunion: React.FC = () => {
             // window.alert("id del proyecto: " + idProyectoDeReunion)
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/project/getProjectbyID/` + idProyectoDeReunion, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/project/getProjectbyID/` + idProyectoDeReunion, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -565,7 +568,7 @@ const FormularioPreReunion: React.FC = () => {
                     // setEstudiantesNoProyecto([...estudiantesNoProyecto, estudiante]);
                 }
             });
-            
+
             setEstudiantesEnProyecto(estudiantesProyectoAux);
             setSelectedInvitados(listaAux);
             // console.log("Estudiantes en proyecto PPPPPPPPPPPPPPPPPPPPPPPPP: ", estudiantesProyectoAux);
@@ -605,6 +608,8 @@ const FormularioPreReunion: React.FC = () => {
     // Funcion que se encarga de guardar los datos del formulario 1 en variables globales
     const guardarFormulario1 = () => {
 
+
+        console.log("Me caigo1? No");
         const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
         correoElectronico = decodedToken.email;
 
@@ -711,6 +716,53 @@ const FormularioPreReunion: React.FC = () => {
         // listaAnfitrionesValueFinal.push(correoElectronico);
 
         // console.log("Participantes: ", listaParticipantesValue);
+
+        console.log("Me caigo2? No");
+        const data = {
+            accessToken: accessToken,
+            eventDetails: {
+                summary: objetivoValue,
+                start: {
+                    dateTime: fechaInicio + "T" + horaInicio.split("-")[0] + ":00",
+                    timeZone: "America/Santiago",
+                },
+                end: {
+                    dateTime: fechaTermino + "T" + horaTermino.split("-")[0] + ":00",
+                    timeZone: "America/Santiago",
+                },
+                location: lugarValue,
+                attendees: listaParticipantesValueFinal.map(email => ({ email })),
+                conferenceData: {
+                    createRequest: {
+                        conferenceSolutionKey: {
+                            type: "hangoutsMeet",
+                        },
+                        requestId: uuidv4(),
+                    },
+                },
+            }
+        }
+        console.log("Me caigo3? No");
+        console.log("HOLA", data);
+
+        const createEvent = async () => {
+            try {
+                console.log("Me caigo4? No");
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/event`, {data}, {
+                    headers: {
+                        Authorization: `Bearer ${tokenUser}`
+                    }
+                });
+                console.log("Evento creado exitosamente en Google Calendar");
+                console.log(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        createEvent();
+
+
+        console.log("Me caí");
         window.alert("Informacion guardada correctamente");
     }
 
@@ -834,7 +886,7 @@ const FormularioPreReunion: React.FC = () => {
         const idReunion = localStorage.getItem('idReunion') ?? ''; // id de la reunion traido desde local storage
         async function cambiarEstadoEnReunion() {
             try {
-                const response = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/meeting/` + idReunion, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/` + idReunion, {
                     state: "En-reunión"
                 }, {
                     headers: {
@@ -857,7 +909,7 @@ const FormularioPreReunion: React.FC = () => {
                 // eliminar todos los elementos vacios de la lista de participantes -> en caso de que no se hayan añadido invitados externos al proyecto
                 listaParticipantesValueFinal = listaParticipantesValueFinal.filter((participante) => participante !== '');
                 listaAnfitrionesValueFinal = listaAnfitrionesValueFinal.filter((anfitrion) => anfitrion !== '');
-                const response = await axios.post(`http://deptmeeting.diinf.usach.cl/api/api/meeting-minute`, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute`, {
                     title: objetivoValue,
                     place: lugarValue,
                     startTime: fechaInicio,
@@ -895,7 +947,7 @@ const FormularioPreReunion: React.FC = () => {
         // paso 2.3: actualizar al usuario -> para que se indique el id del acta (utlima reunion que tuvo o que esta activa)
         async function ActualizarParticipantes(correoEstudiante: string, idActa: string, estadoReu: string) {
             try {
-                const response = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/user/update/` + correoEstudiante + '/usuarioperfil', {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/update/` + correoEstudiante + '/usuarioperfil', {
                     currentMeetingId: idActa,
                     currentMeeting: estadoReu,
                     lastLink: idReunion,
@@ -917,7 +969,7 @@ const FormularioPreReunion: React.FC = () => {
         async function obtenerDatosUsuarioInvitado(correoEstudiante:string) {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`http://deptmeeting.diinf.usach.cl/api/api/user/perfil/email/` + correoEstudiante, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/perfil/email/` + correoEstudiante, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -951,7 +1003,7 @@ const FormularioPreReunion: React.FC = () => {
         // 3.2: Añadir los nuevos miembros del proyecto al atributo "userMembersOriginal"
         async function ActualizarProyecto(idProyecto: string, nuevosIntegrantes: string[]) {
             try {
-                const response = await axios.put(`http://deptmeeting.diinf.usach.cl/api/api/project/` + idProyecto, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/project/` + idProyecto, {
                     userMembers: listaMiembrosOriginal.concat(nuevosIntegrantes)
                 }, {
                     headers: {
@@ -974,7 +1026,7 @@ const FormularioPreReunion: React.FC = () => {
                 // eliminar todos los elementos vacios de la lista de participantes -> en caso de que no se hayan añadido invitados externos al proyecto
                 listaParticipantesValueFinal = listaParticipantesValueFinal.filter((participante) => participante !== '');
                 listaAnfitrionesValueFinal = listaAnfitrionesValueFinal.filter((anfitrion) => anfitrion !== '');
-                const response = await axios.post(`http://deptmeeting.diinf.usach.cl/api/api/meeting-minute/notify/state/change`, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/notify/state/change`, {
                     meetingMinuteDTO: {
                         title: objetivoValue,
                         place: lugarValue,
@@ -1349,8 +1401,7 @@ const FormularioPreReunion: React.FC = () => {
     const [isOpenEnlacesBorrar, setIsOpenEnlacesBorrar] = useState(false);
     const openModalEnlacesBorrar = useCallback(() => setIsOpenEnlacesBorrar(true), []);
     const closeModalEnlacesBorrar = useCallback(() => setIsOpenEnlacesBorrar(false), []);
-
-
+    
     //**********************************************************************
     //**********************************************************************
     //**********************************************************************
@@ -1391,15 +1442,21 @@ const FormularioPreReunion: React.FC = () => {
                                 {/* <Button iconBefore={<WarningIcon label="" size="large" />} appearance="warning" style={{ height: "100%", width: "170px" }} {...tooltipProps}> IMPORTANTE </Button> */}
                                 {/* <ProgressTracker items={items} /> */}
                                 {/* PARTE FIJA DEL MICROFRONTEND: AVATAR GROUP, CHAT y BARRA DE PROGRESO DE LA REUNION */}
-                                <div style={{position: "fixed", top: 96, width: "100%", zIndex:10}}>                                    
+                                <div style={{position: "fixed", top: 96, width: "100%", zIndex:10}}>
                                     <Inline>
                                         {/* CONTENIDO DE LA IZQUIERDA: fotos de los participantes de la reunion y boton que da acceso al chat */}
                                         {/* <div style={{textAlign: "left", height: '100px', width: '450px', backgroundColor: 'white'}}> */}
-                                        <div style={{textAlign: "left", height: '100px', width: '550px', backgroundColor: 'white'}}>
+                                        <div style={{
+                                            textAlign: "left",
+                                            height: '100px',
+                                            width: '550px',
+                                            backgroundColor: 'white'
+                                        }}>
                                             <Inline space="space.200">
                                                 {/* fotos de los integrantes conectados */}
                                                 <div style={{marginTop: '28px'}}>
-                                                    <AvatarGroup appearance="stack" data={data} borderColor="#388BFF" size="large" maxCount={4}/>
+                                                    <AvatarGroup appearance="stack" data={data} borderColor="#388BFF"
+                                                                 size="large" maxCount={4}/>
                                                 </div>
 
                                                 {/* popup para colocar un chat en la reunion */}
@@ -1410,21 +1467,22 @@ const FormularioPreReunion: React.FC = () => {
                                                         placement="bottom-start"
 
                                                         // aqui colocar el componente del chat
-                                                        content={() =>  <Box xcss={contentStyles}>
-                                                                            <MessagesInput send={send}/>
-                                                                            <Messages messages={messages}/>
-                                                                        </Box>}
+                                                        content={() => <Box xcss={contentStyles}>
+                                                            <MessagesInput send={send}/>
+                                                            <Messages messages={messages}/>
+                                                        </Box>}
 
                                                         trigger={(triggerProps) => (
                                                             <Button
                                                                 style={{height: 44}}
-                                                                iconBefore={<CommentIcon label="" size="medium" />}
+                                                                iconBefore={<CommentIcon label="" size="medium"/>}
                                                                 {...triggerProps}
                                                                 appearance="primary"
                                                                 isSelected={isOpen}
                                                                 onClick={() => setIsOpen(!isOpen)}
-                                                                >
-                                                                {isOpen ? '' : ''} <p style={{marginTop:3, marginBottom:0}}>chat</p>{' '}
+                                                            >
+                                                                {isOpen ? '' : ''} <p
+                                                                style={{marginTop: 3, marginBottom: 0}}>chat</p>{' '}
                                                             </Button>
                                                         )}
                                                     />
@@ -1433,37 +1491,39 @@ const FormularioPreReunion: React.FC = () => {
                                         </div>
 
                                         {/* CONTENIDO DEL MEDIO: barra de progreso */}
-                                        <div style={{textAlign: "center", height: '100px', width: '60%', backgroundColor: 'white'}}>
+                                        <div style={{
+                                            textAlign: "center",
+                                            height: '100px',
+                                            width: '60%',
+                                            backgroundColor: 'white'
+                                        }}>
                                             {/* barra de progreso en la renuion fija en pantalla*/}
-                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                                <ProgressTracker items={items} />
+                                            <div style={{display: 'flex', justifyContent: 'center'}}>
+                                                <ProgressTracker items={items}/>
                                             </div>
                                         </div>
 
                                         {/* CONTENIDO DE LA DERECHA: no utilizada en esta fase*/}
-                                        <div style={{textAlign: "left", height: '100px', width: '550px', backgroundColor: 'white'}}>
-                                            <Button iconBefore={<WarningIcon label="" size="large" />} appearance="warning" style={{width: "170px", marginTop:'30px' }} {...tooltipProps}> IMPORTANTE </Button>
+                                        <div style={{
+                                            textAlign: "left",
+                                            height: '100px',
+                                            width: '550px',
+                                            backgroundColor: 'white'
+                                        }}>
+                                            <Button iconBefore={<WarningIcon label="" size="large"/>}
+                                                    appearance="warning" style={{
+                                                width: "170px",
+                                                marginTop: '30px'
+                                            }} {...tooltipProps}> IMPORTANTE </Button>
                                         </div>
                                     </Inline>
-                                </div> 
+                                </div>
 
                             </>
                         )}
                     </Tooltip>
 
                     {/* <ProgressTracker items={items} /> */}
-
-                    
-
-
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <br />
 
                     {/* ACTUALIZACION: ESTO YA NO ES ASI Y CUALQUIER USUARIO PUEDE COMPLETAR EL FORMULARIO DE PRE-REUNION */}
                     {/* OJO: Solo los usuarios de tipo "profesor" pueden interactuar con la etapa de "pre-reunion". Esto debido a que se hace uso de elementos que solo dichos usuarios tienen*/}
@@ -1480,22 +1540,28 @@ const FormularioPreReunion: React.FC = () => {
                             >
                                 {({ formProps, submitting }) => (
                                     <form {...formProps}>
+                                        <br/>
+                                        <br/>
+                                        <br/>
+                                        <br/>
+                                        <br/>
+                                        <br/>
                                         <Inline space="space.500" alignInline="center" shouldWrap>
-                                            <FechaInicio />
-                                            <FechaTermino />
+                                            <FechaInicio/>
+                                            <FechaTermino/>
                                         </Inline>
-                                        <br />
-                                        <Objetivo />
-                                        <br />
-                                        <Lugar />
-                                        <br />
-                                        <ListaParticipantes />
-                                        <br />
-                                        <ListaAnfitriones />
-                                        <br />
-                                        <Secretario />
-                                        <br />
-                                        <ListaParticipantesNoProyecto />
+                                        <br/>
+                                        <Objetivo/>
+                                        <br/>
+                                        <Lugar/>
+                                        <br/>
+                                        <ListaParticipantes/>
+                                        <br/>
+                                        <ListaAnfitriones/>
+                                        <br/>
+                                        <Secretario/>
+                                        <br/>
+                                        <ListaParticipantesNoProyecto/>
 
                                         <FormFooter>
                                             <ButtonGroup>
@@ -1503,7 +1569,7 @@ const FormularioPreReunion: React.FC = () => {
                                                     type="submit"
                                                     appearance="primary"
                                                     onClick={() => guardarFormulario1()}
-                                                // style={{ marginLeft: '5px' }}
+                                                    // style={{ marginLeft: '5px' }}
                                                 >
                                                     Confirmar datos
                                                 </Button>
@@ -1513,7 +1579,8 @@ const FormularioPreReunion: React.FC = () => {
                                 )}
                             </Form>
 
-                            {!iniciarFormulario && <><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /></>}
+                            {!iniciarFormulario && <>
+                                <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br /></>}
 
                             {/* me aseguro que el usuario presione el boton antes de continuar */}
                             {iniciarFormulario ? (

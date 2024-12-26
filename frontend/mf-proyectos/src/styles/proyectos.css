@@ -1,0 +1,75 @@
+/* Estilos para el título */
+h1 {
+    text-align: center;
+    color: #000000;
+    margin: 20px 0;
+}
+
+/* Estilos para los botones */
+.botonNuevoProyecto {
+    background-color: #00A499 !important;
+    color: white !important;
+    border: none !important;
+    transition: background-color 0.3s ease !important;
+    margin: 15px !important;
+}
+
+.botonNuevoProyecto:hover {
+    background-color: #008c82 !important;
+}
+
+/* Contenedor de proyectos */
+.proyectosContainer {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Estilos para las tarjetas de proyecto */
+.proyectoCard {
+    background-color: #E5F6F5;
+    border: 2px solid #00A499;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.proyectoCard h3 {
+    margin: 0;
+    text-align: center;
+    color: #000000;
+    padding: 10px 0;
+}
+
+.proyectoCard .descripcion {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #E5F6F5;
+    border: 2px solid #00A499;
+    border-top: none;
+    padding: 15px;
+    z-index: 1000;
+    border-radius: 0 0 4px 4px;
+}
+
+.proyectoCard:hover {
+    background-color: #d1efed;
+    border-radius: 4px 4px 0 0;
+}
+
+.proyectoCard:hover .descripcion {
+    display: block;
+}
+
+/* Estilos para mensajes de carga o error */
+.mensaje {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}

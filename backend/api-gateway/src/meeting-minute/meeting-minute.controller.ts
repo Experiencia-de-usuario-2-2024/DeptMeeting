@@ -60,6 +60,7 @@ export class MeetingMinuteController {
   @Get()
   @ApiOperation({ summary: 'Obtener todas las actas dialógicas' })
   findAll(): Observable<IMeetingMinute> {
+    console.log("solicitando obtener actas")
     return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.FIND_ALL, '');
   }
 
@@ -82,6 +83,7 @@ export class MeetingMinuteController {
   @Put(':id')
   @ApiOperation({ summary: 'Actualizar acta dialógica por id' })
   update(@Param('id') id: string, @Body() meetingMinuteDTO: MeetingMinuteDTO): Observable<IMeetingMinute> {
+    console.log('MeetingMinuteController.update() id: ', id, 'meetingMinuteDTO: ', meetingMinuteDTO);
     const params = {
       id: id,
       meetingMinuteDTO: meetingMinuteDTO
@@ -112,7 +114,6 @@ export class MeetingMinuteController {
       meetingMinuteDTO: meetingMinuteDTO,
       user: req.user
     }
-    console.log("Notificando cambio de estado de acta dialogica: ", meetingMinuteDTO)
     return this._clientProxyNotifications.send('sendNotification', params);
   }
 
@@ -163,13 +164,10 @@ export class MeetingMinuteController {
   }
 
 
-  // METODOS NUEVOS
-
-  // metodo para encontrar actas dialogicas por id de reunion
-  @Get('reunion/:idReunion')
-  @ApiOperation({ summary: 'Obtener acta dialógica por id de la reunión a la que pertenece' })
-  encontrarPorReunion(@Param('idReunion') idReunion: string): Observable<IMeetingMinute> {
-    return this._clientProxyMeetingMinute.send("encontrarPorReunion", idReunion);
+  @Get('/meeting/:id')
+  @ApiOperation({ summary: 'Obtener acta dialogica por id de reunion' })
+  getMeetingMinuteByMeeting(@Param('id') id: string): Observable<IMeetingMinute> {
+    return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.FIND_BY_MEETING, id);
   }
 
 
