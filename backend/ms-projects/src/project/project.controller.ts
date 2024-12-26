@@ -1,13 +1,15 @@
-import {
-  Controller,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { ProjectMSG } from 'src/common/constants';
+import { PeriodMSG, ProjectMSG } from 'src/common/constants';
 import { ProjectService } from './project.service';
+import { PeriodService } from './period.service';
 
 @Controller()
 export class ProjectController {
-  constructor(private readonly projectService: ProjectService) { }
+  constructor(
+    private readonly projectService: ProjectService,
+    private readonly periodService: PeriodService,
+  ) {}
 
   /* 
   Modelo estructural de datos:
@@ -78,7 +80,10 @@ export class ProjectController {
   */
   @MessagePattern(ProjectMSG.ADD_GUEST)
   async addGuest(@Payload() payload) {
-    return await this.projectService.addGuest(payload.projectId, payload.guestId);
+    return await this.projectService.addGuest(
+      payload.projectId,
+      payload.guestId,
+    );
   }
 
   /*  
@@ -97,9 +102,47 @@ export class ProjectController {
   salida: objeto del proyecto encontrado.  
   */
   @MessagePattern(ProjectMSG.ADD_MEMBER)
-  async addMember(
-    @Payload() payload: any
-  ) {
-    return this.projectService.addMember(payload.projectId, payload.memberEmail);
+  async addMember(@Payload() payload: any) {
+    return this.projectService.addMember(
+      payload.projectId,
+      payload.memberEmail,
+    );
+  }
+
+  // METODOS PARA DEPTMEETING
+  @MessagePattern(PeriodMSG.CREATE)
+  async createPeriod(@Payload() payload: any) {
+    return await this.periodService.create(payload);
+  }
+
+  @MessagePattern(PeriodMSG.FIND_ALL)
+  async findAllPeriods() {
+    return await this.periodService.findAll();
+  }
+
+  @MessagePattern(PeriodMSG.UPDATE)
+  async updatePeriod(@Payload() payload: any) {
+    return await this.periodService.update(payload.id, payload.periodDTO);
+  }
+
+  @MessagePattern(PeriodMSG.DELETE)
+  async deletePeriod(@Payload() id: string) {
+    return await this.periodService.delete(id);
+  }
+
+  @MessagePattern(PeriodMSG.ADD_COMMISSION)
+  async addCommission(@Payload() payload: any) {
+    return await this.periodService.addCommission(
+      payload.periodId,
+      payload.commissionId,
+    );
+  }
+
+  @MessagePattern(PeriodMSG.ADD_MEETING)
+  async addMeeting(@Payload() payload: any) {
+    return await this.periodService.addMeeting(
+      payload.periodId,
+      payload.meetingId,
+    );
   }
 }

@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { GuestMSG, ProjectMSG } from 'src/common/constants';
+import { GuestMSG, PeriodMSG, ProjectMSG } from 'src/common/constants';
 import { IProject } from 'src/common/interfaces/project.interface';
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
 import { ProjectDTO } from './dto/project.dto';
@@ -24,15 +24,14 @@ import { Public } from 'src/common/public.decorator';
 @UseGuards(JwtAuthGuard)
 @Controller('api/project')
 export class ProjectController {
-
   // Entrada: cliente proxy global
-  constructor(private readonly clientProxy: ClientProxyMeetflow) { }
+  constructor(private readonly clientProxy: ClientProxyMeetflow) {}
 
   // Proyectos
   private _clientProxyProject = this.clientProxy.clientProxyProject();
 
   // Invitados
-/*   private _clientProxyGuest = this.clientProxy.clientProxyGuest(); */
+  /*   private _clientProxyGuest = this.clientProxy.clientProxyGuest(); */
 
   // cliente proxy de notificaciones
   private _clientProxyNotifications =
@@ -77,7 +76,7 @@ export class ProjectController {
     return await this._clientProxyProject.send(ProjectMSG.FIND_ONE, id);
   }
 
-    /*  
+  /*  
   Método para  obtener un proyecto a partir del id.
   entrada: id del proyecto. 
   salida: objeto del proyecto encontrada.  
@@ -99,7 +98,10 @@ export class ProjectController {
     @Param('id') id: string,
     @Body() projectDTO: ProjectDTO,
   ): Promise<Observable<IProject>> {
-    return await this._clientProxyProject.send(ProjectMSG.UPDATE, { id, projectDTO });
+    return await this._clientProxyProject.send(ProjectMSG.UPDATE, {
+      id,
+      projectDTO,
+    });
   }
 
   /*  
@@ -118,7 +120,7 @@ export class ProjectController {
   entrada: id del proyecto e id del invitado
   salida: objeto del proyecto con nuevo invitado añadido.  
   */
-/*   @Post(':projectId/guest/:guestId')
+  /*   @Post(':projectId/guest/:guestId')
   async addGuest(
     @Param('projectId') projectId: string,
     @Param('guestId') guestId: string,
@@ -142,7 +144,9 @@ export class ProjectController {
   @Get('/get/findByUser')
   @ApiOperation({ summary: 'encuentra proyect' })
   async findAllForUser(@Req() req: any) {
-    return await this._clientProxyProject.send('LIST_PROJECTS', req.user).toPromise();
+    return await this._clientProxyProject
+      .send('LIST_PROJECTS', req.user)
+      .toPromise();
   }
 
   /*  
@@ -157,25 +161,27 @@ export class ProjectController {
   ) {
     const params = {
       projectId: projectId,
-      memberEmail: memberEmail
-    }
+      memberEmail: memberEmail,
+    };
     return this._clientProxyProject.send(ProjectMSG.ADD_MEMBER, params);
   }
 
   /*  
-Metodo para notificar un usuario que ha sido invitado a un proyecto
-entrada: id de la acta dialógica y nuevos datos de la acta dialógica. 
-salida: objeto de la acta dialógica actualizada.
-*/
+  Metodo para notificar un usuario que ha sido invitado a un proyecto
+  entrada: id de la acta dialógica y nuevos datos de la acta dialógica.
+  salida: objeto de la acta dialógica actualizada.
+  */
   @Post('/notify/invite/member')
-  @ApiOperation({ summary: 'Notificar al usuario que ha sido invitado a un proyecto' })
+  @ApiOperation({
+    summary: 'Notificar al usuario que ha sido invitado a un proyecto',
+  })
   sendNotification(@Body() project: any, @Req() req: any) {
-    console.log("Solicitando enviar notificación", project);
-    console.log("desde", req.user);
+    console.log('Solicitando enviar notificación', project);
+    console.log('desde', req.user);
     const params = {
       project: project,
-      user: req.user
-    }
+      user: req.user,
+    };
     return this._clientProxyNotifications.send('SEND_INVITE_MEMBER', params);
   }
 
@@ -186,4 +192,52 @@ salida: objeto de la acta dialógica actualizada.
     return this._clientProxyProject.send('/public-info', projectId);
   }
 
+  // METODOS DE DEPTMEETING
+  @Post('/period')
+  @ApiOperation({ summary: 'Crear un periodo del consejo' })
+  async createPeriod(@Body() period: any) {
+    return await this._clientProxyProject
+      .send(PeriodMSG.CREATE, period)
+      .toPromise();
+  }
+
+  @Get('/period')
+  @ApiOperation({ summary: 'Obtener todos los periodos' })
+  async findAllPeriod() {
+    return await this._clientProxyProject
+      .send(PeriodMSG.FIND_ALL, '')
+      .toPromise();
+  }
+
+  @Put('/period/:id')
+  @ApiOperation({ summary: 'Actualizar un periodo' })
+  async updatePeriod(@Param('id') id: string, @Body() period: any) {
+    return await this._clientProxyProject
+      .send(PeriodMSG.UPDATE, { id, period })
+      .toPromise();
+  }
+
+  @Delete('/period/:id')
+  @ApiOperation({ summary: 'Borrar un periodo' })
+  async deletePeriod(@Param('id') id: string) {
+    return await this._clientProxyProject
+      .send(PeriodMSG.DELETE, id)
+      .toPromise();
+  }
+
+  @Put('/period/:id/commission/:idCommission')
+  @ApiOperation({ summary: 'Añadir una comisión a un periodo' })
+  async addCommission(@Param('id') id: string, @Param() idCommission: string) {
+    return await this._clientProxyProject
+      .send(PeriodMSG.ADD_COMMISSION, { id, idCommission })
+      .toPromise();
+  }
+
+  @Put('/period/:id/meeting/:idMeeting')
+  @ApiOperation({ summary: 'Añadir una reunión a un periodo' })
+  async addMeeting(@Param('id') id: string, @Param() idMeeting: string) {
+    return await this._clientProxyProject
+      .send(PeriodMSG.ADD_MEETING, { id, idMeeting })
+      .toPromise();
+  }
 }

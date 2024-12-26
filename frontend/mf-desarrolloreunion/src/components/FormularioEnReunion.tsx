@@ -385,7 +385,10 @@ const FormularioEnReunion: React.FC = () => {
 
     useEffect(() => {
         // websocket
-        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`);
+        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`, {path: '/socket.io'});
+        const socketAux = io(`${process.env.REACT_APP_BACKEND_IO}`);
+        console.log("socket: ", newSocket);
+        console.log("Socket aux: ", socketAux);
         setSocket(newSocket);
 
         newSocket.on('new_reload', () => {
@@ -957,6 +960,11 @@ const FormularioEnReunion: React.FC = () => {
     const openModalInfoReu = useCallback(() => setIsOpenInfoReu(true), []);
     const closeModalInfoReu = useCallback(() => setIsOpenInfoReu(false), []);
 
+    // Para modal dialog para "votacion"
+    const [isOpenVote, setIsOpenVote] = useState(false);
+    const openModalVote = useCallback(() => setIsOpenVote(true), []);
+    const closeModalVote = useCallback(() => setIsOpenVote(false), []);
+
     // **************************************************************************************************************************************************************************************** //
     // **************************************************************************************************************************************************************************************** //
     // **************************************************************************************************************************************************************************************** //
@@ -1154,7 +1162,7 @@ const FormularioEnReunion: React.FC = () => {
                     timeLimit: "",
                     // position: SOLO SI ES NECESARIO, AÑADIR LA POSICION
                     // isSort: SOLO SI ES NECESARIO, AÑADIR ESTE ATRIBUTO
-                    createdAt: new Date().toLocaleString('es-CL'),
+                    createdAt: new Date(), //.toLocaleString('es-CL'),
                     // updatedAt: TODAVIA NO ES NECESARIO
                 },{
                     headers: {
@@ -1278,7 +1286,7 @@ const FormularioEnReunion: React.FC = () => {
                     position: ((meetingminute?.cantElementos ?? 0) + 1).toString(),
                     dateLimit: "",
                     timeLimit: "",
-                    createdAt: new Date().toLocaleString('es-CL'),
+                    createdAt: new Date(), //.toLocaleString('es-CL'),
                     disagreement: {
                         firtPosition: {
                             responsible: listaParticipantesUno,
@@ -1398,7 +1406,7 @@ const FormularioEnReunion: React.FC = () => {
                     position: ((meetingminute?.cantElementos ?? 0) + 1).toString(),
                     dateLimit: "",
                     timeLimit: "",
-                    createdAt: new Date().toLocaleString('es-CL'),
+                    createdAt: new Date(), //.toLocaleString('es-CL'),
                 },{
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -1581,7 +1589,7 @@ const FormularioEnReunion: React.FC = () => {
                     timeLimit: "",
                     // position: SOLO SI ES NECESARIO, AÑADIR LA POSICION
                     // isSort: SOLO SI ES NECESARIO, AÑADIR ESTE ATRIBUTO
-                    createdAt: new Date().toLocaleString('es-CL'),
+                    createdAt: new Date(), //.toLocaleString('es-CL'),
                     // updatedAt: TODAVIA NO ES NECESARIO
                 },{
                     headers: {
@@ -1646,6 +1654,10 @@ const FormularioEnReunion: React.FC = () => {
         socket?.emit('event_reload', payload);
 
         closeModalTextoLibre();
+    }
+
+    const guardarVote = () => {
+
     }
 
     // Funcion encargada de emitir una alerta mediante websockets a los participantes de la reunion, de tal forma todos sepan que participante esta añadiendo un elemento a un respectivo tema
@@ -1960,6 +1972,13 @@ return (
                                                     <Inline alignInline="center">
                                                         <Image src={i__TextoLibreBlanco} alt="Simple example" testId="image" style={{ width: '48px', height: '48px', marginTop: '7px' }} /> 
                                                         <div style={{ marginTop: '11.72px', marginLeft: '7px' }}>Texto libre</div>
+                                                    </Inline>
+                                                </Button>
+
+                                                <Button appearance="primary" onClick={() => {openModalVote(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
+                                                    <Inline alignInline="center">
+                                                        <Image src={i__TextoLibreBlanco} alt="Simple example" testId="image" style={{ width: '48px', height: '48px', marginTop: '7px' }} />
+                                                        <div style={{ marginTop: '11.72px', marginLeft: '7px'}}>Votación</div>
                                                     </Inline>
                                                 </Button>
                                             </Inline>

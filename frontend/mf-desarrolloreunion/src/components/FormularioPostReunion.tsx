@@ -310,7 +310,7 @@ const FormularioPostReunion: React.FC = () => {
 
     useEffect(() => {
         // websocket
-        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`);
+        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}/chat`);
         setSocket(newSocket);
 
         // escuchar al evento de recarga de pagina

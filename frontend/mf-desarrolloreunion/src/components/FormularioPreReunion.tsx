@@ -380,7 +380,7 @@ const FormularioPreReunion: React.FC = () => {
 
 
         // websocket
-        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`);
+        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}/chat`);
         setSocket(newSocket);
 
         // Identificar al nuevo usuario conectado

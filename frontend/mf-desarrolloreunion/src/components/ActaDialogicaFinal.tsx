@@ -92,7 +92,7 @@ const ActaDialogicaFinal: React.FC = () => {
 
     useEffect(() => {
         // websocket
-        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`);
+        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`, {cert: '/etc/letsen', path: '/socket.io',});
         setSocket(newSocket);
 
         // Obtener los datos del usuario logeado
