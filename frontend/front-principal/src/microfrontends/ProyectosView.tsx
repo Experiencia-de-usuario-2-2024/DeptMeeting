@@ -11,7 +11,6 @@ const Proyectos = lazy(() => import("MF_PROYECTOS/Proyectos").catch(error => {
 
 const ProyectosView = () => {
 
-
     return (
         <div>
             <main>

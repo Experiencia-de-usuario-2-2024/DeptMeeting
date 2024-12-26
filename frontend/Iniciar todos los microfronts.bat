@@ -1,5 +1,6 @@
 @echo off
 REM Definir variables para las rutas comunes
+set BASE_PATH=C:\Users\Alexa\Desktop\Proyecto_ux\DeptMeeting\frontend
 
 REM Imprimir el valor de BASE_PATH en la consola
 echo El valor de BASE_PATH es: %BASE_PATH%

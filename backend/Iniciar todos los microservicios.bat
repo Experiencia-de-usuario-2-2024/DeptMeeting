@@ -1,6 +1,7 @@
 @echo off
 REM Definir variables para las rutas comunes
-set BASE_PATH=C:\Users\Pipet\Documents\Github\MemFollow-TextEdit-Backend\MicroServicios
+
+set BASE_PATH=C:\Users\Alexa\Desktop\Proyecto_ux\DeptMeeting\backend
 
 REM Array de directorios de microservicios
 set MS_DIRS=api-gateway ms-elements ms-meetingminutes ms-meetings ms-notifications ms-projects ms-users

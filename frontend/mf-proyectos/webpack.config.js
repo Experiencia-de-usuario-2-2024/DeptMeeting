@@ -5,7 +5,7 @@ const WebpackShellPluginNext = require('webpack-shell-plugin-next');
 const webpack = require("webpack"); // <-- Añadir esta linea
 const Dotenv = require("dotenv-webpack");
 // Cargar dotenv manualmente para verificación //descomentar si se quiere local
-//require('dotenv').config({ path: './.env.development' });
+require('dotenv').config({ path: './.env.development' });
 //console.log('Variables de entorno cargadas:', Object.fromEntries(
 //    Object.entries(process.env).filter(([key]) => key.startsWith('REACT_APP'))
 //  ));
@@ -74,7 +74,8 @@ module.exports = {
             name: "mf_proyectos", // Modificar -> listo
             filename: "remoteEntry.js",
             exposes: {
-                "./Proyectos": "./src/components/Proyectos", // Ejemplo, aqui se exponen los componentes -> listo
+                "./Proyectos": "./src/components/Proyectos",
+                "./PeriodosConsejos": "./src/components/PeriodosConsejos",// Ejemplo, aqui se exponen los componentes -> listo
             },
             shared: {
                 ...dependencies,
