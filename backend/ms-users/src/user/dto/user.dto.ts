@@ -7,6 +7,7 @@ export class UserDTO {
   institution: string; // institución del usuario -> NO SE UTILIZA
   type: string; // tipo de usuario (profesor, estudiante, invitado -> ESTE ULTIMO NO SE ESTA UTILIZANDO)
   password: string; // contraseña del usuario
+  googlePassword: string; // contraseña de google del usuario
   color: string; //  tag color que aparece en las siglas del nombre como perfil --> NO SE UTILIZA
   currentProject: string; // nombre del último proyecto visitado
   currentProjectId: string; // id del último proyecto visitado

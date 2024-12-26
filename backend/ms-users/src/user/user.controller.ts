@@ -1,6 +1,4 @@
-import {
-  Controller,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UserMSG } from 'src/common/constants';
@@ -9,9 +7,11 @@ import { UserService } from './user.service';
 
 @Controller()
 export class UserController {
-
   // Metodo de instanciacion de la clase UserController
-  constructor(private userService: UserService, private readonly jwtService: JwtService) { }
+  constructor(
+    private userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   /* 
   Modelo estructural de datos:
@@ -133,14 +133,16 @@ export class UserController {
         payload.password,
         user.password,
       );
-      if (isValidPassword) {
+      const isValidGooglePassword = await this.userService.checkPassword(
+        payload.googlePaswword,
+        user.googlePassword,
+      );
+      if (isValidPassword || isValidGooglePassword) {
         return user;
-      }
-      else {
+      } else {
         return null;
       }
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -155,8 +157,7 @@ export class UserController {
     const user = await this.userService.requestResetPassword(payload);
     if (user) {
       return user;
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -169,9 +170,6 @@ export class UserController {
   async countUsers(@Payload() payload): Promise<any> {
     return await this.userService.countUsers();
   }
-
-
-
 
   // ************************* NUEVOS METODOS ************************* //
   /*  
@@ -190,8 +188,4 @@ export class UserController {
     // console.log("CORREO QUE LLEGA en ms controller: ", payload.correo);
     return this.userService.updateByEmailVer2(payload.correo, payload.userDTO);
   }
-
-  
-
-
 }
