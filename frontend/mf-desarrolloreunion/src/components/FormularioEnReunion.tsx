@@ -5,6 +5,7 @@ import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
 import { Box, xcss } from '@atlaskit/primitives';
 import { DatePicker, DateTimePicker } from '@atlaskit/datetime-picker';
+import { Checkbox } from '@atlaskit/checkbox';
 import Button, { ButtonGroup } from '@atlaskit/button';
 import LoadingButton from '@atlaskit/button/loading-button';
 import Select, { ActionMeta, MultiValue, PropsValue } from 'react-select';
@@ -54,6 +55,7 @@ import i__DudaBlanco from "../assets/static/i__DudaBlanco.png";
 
 import i__TextoLibre from "../assets/static/i__TextoLibre.png";
 import i__TextoLibreBlanco from "../assets/static/i__TextoLibreBlanco.png";
+import TextField from "@atlaskit/textfield";
 
 
 var listaEstudiantes: string[] = [];
@@ -114,6 +116,7 @@ var correoElectronico: string;
 
 var idReunionAux: string;
 var idProyectoAux: string;
+const googleMeetLink = localStorage.getItem('googleMeetLink');
 
 // estados de la reunion (para la barra de progreso)
 const items: Stages = [
@@ -157,6 +160,9 @@ var numeroReunion: number;
 
 const FormularioEnReunion: React.FC = () => {
 
+    const [googleMeet, setGoogleMeet] = useState(googleMeetLink);
+    const [options, setOptions] = useState(['']);
+    const [error, setError] = useState(null);
     // para el popup del chat
     const [isOpen, setIsOpen] = useState(false)
 
@@ -197,6 +203,29 @@ const FormularioEnReunion: React.FC = () => {
 
     }, [messageListener]);
 
+    const handleAddOption = () => {
+        setOptions([...options, '']);
+    };
+
+    const handleRemoveOption = (index) => {
+        const updatedOptions = options.filter((_, i) => i !== index);
+        setOptions(updatedOptions);
+    };
+
+    const handleChangeOption = (index, value) => {
+        const updatedOptions = [...options];
+        updatedOptions[index] = value;
+        setOptions(updatedOptions);
+    };
+
+    const handleSubmit = (data) => {
+        if (options.length < 2 || options.some((opt) => opt.trim() === '')) {
+            setError('Debes tener al menos dos opciones válidas.');
+            return;
+        }
+        console.log('Datos enviados:', { ...data, options });
+        alert('¡Votación creada con éxito!');
+    };
 
     // Interfaz para ver los datos de un acta dialogica (meetingminute)
     interface MeetingMinute {
@@ -1706,7 +1735,8 @@ return (
                                 <Inline space="space.200">
                                     {/* fotos de los integrantes conectados */}
                                     <div style={{marginTop: '28px'}}>
-                                        <AvatarGroup appearance="stack" data={data} borderColor="#388BFF" size="large" maxCount={4}/>
+                                        <AvatarGroup appearance="stack" data={data} borderColor="#388BFF" size="large"
+                                                     maxCount={4}/>
                                     </div>
 
                                     {/* popup para colocar un chat en la reunion */}
@@ -1717,27 +1747,38 @@ return (
                                             placement="bottom-start"
 
                                             // aqui colocar el componente del chat
-                                            content={() =>  <Box xcss={contentStyles}>
-                                                                <MessagesInput send={send}/>
-                                                                <Messages messages={messages}/>
-                                                            </Box>}
+                                            content={() => <Box xcss={contentStyles}>
+                                                <MessagesInput send={send}/>
+                                                <Messages messages={messages}/>
+                                            </Box>}
 
                                             trigger={(triggerProps) => (
                                                 <Button
                                                     style={{height: 44}}
-                                                    iconBefore={<CommentIcon label="" size="medium" />}
+                                                    iconBefore={<CommentIcon label="" size="medium"/>}
                                                     {...triggerProps}
                                                     appearance="primary"
                                                     isSelected={isOpen}
                                                     onClick={() => setIsOpen(!isOpen)}
-                                                    >
+                                                >
                                                     {/* {isOpen ? 'Cerrar' : 'Abrir'} chat{' '} */}
-                                                    {isOpen ? '' : ''} <p style={{marginTop:3, marginBottom:0}}>chat</p>{' '}
+                                                    {isOpen ? '' : ''} <p
+                                                    style={{marginTop: 3, marginBottom: 0}}>chat</p>{' '}
                                                 </Button>
                                             )}
                                         />
                                         {/* IMPLEMENTACION DEL CHAT COMO UN DIALOGO MODAL, NO SE USARA */}
                                         {/* <Button appearance="primary" onClick={() => {openModalChat()}}>ABRIR CHAT</Button> */}
+                                    </div>
+                                    <div style={{marginTop: '28px'}}>
+                                        <Button
+                                            style={{height: 44}}
+                                            appearance="primary"
+                                            isDisabled={!googleMeet}
+                                            onClick={() => window.open(googleMeet, '_blank')}
+                                        >
+                                            <p style={{marginTop: 3, marginBottom: 0}}>Google Meet</p>{' '}
+                                        </Button>
                                     </div>
                                 </Inline>
                             </div>
@@ -1745,8 +1786,8 @@ return (
                             {/* CONTENIDO DEL MEDIO: barra de progreso */}
                             <div style={{textAlign: "center", height: '100px', width: '60%', backgroundColor: 'white'}}>
                                 {/* barra de progreso en la renuion fija en pantalla*/}
-                                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <ProgressTracker items={items} />
+                                <div style={{display: 'flex', justifyContent: 'center'}}>
+                                    <ProgressTracker items={items}/>
                                 </div>
                             </div>
 
@@ -2715,6 +2756,112 @@ return (
                     )}
                     </Form>
                 </Modal>
+                )}
+            </ModalTransition>
+
+            {/* ********************************************************************************************************************************************************** */}
+            {/* ******************************************************************** Modal dialog de DESACUERDO ********************************************************** */}
+            {/* ********************************************************************************************************************************************************** */}
+            <ModalTransition>
+                {isOpenVote && (
+                    <Modal onClose={closeModalVote} shouldScrollInViewport>
+
+
+                        <Form<{ username: string }>
+                            onSubmit={(data) => {
+                                // console.log('form data', data);
+                                return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
+                                    data.username === 'error' ? { username: 'IN_USE' } : undefined,
+                                );
+                            }}
+                        >
+                            {/* <form> */}
+                            {({ formProps, submitting }) => (
+                                <form {...formProps}>
+
+                                    <ModalHeader>
+                                        <ModalTitle>Crear votacion</ModalTitle>
+                                    </ModalHeader>
+                                    <ModalBody>
+
+                                        {/* Campo para que escriban el origenDesacuerdo */}
+                                        <Field
+                                            id="origenDesacuerdo"
+                                            name="origenDesacuerdo"
+                                            label="Escriba el titulo de la votación"
+                                            isRequired
+                                        >
+                                            {({ fieldProps }) => (
+                                                <Fragment>
+                                                    {({ fieldProps }) => <TextField {...fieldProps} placeholder="Título de la votación" />}
+                                                    {/* <HelperMessage>
+                                    {name ? `Hello, ${name}` : ''}
+                                </HelperMessage> */}
+                                                </Fragment>
+                                            )}
+                                        </Field>
+
+                                        {/* Campo para indicar dueño de la postura uno */}
+                                        <Field
+                                            aria-required={true}
+                                            name="listaParticipantesUno"
+                                            defaultValue=""
+                                            label="Dueño de la primera postura"
+                                        >
+                                            {({ fieldProps, error, valid }) =>
+                                                (
+
+                                                    <TextArea {...fieldProps} placeholder="Opcional: describe los detalles" />
+                                                )}
+                                        </Field>
+
+                                        {/* Opciones */}
+                                        <h4>Opciones de votación</h4>
+                                        {options.map((option, index) => (
+                                            <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+                                                <TextField
+                                                    placeholder={`Opción ${index + 1}`}
+                                                    value={option}
+                                                    onChange={(e) => handleChangeOption(index, e.target.value)}
+                                                />
+                                                <Button
+                                                    appearance="danger"
+                                                    onClick={() => handleRemoveOption(index)}
+                                                    isDisabled={options.length <= 2}
+                                                    style={{ marginLeft: 8 }}
+                                                >
+                                                    Eliminar
+                                                </Button>
+                                            </div>
+                                        ))}
+                                        <Button appearance="primary" onClick={handleAddOption}>
+                                            Agregar opción
+                                        </Button>
+                                        {error && <p style={{ color: 'red' }}>{error}</p>}
+
+                                        {/* Fecha límite */}
+                                        <Field name="deadline" label="Fecha límite para votar">
+                                            {({ fieldProps }) => <DatePicker {...fieldProps} placeholder="Selecciona una fecha" />}
+                                        </Field>
+
+                                        {/* Anónimo */}
+                                        <Field name="isAnonymous" label="Votación anónima" defaultValue={false}>
+                                            {({ fieldProps }) => <Checkbox {...fieldProps} label="Permitir votos anónimos" />}
+                                        </Field>
+
+                                    </ModalBody>
+                                    <ModalFooter>
+                                        <Button appearance="subtle" onClick={closeModalDesacuerdo}>
+                                            Cancelar Votación
+                                        </Button>
+                                        <Button appearance="primary" onClick={() => handleSubmit()} type="submit">
+                                            Crear votación
+                                        </Button>
+                                    </ModalFooter>
+                                </form>
+                            )}
+                        </Form>
+                    </Modal>
                 )}
             </ModalTransition>
 

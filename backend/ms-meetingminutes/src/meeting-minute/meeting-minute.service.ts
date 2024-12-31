@@ -7,18 +7,20 @@ import { MeetingMinuteDTO } from './dto/meeting-minute.dto';
 
 @Injectable()
 export class MeetingMinuteService {
-
   constructor(
     @InjectModel(MEETINGMINUTE.name)
-    private readonly model: Model<IMeetingMinute>
-  ) { }
+    private readonly model: Model<IMeetingMinute>,
+  ) {}
 
   /*  
      Método para crear una nueva acta dialógica.
      entrada: datos del acta dialógica. 
      salida: objeto de nueva acta dialógica.  
   */
-  async create(meetingMinuteDTO: MeetingMinuteDTO, user: any): Promise<IMeetingMinute> {
+  async create(
+    meetingMinuteDTO: MeetingMinuteDTO,
+    user: any,
+  ): Promise<IMeetingMinute> {
     const newMeetingMinute = new this.model(meetingMinuteDTO);
     return await newMeetingMinute.save();
   }
@@ -28,7 +30,7 @@ export class MeetingMinuteService {
     salida: objeto de actas dialógicas encontradas. 
   */
   async findAll(): Promise<any[]> {
-    console.log("Buscando en la base de datos todas las actas")
+    console.log('Buscando en la base de datos todas las actas');
     return await this.model.find();
   }
 
@@ -65,15 +67,18 @@ export class MeetingMinuteService {
     await this.model.findByIdAndDelete(id);
     return {
       status: HttpStatus.OK,
-      msg: 'Deleted'
-    }
+      msg: 'Deleted',
+    };
   }
-
 
   // metodos nuevos
   async encontrarPorReunion(idReunion: string): Promise<any> {
+    console.log(
+      'Buscando en la base de datos todas las actas de la reunion: ',
+      idReunion,
+    );
     const meetingMinute = await this.model.find({ meeting: idReunion });
+    console.log('Actas encontradas: ', meetingMinute);
     return meetingMinute;
   }
-
 }

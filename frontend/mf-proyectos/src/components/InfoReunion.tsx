@@ -53,7 +53,7 @@ const InfoReunion: React.FC = () => {
     // Para determinar si se muestra en la parte central el acta dialogica o no (en cualquiera que sea su etapa, pre, in, post o finalizada)
     const [verActaDialogica, setVerActaDialogica] = React.useState(false);
 
-    // Para guardar los datos de la runion
+    // Para guardar los datos de la reunion
     const [reunionProyecto, setReunionProyecto] = React.useState<Reunion>(); 
     const [reunionNueva, setReunionNueva] = React.useState(false); 
 

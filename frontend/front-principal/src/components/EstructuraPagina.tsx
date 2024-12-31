@@ -6,6 +6,7 @@ import DesarrolloReunionView from "../microfrontends/DesarrolloReunionView";
 import InformacionView from "../microfrontends/InformacionView";
 import TareasView from "../microfrontends/TareasView";
 import KanbanPlusView from "../microfrontends/KanbanPlusView";
+import PeriodosConsejosView from "../microfrontends/PeriodosConsejosView";
 
 import ListIcon from '@atlaskit/icon/glyph/list'
 import HomeIcon from '@atlaskit/icon/glyph/home'
@@ -445,8 +446,9 @@ const EstructuraPagina = () =>{
                     {/* CONTENIDO DEL SIDEBAR IZQUIERDO */}
                     {/* <SlotLabel>LeftSidebar</SlotLabel>
                     <ToggleFixed slotName="LeftSidebar" />
-                    <ToggleScrollable slotName="LeftSidebar" /> */}
-                    <ProyectosView />
+                    <ToggleScrollable slotName="LeftSidebar" />
+                    <ProyectosView />*/}
+                    <PeriodosConsejosView/>
                 </SlotWrapper>
                 {/* CONTENIDO AQUI */}
                 </LeftSidebarWithoutResize>

@@ -77,7 +77,7 @@ export class MeetingMinuteController {
 
 
     // metodos nuevos
-    @MessagePattern("encontrarPorReunion")
+    @MessagePattern("FIND_BY_MEETING")
     encontrarPorReunion(@Payload() payload: any) {
         return this.meetingMinuteService.encontrarPorReunion(payload);
     }

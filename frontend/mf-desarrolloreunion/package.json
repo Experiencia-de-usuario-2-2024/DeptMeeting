@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@atlaskit/avatar-group": "^9.5.3",
+    "@atlaskit/checkbox": "^15.2.2",
     "@atlaskit/css-reset": "^6.6.1",
     "@atlaskit/page-layout": "^3.1.4",
     "@atlaskit/popup": "^1.14.0",

@@ -8,6 +8,8 @@ export class MeetingDTO {
     state: string; // estado de la reunión (new, pre-meeting, in-meeting, post-meeting, finish)
     project: string[]; // id del proyecto asociado
     _id: string; // id
+    googleMeetLikn: string; // link de la reunión en google meet
+    googleCalendarEvent: string; // evento en google calendar
     createdAt: Date; // fecha de creación
     updatedAt: Date; // fecha de actualización
     invitados: string[]; // correos de los invitados

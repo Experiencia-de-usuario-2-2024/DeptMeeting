@@ -5,7 +5,7 @@ import LoadingButton from '@atlaskit/button/loading-button';
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
 
 import { jwtDecode } from 'jwt-decode';
-import Proyectos from "./Proyectos";
+import Proyectos from "./Proyectos"; //cambiar a comisiones
 
 import TextField from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
@@ -21,7 +21,7 @@ import Select, { ActionMeta, PropsValue } from 'react-select';
 let miembrosOriginales: string[] = [];
 let emailUsuarioPerfil: string = "";
 
-const FormularioNuevoProyecto: React.FC = () => {
+const FormularioNuevaComision: React.FC = () => {
 
     // Interfaz utilizada para mostrar datos del usuario en el select
     interface Estudiantes {
@@ -186,12 +186,14 @@ const FormularioNuevoProyecto: React.FC = () => {
 
         //  1. Realizar peticion para crear proyecto
         async function peticionCrearProyecto() {
-            try {            
+            try {
+                const period = localStorage.getItem('periodoSeleccionado')
                 const responseProyecto = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/project/create`, {
                     shortName: shortNameValue,
                     name: nameValue,
                     description: descriptionValueVer2,
-                    userOwner: userOwnerValue
+                    userOwner: userOwnerValue,
+                    idPeriod: JSON.parse(period)._id
                 }, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -298,7 +300,7 @@ const FormularioNuevoProyecto: React.FC = () => {
             aria-required={true}
             name="shortName"
             defaultValue=""
-            label="Nombre abreviado del proyecto"
+            label="Nombre abreviado de la comisión"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -309,7 +311,7 @@ const FormularioNuevoProyecto: React.FC = () => {
             aria-required={true}
             name="name"
             defaultValue=""
-            label="Nombre del proyecto"
+            label="Nombre de la comisión"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -321,7 +323,7 @@ const FormularioNuevoProyecto: React.FC = () => {
             aria-required={true}
             name="descriptionVer2"
             defaultValue=""
-            label="Descripción del proyecto"
+            label="Descripción de la comision"
             isRequired
         >
             {({ fieldProps }) => <TextArea {...fieldProps} onChange={(event) => fieldProps.onChange(event.target.value)} />}
@@ -333,7 +335,7 @@ const FormularioNuevoProyecto: React.FC = () => {
             aria-required={true}
             name="description"
             defaultValue=""
-            label="Descripción del proyecto"
+            label="Descripción de la comsión"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -400,7 +402,7 @@ const FormularioNuevoProyecto: React.FC = () => {
                             flexDirection: 'column',
                         }}
                     >
-                    <h1>Creación de nuevo proyecto</h1>
+                    <h1>Creación de nueva comisión</h1>
                         <Form<{ username: string }>
                             onSubmit={(data) => {
                                 return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
@@ -430,7 +432,7 @@ const FormularioNuevoProyecto: React.FC = () => {
                                                 onClick={() => crearProyecto()}
                                                 style={{ marginLeft: '5px' }}
                                             >
-                                                Crear proyecto
+                                                Crear comisión
                                             </LoadingButton>
                                         </ButtonGroup>
                                     </FormFooter>
@@ -448,4 +450,4 @@ const FormularioNuevoProyecto: React.FC = () => {
 
 };
 
-export default FormularioNuevoProyecto;
+export default FormularioNuevaComision;

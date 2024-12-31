@@ -36,6 +36,7 @@ import io, { Socket } from "socket.io-client";
 import FormularioEnReunion from "./FormularioEnReunion";
 import MessagesInput from "./MessageInput";
 import Messages from "./Messages";
+import actaDialogicaFinal from "./ActaDialogicaFinal";
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
@@ -45,6 +46,7 @@ const accessToken = localStorage.getItem('accessToken');
 const tipoDeUsuario = localStorage.getItem('tipoUsuario');
 
 const descripcionReunion = localStorage.getItem('descripcionReunion');
+const googleMeetLink = localStorage.getItem('googleMeetLink');
 
 var correoUserOwner: string = "";
 correoUserOwner = localStorage.getItem('userOwner') ?? "";
@@ -152,6 +154,7 @@ const FormularioPreReunion: React.FC = () => {
 
     // par el envio de mensajes mediante websockets
     const [messages, setMessages] = useState<string[]>([]);
+    const [googleMeet, setGoogleMeet] = useState(googleMeetLink);
 
     // funciona separando el chat en salas
     const send = (value:string) => {
@@ -349,7 +352,7 @@ const FormularioPreReunion: React.FC = () => {
     const [temasUsuario, setTemasUsuarios] = React.useState<string[]>();
 
     // para guardar los datos del acta dialogica (meetingminute)
-    const [meetingminute, setMeetingMinute] = React.useState<MeetingMinute>();
+    const [meetingminute, setMeetingMinute] = React.useState<MeetingMinute>(null);
 
     const [listaParticipantes, setListaParticipantes] = React.useState<Usuario[]>([]);
     var listaParticipantesAux: Usuario[] = [];
@@ -469,6 +472,13 @@ const FormularioPreReunion: React.FC = () => {
                     listaTemas.push("Revisar compromisos previos");
                     setTemasUsuarios(listaTemas);
                 }
+                if (response.data.googleMeetLink){
+                    localStorage.setItem('googleMeetLink', response.data.googleMeetLink);
+                    setGoogleMeet(response.data.googleMeetLink);
+                }else {
+                    localStorage.removeItem('googleMeetLink');
+                    setGoogleMeet("");
+                }
 
             } catch (error) {
                 console.error(error);
@@ -575,6 +585,48 @@ const FormularioPreReunion: React.FC = () => {
             setEstudiantesNoProyecto(estudiantesFueraProyectoAux);
         }
 
+        async function obtenerMeetingMinutePorIdReunion() {
+            try {
+                console.log("Estoy chato ctm:", idReunion);
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/meeting/` + idReunion, {
+                    headers: {
+                        Authorization: `Bearer ${tokenUser}`
+                    }
+                });
+                console.log("INFORMACION DEL ACTA DIALOGICA AL RECUPERAR ACTA *** PRE REUNION ***");
+                console.log(response.data);
+                if (response.data){
+                    setMeetingMinute(response.data[0]);
+                    nombreCortoProyectoAux = response.data[0].nombreCortoProyecto;
+                    const anfitrionEmail = response.data[0].leaders[0];
+                    setSelectedAnfitriones({ value: anfitrionEmail, label: anfitrionEmail, email: anfitrionEmail });
+                    const secretarioEmail = response.data[0].secretaries[0];
+                    setSelectedSecretario({value: secretarioEmail, label: secretarioEmail, email: secretarioEmail});
+                    const participantesEmail = response.data[0].participants.map((email: string) => ({
+                        value: email,
+                        label: email,
+                        email: email,
+                    }));
+                    setSelectedInvitados(participantesEmail);
+                    localStorage.setItem('iniciarFormulario', JSON.stringify(true));
+                    const storedValue2 = localStorage.getItem('iniciarFormulario');
+                    if (storedValue2) {
+                        const parsedValue2 = JSON.parse(storedValue2);
+                        setIniciarFormulario(parsedValue2);
+                    }
+                    fechaInicioValue = response.data[0].startTime + "T" + response.data[0].startHour;
+                    fechaTerminoValue = response.data[0].endTime + "T" + response.data[0].endHour;
+                    objetivoValue = response.data[0].title;
+                    lugarValue = response.data[0].place;
+                    secretarioValue = response.data[0].secretaries[0];
+                    listaParticipantesValueFinal = response.data[0].participants;
+                    listaAnfitrionesValueFinal = response.data[0].leaders;
+                }
+            } catch (error) {
+                console.log("ERROR AL OBTENER LA INFORMACION DEL ACTA DIALOGICA");
+                console.error(error);
+            }
+        }
 
         // asegurar que las funciones se ejecuten en el orden establecido
         const fetchData = async () => {
@@ -588,6 +640,7 @@ const FormularioPreReunion: React.FC = () => {
 
             await obtenerProyectoPorId();
             await filtrarEstudiantesProyecto();
+            await obtenerMeetingMinutePorIdReunion();
         };
         fetchData();
 
@@ -606,7 +659,7 @@ const FormularioPreReunion: React.FC = () => {
     // Entrada: ninguna
     // Salida: ninguna (guardar en variables globales los datos del formulario 1)
     // Funcion que se encarga de guardar los datos del formulario 1 en variables globales
-    const guardarFormulario1 = () => {
+    const guardarFormulario1 = async () => {
 
 
         console.log("Me caigo1? No");
@@ -717,7 +770,6 @@ const FormularioPreReunion: React.FC = () => {
 
         // console.log("Participantes: ", listaParticipantesValue);
 
-        console.log("Me caigo2? No");
         const data = {
             accessToken: accessToken,
             eventDetails: {
@@ -742,12 +794,11 @@ const FormularioPreReunion: React.FC = () => {
                 },
             }
         }
-        console.log("Me caigo3? No");
-        console.log("HOLA", data);
 
+        let newLinkMeet = "";
+        let eventCalendar = "";
         const createEvent = async () => {
             try {
-                console.log("Me caigo4? No");
                 const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/event`, {data}, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -755,14 +806,76 @@ const FormularioPreReunion: React.FC = () => {
                 });
                 console.log("Evento creado exitosamente en Google Calendar");
                 console.log(response.data);
+                localStorage.setItem('googleMeetLink', response.data.hangoutLink);
+                setGoogleMeet(response.data.hangoutLink);
+                newLinkMeet = response.data.hangoutLink;
+                eventCalendar = response.data.htmlLink;
             } catch (error) {
                 console.error(error);
             }
         }
-        createEvent();
+        await createEvent();
 
+        const actualizarMeeting = async () => {
+            try {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/` + localStorage.getItem('idReunion'), {
+                    googleMeetLink: newLinkMeet,
+                    googleCalendarEvent: eventCalendar,
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${tokenUser}`
+                    }
+                });
+                console.log("Google Meet Link actualizado exitosamente");
+                console.log(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
 
-        console.log("Me caí");
+        await actualizarMeeting();
+
+        const crearActaParaPrereunion = async () => {
+            console.log("ENTRE CTM");
+            const idReunion = localStorage.getItem('idReunion') ?? ''; // id de la reunion traido desde local storage
+            try {
+                listaParticipantesValueFinal = listaParticipantesValueFinal.concat(listaParticipantesFueraProyectoValueFinal);
+                // eliminar todos los elementos vacios de la lista de participantes -> en caso de que no se hayan añadido invitados externos al proyecto
+                listaParticipantesValueFinal = listaParticipantesValueFinal.filter((participante) => participante !== '');
+                listaAnfitrionesValueFinal = listaAnfitrionesValueFinal.filter((anfitrion) => anfitrion !== '');
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute`, {
+                    title: objetivoValue,
+                    place: lugarValue,
+                    startTime: fechaInicio,
+                    endTime: fechaTermino,
+                    startHour: horaInicio,
+                    endHour: horaTermino,
+                    // La hora de inicio se indicara en el componente "FormularioEnReunion", esto cuando el anfitrion presione "Comenzar Reunion"
+                    participants: listaParticipantesValueFinal,
+                    secretaries: [secretarioValue],
+                    leaders: listaAnfitrionesValueFinal,
+                    meeting: idReunion,
+                    number: reunion?.number,
+                    fase: "pre-reunión",
+                    cantElementos: 0,
+                    nombreCortoProyecto: nombreCortoProyectoAux,
+                    comenzoReunion: false,
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${tokenUser}`
+                    }
+                });
+                console.log("Acta creada exitosamente");
+                console.log(response.data);
+                setMeetingMinute(response.data)
+                // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
+                localStorage.setItem('idMeetingMinute', response.data._id);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        await crearActaParaPrereunion();
+
         window.alert("Informacion guardada correctamente");
     }
 
@@ -909,7 +1022,7 @@ const FormularioPreReunion: React.FC = () => {
                 // eliminar todos los elementos vacios de la lista de participantes -> en caso de que no se hayan añadido invitados externos al proyecto
                 listaParticipantesValueFinal = listaParticipantesValueFinal.filter((participante) => participante !== '');
                 listaAnfitrionesValueFinal = listaAnfitrionesValueFinal.filter((anfitrion) => anfitrion !== '');
-                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute`, {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute`,{
                     title: objetivoValue,
                     place: lugarValue,
                     startTime: fechaInicio,
@@ -1095,7 +1208,7 @@ const FormularioPreReunion: React.FC = () => {
         <Field
             aria-required={true}
             name="objetivo"
-            defaultValue= {descripcionReunion}
+            defaultValue= {meetingminute?.place || descripcionReunion}
             label="Objetivo de la reunión"
             isRequired
         >
@@ -1108,7 +1221,7 @@ const FormularioPreReunion: React.FC = () => {
         <Field
             aria-required={true}
             name="lugar"
-            defaultValue=""
+            defaultValue={meetingminute?.place || ""}
             label="Lugar de la reunión (puede ser online, en tal caso indicar plataforma y enlace)"
             isRequired
         >
@@ -1121,7 +1234,7 @@ const FormularioPreReunion: React.FC = () => {
         <Field
             name="fechaInicio"
             label="Fecha y hora de inicio"
-            // defaultValue={new Date().toISOString()}
+            defaultValue={meetingminute?.startTime && meetingminute?.startHour ? meetingminute?.startTime + "T" + meetingminute?.startHour : ""}
             isRequired
         >
             {({ fieldProps: { id, ...rest }, error }) => {
@@ -1161,7 +1274,7 @@ const FormularioPreReunion: React.FC = () => {
         <Field
             name="fechaTermino"
             label="Fecha y hora de término"
-            // defaultValue={new Date().toISOString()}
+            defaultValue={meetingminute?.endTime && meetingminute?.endHour ? meetingminute?.endTime + "T" + meetingminute?.endHour : ""}
             isRequired
         >
             {({ fieldProps: { id, ...rest }, error }) => {
@@ -1205,7 +1318,7 @@ const FormularioPreReunion: React.FC = () => {
             <Field
                 aria-required={true}
                 name="listaParticipantes"
-                defaultValue=""
+                //defaultValue={meetingminute.participants?.map((participante: string) => participante) || ""}
                 label="Invitados/as del proyecto a la reunión"
                 isRequired
             >
@@ -1239,7 +1352,7 @@ const FormularioPreReunion: React.FC = () => {
             <Field
                 aria-required={true}
                 name="listaParticipantesNoProyecto"
-                defaultValue=""
+                //defaultValue=""
                 label="Invitados/as fuera del proyecto a la reunión"
             // isRequired -> no es necesario
             >
@@ -1271,7 +1384,6 @@ const FormularioPreReunion: React.FC = () => {
             <Field
                 aria-required={true}
                 name="listaAnfitriones"
-                defaultValue={correoElectronico}
                 label="Anfitrión/a de la reunión"
                 isRequired
             >
@@ -1281,7 +1393,7 @@ const FormularioPreReunion: React.FC = () => {
                     <Select
                         {...fieldProps}
                         // isMulti -> solamente se puede un anfitrion
-                        // defaultValue={[{ value: estudiantesEnProyecto[1].email, label: estudiantesEnProyecto[1].email, email: estudiantesEnProyecto[1].email }]}
+                        // //defaultValue={[{ value: estudiantesEnProyecto[1].email, label: estudiantesEnProyecto[1].email, email: estudiantesEnProyecto[1].email }]}
                         options={estudiantesEnProyecto.map((estudiante) => ({ value: estudiante.email, label: estudiante.email, email: estudiante.email }))}
                         value={selectedAnfitriones}
                         onChange={(newValue: PropsValue<Estudiantes>, actionMeta: ActionMeta<Estudiantes>) => {
@@ -1303,7 +1415,7 @@ const FormularioPreReunion: React.FC = () => {
             <Field
                 aria-required={true}
                 name="secretario"
-                defaultValue=""
+                //defaultValue=""
                 label="Secretario/a de la reunión"
                 isRequired
             >
@@ -1487,6 +1599,16 @@ const FormularioPreReunion: React.FC = () => {
                                                         )}
                                                     />
                                                 </div>
+                                                <div style={{marginTop: '28px'}}>
+                                                    <Button
+                                                        style={{height: 44}}
+                                                        appearance="primary"
+                                                        isDisabled={!googleMeet}
+                                                        onClick={() => window.open(googleMeet, '_blank')}
+                                                    >
+                                                        <p style={{marginTop: 3, marginBottom: 0}}>Google Meet</p>{' '}
+                                                    </Button>
+                                                </div>
                                             </Inline>
                                         </div>
 
@@ -1568,6 +1690,7 @@ const FormularioPreReunion: React.FC = () => {
                                                 <Button
                                                     type="submit"
                                                     appearance="primary"
+                                                    isDisabled={iniciarFormulario}
                                                     onClick={() => guardarFormulario1()}
                                                     // style={{ marginLeft: '5px' }}
                                                 >

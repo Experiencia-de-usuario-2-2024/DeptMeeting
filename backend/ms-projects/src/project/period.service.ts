@@ -27,6 +27,10 @@ export class PeriodService {
     return await this.model.find().populate('commissions');
   }
 
+  async findById(id: string): Promise<IPeriod> {
+    return await this.model.findById(id);
+  }
+
   /*
     Método para actualizar un periodo a partir del id.
     entrada: id del periodo y nuevos datos del periodo.

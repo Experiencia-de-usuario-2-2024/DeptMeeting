@@ -39,6 +39,7 @@ import Messages from "./Messages";
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
+const googleMeetLink = localStorage.getItem('googleMeetLink');
 
 var numeroTemaSeleccionado: number;
 
@@ -124,6 +125,7 @@ var estadoReunion: string;
 
 const FormularioPostReunion: React.FC = () => {
 
+    const [googleMeet, setGoogleMeet] = useState(googleMeetLink);
     // para el popup de la informacion de la reunion
     const [isOpenInformacion, setIsOpenInformacion] = useState(false)
 
@@ -810,12 +812,13 @@ const FormularioPostReunion: React.FC = () => {
                             <div style={{ textAlign: "left", height: '100px', width: '550px', backgroundColor: 'white' }}>
                                 <Inline space="space.200">
                                     {/* fotos de los integrantes conectados */}
-                                    <div style={{ marginTop: '28px' }}>
-                                        <AvatarGroup appearance="stack" data={data} borderColor="#388BFF" size="large" maxCount={4} />
+                                    <div style={{marginTop: '28px'}}>
+                                        <AvatarGroup appearance="stack" data={data} borderColor="#388BFF" size="large"
+                                                     maxCount={4}/>
                                     </div>
 
                                     {/* popup para colocar un chat en la reunion */}
-                                    <div style={{ marginTop: '28px' }}>
+                                    <div style={{marginTop: '28px'}}>
                                         <Popup
                                             isOpen={isOpen}
                                             onClose={() => setIsOpen(false)}
@@ -823,35 +826,46 @@ const FormularioPostReunion: React.FC = () => {
 
                                             // aqui colocar el componente del chat
                                             content={() => <Box xcss={contentStyles}>
-                                                <MessagesInput send={send} />
-                                                <Messages messages={messages} />
+                                                <MessagesInput send={send}/>
+                                                <Messages messages={messages}/>
                                             </Box>}
 
                                             trigger={(triggerProps) => (
                                                 <Button
-                                                    style={{ height: 44 }}
-                                                    iconBefore={<CommentIcon label="" size="medium" />}
+                                                    style={{height: 44}}
+                                                    iconBefore={<CommentIcon label="" size="medium"/>}
                                                     {...triggerProps}
                                                     appearance="primary"
                                                     isSelected={isOpen}
                                                     onClick={() => setIsOpen(!isOpen)}
                                                 >
                                                     {/* {isOpen ? 'Cerrar' : 'Abrir'} chat{' '} */}
-                                                    {isOpen ? '' : ''} <p style={{ marginTop: 3, marginBottom: 0 }}>chat</p>{' '}
+                                                    {isOpen ? '' : ''} <p
+                                                    style={{marginTop: 3, marginBottom: 0}}>chat</p>{' '}
                                                 </Button>
                                             )}
                                         />
                                         {/* IMPLEMENTACION DEL CHAT COMO UN DIALOGO MODAL, NO SE USARA */}
                                         {/* <Button appearance="primary" onClick={() => {openModalChat()}}>ABRIR CHAT</Button> */}
                                     </div>
+                                    <div style={{marginTop: '28px'}}>
+                                        <Button
+                                            style={{height: 44}}
+                                            appearance="primary"
+                                            isDisabled={!googleMeet}
+                                            onClick={() => window.open(googleMeet, '_blank')}
+                                        >
+                                            <p style={{marginTop: 3, marginBottom: 0}}>Google Meet</p>{' '}
+                                        </Button>
+                                    </div>
                                 </Inline>
                             </div>
 
                             {/* CONTENIDO DEL MEDIO: barra de progreso */}
-                            <div style={{ textAlign: "center", height: '100px', width: '60%', backgroundColor: 'white' }}>
+                            <div style={{textAlign: "center", height: '100px', width: '60%', backgroundColor: 'white'}}>
                                 {/* barra de progreso en la renuion fija en pantalla*/}
-                                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <ProgressTracker items={items} />
+                                <div style={{display: 'flex', justifyContent: 'center'}}>
+                                    <ProgressTracker items={items}/>
                                 </div>
                             </div>
 
