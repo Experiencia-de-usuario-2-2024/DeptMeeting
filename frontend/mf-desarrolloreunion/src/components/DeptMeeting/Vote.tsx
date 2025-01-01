@@ -18,19 +18,22 @@ interface VoteELementProps {
     dateLimit: string;
     vote:   {
         type: string,
-        options: [ {option: string, votes: number} ],
-        voters: [ {voter: string, option: string} ],
+        options: {option: string, votes: number, _id: string}[],
+        voters: {voter: string, option: string}[],
         result: string,
-    }
+    };
 }
 
 
 
-const Vote: React.FC<VoteELementProps> = ({ voteElement }) => {
+const Vote: React.FC<{voteElement: VoteELementProps}> = ( {voteElement }) => {
     const [options, setOptions] = useState<string[]>([]);
     const [votes, setVotes] = useState<number[]>(Array(options.length).fill(0));
     const [voted, setVoted] = useState(false);
+    const [correoElectronico, setCorreoElectronico] = useState<string | null>(null);
     const totalVotes = votes.reduce((a, b) => a + b, 0);
+    const [tokenUser, setTokenUser] = useState<string | null>(null);
+
 
     const handleVote = (index: number) => {
         if (!voted) {
@@ -44,12 +47,16 @@ const Vote: React.FC<VoteELementProps> = ({ voteElement }) => {
 
     const SaveVote = async (index: number) => {
         try {
-            const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEAWY}/element/${voteElement._id}`, {
-                    voter: {
-                        email: correoElectronico,
-                        option: options[index],
-                    },
+            const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/element/${voteElement._id}/vote`,
+                {
+                    email: correoElectronico,
+                    option: options[index],
                 },
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenUser}`
+                    },
+               },
             );
         } catch (error) {
             console.error(error);
@@ -58,8 +65,15 @@ const Vote: React.FC<VoteELementProps> = ({ voteElement }) => {
 
 
     useEffect(() => {
-        console.log("votacion element: ", voteElement);
-        if (voteElement) {
+        const tokenUser = localStorage.getItem('tokenUser');
+        setTokenUser(tokenUser);
+        const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
+        if( decodedToken && voteElement){
+            setCorreoElectronico(decodedToken.email);
+            console.log("El token es: ", decodedToken.email);
+            if (voteElement.vote.voters.some((voter) => voter.voter === decodedToken.email)) {
+                setVoted(true);
+            }
             setOptions(voteElement.vote.options.map((option) => option.option));
             setVotes(voteElement.vote.options.map((option) => option.votes));
             console.log("El correo electronico es: ", correoElectronico);
@@ -68,7 +82,7 @@ const Vote: React.FC<VoteELementProps> = ({ voteElement }) => {
 
     return (
         <div style={{ padding: "20px", maxWidth: "500px", margin: "auto" }}>
-            <h2 style={{ textAlign: "center" }}>{voteElement.description}</h2>
+            <h2 style={{ textAlign: "center" }}>{voteElement.number}.{voteElement.position}  {voteElement.description}</h2>
 
             {voted && (
                 <SectionMessage title="¡Gracias por votar!" appearance="confirmation">
@@ -93,23 +107,24 @@ const Vote: React.FC<VoteELementProps> = ({ voteElement }) => {
                             alignItems: "center",
                         }}
                     >
-                        <span style={{ fontWeight: 500 }}>{option}</span>
+                        <span style={{ fontWeight: 700 }}>{option}</span>
                         <Button
+                            style={{ margin: "7px"}}
                             appearance="primary"
                             isDisabled={voted}
                             onClick={() => handleVote(index)}
                         >
-                            Vote
+                            Votar
                         </Button>
                     </div>
                     <ProgressBar
                         value={totalVotes === 0 ? 0 : votes[index] / totalVotes}
                     />
                     <span>
-            {votes[index]} vote{votes[index] !== 1 && "s"} (
+            {votes[index]} voto{votes[index] !== 1 && "s"} (
                         {totalVotes === 0
                             ? "0%"
-                            : ((votes[index] / totalVotes) * 100).toFixed(2) + "%"})
+                            : ((votes[index] / totalVotes) * 100).toFixed(1) + "%"})
           </span>
                 </div>
             ))}

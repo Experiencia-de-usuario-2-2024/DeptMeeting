@@ -598,7 +598,6 @@ const FormularioPreReunion: React.FC = () => {
                 console.log(response.data);
                 if (response.data){
                     setMeetingMinute(response.data[0]);
-                    localStorage.setItem('idActaDialogica', response.data[0]._id);
                     nombreCortoProyectoAux = response.data[0].nombreCortoProyecto;
                     const anfitrionEmail = response.data[0].leaders[0];
                     setSelectedAnfitriones({ value: anfitrionEmail, label: anfitrionEmail, email: anfitrionEmail });

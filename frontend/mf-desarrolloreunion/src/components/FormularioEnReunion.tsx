@@ -57,6 +57,11 @@ import i__TextoLibre from "../assets/static/i__TextoLibre.png";
 import i__TextoLibreBlanco from "../assets/static/i__TextoLibreBlanco.png";
 import TextField from "@atlaskit/textfield";
 import Vote from "./DeptMeeting/Vote";
+import FreeText from "./DeptMeeting/FreeText";
+import Commitment from "./DeptMeeting/Commitment";
+import Agreement from "./DeptMeeting/Agreement";
+import Disagreement from "./DeptMeeting/Disagreement";
+import Doubt from "./DeptMeeting/Doubt";
 
 
 var listaEstudiantes: string[] = [];
@@ -575,7 +580,9 @@ const FormularioEnReunion: React.FC = () => {
                 // localStorage.setItem('idReunion', response.data[0].meeting);
                 // window.alert("id de la reunion en recuperar acta EN REUNION: " + response.data[0].meeting);
                 idReunionAux = response.data[0].meeting;
-
+                const idMeetingMinute = response.data[0]._id;
+                const idInLocalStorageMeetingMinute = localStorage.getItem('idMeetingMinute');
+                if (idMeetingMinute !== idInLocalStorageMeetingMinute) localStorage.setItem('idMeetingMinute', response.data[0]._id);
                 // se recorre la lista de participantes de la reunion para obtener los compromisos de cada uno utilizando la funcion "obtenerCompromisosUsuario"
                 response.data[0].participants.forEach((participante: string) => {
                     obtenerCompromisosUsuario(participante);
@@ -713,7 +720,6 @@ const FormularioEnReunion: React.FC = () => {
                 console.log("Acta actualizada exitosamente: asistentes de la reunion añadidos");
                 console.log(response.data);
                 // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
-                localStorage.setItem('idMeetingMinute', response.data._id);
             } catch (error) {
                 console.error(error);
             }
@@ -870,7 +876,6 @@ const FormularioEnReunion: React.FC = () => {
                 console.log("Acta actualizada exitosamente -> fecha y hora de inicio real añadida");
                 console.log(response.data);
                 // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
-                localStorage.setItem('idMeetingMinute', response.data._id);
             } catch (error) {
                 console.error(error);
             }
@@ -1126,7 +1131,6 @@ const FormularioEnReunion: React.FC = () => {
                 console.log("Acta actualizada exitosamente (elemento dialogico añadido al tema)");
                 console.log(response.data);
                 // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
-                localStorage.setItem('idMeetingMinute', response.data._id);
             } catch (error) {
                 console.error(error);
             }
@@ -1237,7 +1241,6 @@ const FormularioEnReunion: React.FC = () => {
                 console.log("Acta actualizada exitosamente (elemento dialogico añadido al tema)");
                 console.log(response.data);
                 // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
-                localStorage.setItem('idMeetingMinute', response.data._id);
             } catch (error) {
                 console.error(error);
             }
@@ -1371,7 +1374,6 @@ const FormularioEnReunion: React.FC = () => {
                 console.log("Acta actualizada exitosamente (elemento dialogico añadido al tema)");
                 console.log(response.data);
                 // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
-                localStorage.setItem('idMeetingMinute', response.data._id);
             } catch (error) {
                 console.error(error);
             }
@@ -1479,7 +1481,6 @@ const FormularioEnReunion: React.FC = () => {
                 console.log("Acta actualizada exitosamente (elemento dialogico añadido al tema)");
                 console.log(response.data);
                 // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
-                localStorage.setItem('idMeetingMinute', response.data._id);
             } catch (error) {
                 console.error(error);
             }
@@ -1550,7 +1551,6 @@ const FormularioEnReunion: React.FC = () => {
                 console.log("Acta actualizada exitosamente (nuevo tema añadido)");
                 console.log(response.data);
                 // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
-                localStorage.setItem('idMeetingMinute', response.data._id);
             } catch (error) {
                 console.error(error);
             }
@@ -1664,7 +1664,6 @@ const FormularioEnReunion: React.FC = () => {
                 console.log("Acta actualizada exitosamente (texto libre añadido al tema)");
                 console.log(response.data);
                 // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
-                localStorage.setItem('idMeetingMinute', response.data._id);
             } catch (error) {
                 console.error(error);
             }
@@ -1717,7 +1716,12 @@ const FormularioEnReunion: React.FC = () => {
                     createdAt: new Date(), //.toLocaleString('es-CL'),
                     vote: {
                         type: data.isAnonymous ? "Anonima" : "Publica",
-                        options: data.options,
+                        options: data.options.map((option) => {
+                            return {
+                                option: option,
+                                votes: 0,
+                            };
+                        }),
                     }
                 },{
                     headers: {
@@ -1759,7 +1763,6 @@ const FormularioEnReunion: React.FC = () => {
                 console.log("Acta actualizada exitosamente (elemento dialogico añadido al tema)");
                 console.log(response.data);
                 // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
-                localStorage.setItem('idMeetingMinute', response.data._id);
             } catch (error) {
                 console.error(error);
             }
@@ -2076,21 +2079,32 @@ return (
                                             {/* para escoger el elemento dialogico, el usuario debera de presionar uno de los 4 botones que se le presentan. */}
                                             {/* una vez presionado uno de estos botones, se abrira un cuadro modal (https://atlassian.design/components/modal-dialog/examples) el cual le solicitara al usuario ingresar el texto correspondiente */}
                                             <br />
-                                            <Vote voteElement={{_id: '677469103168a534f714dc88', description: 'seguir o no seguir', number: 4, position: '6', dateLimit: '', vote: {type: 'Anonima', options: [{option: 'seguir', votes: 0}, {option: 'no seguir', votes: 0}], voters: []}}} />
+                                            <Vote voteElement={{_id: '6775811c08cee04622a35d63', description: 'Votacion Testing', number: 6, position: '8', dateLimit: '', vote: {type: 'Publica', options: [{option: 'wan', votes: 0, _id: '6775811c08cee04622a35d64'}, {option: 'tu', votes: 1, _id: '6775811c08cee04622a35d65'}, {option: 'dee', votes: 0, _id:'6775811c08cee04622a35d66'}], voters: []}}} />
+                                            <br />
+                                            <FreeText _id={'6774af6ba023440b23e68282'} description={'Que tal, hijos de Odin'} participants={['jairo.santi@usach.cl']}/>
+                                            <br />
+                                            <Commitment _id={'677470ef3168a534f714dc92'} description={'no me quiero comprometer'} number={4} position={'6'} dateLimit={'2025-01-02'} timeLimit={'12:00'} participants={['jairo.santi@usach.cl']}/>
+                                            <br />
+                                            <Agreement _id={'6774af82a023440b23e68286'} description={'estoy de acuerdo xdddd'} number={6} position={'1'} />
+                                            <br/>
+                                            <Disagreement disagreementElement={{_id: '677470d23168a534f714dc8e', description: 'No saber si seguir o no seguir con esto', number: 4, position: '6', disagreement: { firtPosition: { responsible: 'jairo.santi@usach.cl', description: 'no seguit' }, secondPosition: { responsible: 'jairo.santi@usach.cl', description: 'seguir' }}}}/>
+                                            <br/>
+                                            <Doubt doubtElement={{_id: '67746d343168a534f714dc8c', description: 'xddddddd', participants: [ 'jairo.santi@usach.cl' ], number: 4, position: '6'}} />
+                                            <br/>
                                             <Inline space="space.200" alignInline="center" shouldWrap>
 
                                                 {/* <Button appearance="primary" onClick={() => {openModalCompromiso(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1;}}>Compromiso</Button> */}
                                                 <Button appearance="primary" onClick={() => {openModalCompromiso(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
                                                     <Inline alignInline="center">
-                                                        <Image src={i__CompromisoBlanco} alt="Simple example" testId="image" style={{ width: '50px', height: '50px', marginTop: '5px'  }} /> 
+                                                        <Image src={i__CompromisoBlanco} alt="Simple example" testId="image" style={{ width: '50px', height: '50px', marginTop: '5px'  }} />
                                                         <div style={{ marginTop: '11.72px', marginLeft: '5px' }}>Compromiso</div>
                                                     </Inline>
                                                 </Button>
-                                                
+
                                                 {/* <Button appearance="primary" onClick={() => {openModalAcuerdo(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1;}}>Acuerdo</Button> */}
                                                 <Button appearance="primary" onClick={() => {openModalAcuerdo(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
                                                     <Inline alignInline="center">
-                                                        <Image src={i__AcuerdoBlanco} alt="Simple example" testId="image" style={{ width: '50px', height: '50px', marginTop: '5px' }} /> 
+                                                        <Image src={i__AcuerdoBlanco} alt="Simple example" testId="image" style={{ width: '50px', height: '50px', marginTop: '5px' }} />
                                                         <div style={{ marginTop: '11.72px', marginLeft: '5px' }}>Acuerdo</div>
                                                     </Inline>
                                                 </Button>
@@ -2098,7 +2112,7 @@ return (
                                                 {/* <Button appearance="primary" onClick={() => {openModalDesacuerdo(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1;}}>Desacuerdo</Button> */}
                                                 <Button appearance="primary" onClick={() => {openModalDesacuerdo(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
                                                     <Inline alignInline="center">
-                                                        <Image src={i__DesacuerdoBlanco} alt="Simple example" testId="image" style={{ width: '50px', height: '50px', marginTop: '5px' }} /> 
+                                                        <Image src={i__DesacuerdoBlanco} alt="Simple example" testId="image" style={{ width: '50px', height: '50px', marginTop: '5px' }} />
                                                         <div style={{ marginTop: '11.72px', marginLeft: '5px' }}>Desacuerdo</div>
                                                     </Inline>
                                                 </Button>
@@ -2106,14 +2120,14 @@ return (
                                                 {/* <Button appearance="primary" onClick={() => {openModalDuda(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1;}}>Duda</Button> */}
                                                 <Button appearance="primary" onClick={() => {openModalDuda(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
                                                     <Inline alignInline="center">
-                                                        <Image src={i__DudaBlanco} alt="Simple example" testId="image" style={{ width: '50px', height: '50px', marginTop: '5px' }} /> 
+                                                        <Image src={i__DudaBlanco} alt="Simple example" testId="image" style={{ width: '50px', height: '50px', marginTop: '5px' }} />
                                                         <div style={{ marginTop: '11.72px', marginLeft: '5px' }}>Duda</div>
                                                     </Inline>
                                                 </Button>
 
                                                 <Button appearance="primary" onClick={() => {openModalTextoLibre(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
                                                     <Inline alignInline="center">
-                                                        <Image src={i__TextoLibreBlanco} alt="Simple example" testId="image" style={{ width: '48px', height: '48px', marginTop: '7px' }} /> 
+                                                        <Image src={i__TextoLibreBlanco} alt="Simple example" testId="image" style={{ width: '48px', height: '48px', marginTop: '7px' }} />
                                                         <div style={{ marginTop: '11.72px', marginLeft: '7px' }}>Texto libre</div>
                                                     </Inline>
                                                 </Button>
@@ -2194,7 +2208,8 @@ return (
             
             // para ir a la siguiente etapa (post-reunion)
             ) : (
-                <FormularioPostReunion />
+                //<FormularioPostReunion />
+                <></>
             )}
 
             {/* ********************************************************************************************************************************************************** */}

@@ -440,7 +440,7 @@ const FormularioPostReunion: React.FC = () => {
             // window.alert("id de la minuta DENTRO DE LA FUNCION: " + idMeetingMinute);
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/${localStorage.getItem('idMeetingMinute')}`, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/meeting/${localStorage.getItem('idReunion')}`, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -451,6 +451,9 @@ const FormularioPostReunion: React.FC = () => {
                 nombreCortoProyectoAux = response.data[0].nombreCortoProyecto;
                 idReunionAux = response.data[0].meeting;
                 numeroReunion = response.data[0].number;
+                const idMeetingMinute = response.data[0]._id;
+                const idInLocalStorageMeetingMinute = localStorage.getItem('idMeetingMinute');
+                if (idMeetingMinute !== idInLocalStorageMeetingMinute) localStorage.setItem('idMeetingMinute', response.data[0]._id);
                 // se recorre la lista de participantes de la reunion para obtener los compromisos de cada uno utilizando la funcion "obtenerCompromisosUsuario"
                 response.data[0].participants.forEach((participante: string) => {
                     obtenerCompromisosUsuario(participante);

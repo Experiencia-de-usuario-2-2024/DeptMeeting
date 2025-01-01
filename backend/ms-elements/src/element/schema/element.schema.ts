@@ -44,6 +44,7 @@ export const elementSchema = new mongoose.Schema(
         },
       ],
       result: { type: String, required: false },
+      open: {type: Boolean, required: false},
     },
   },
   {

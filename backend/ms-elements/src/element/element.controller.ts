@@ -155,7 +155,11 @@ salida: objeto del elemento encontrado.
     return await this.elementService.compromisosUsuarios(email);
   }
 
-
+  @MessagePattern(ElementMSG.UPDATE_VOTE)
+  async updateVote(@Payload() payload: any) {
+    console.log("Copiado:" + payload);
+    return this.elementService.updateVote(payload.id, payload.vote);
+  }
 
 
 }
