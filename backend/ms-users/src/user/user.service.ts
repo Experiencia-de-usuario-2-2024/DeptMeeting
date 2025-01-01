@@ -1,11 +1,10 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { UserSchema, UserDocument } from "./schema/user.schema";
-import { Model, Document } from 'mongoose';
-import { v4 } from 'uuid';
+import {HttpStatus, Injectable} from '@nestjs/common';
+import {InjectModel} from '@nestjs/mongoose';
+import {UserDocument} from "./schema/user.schema";
+import {Document, Model} from 'mongoose';
+import {v4} from 'uuid';
 import * as bcrypt from 'bcrypt';
-import { IUser } from 'src/common/interfaces/user.interface';
-import { UserDTO } from './dto/user.dto';
+import {UserDTO} from './dto/user.dto';
 import {User} from "./user.entity";
 
 @Injectable()
@@ -29,21 +28,35 @@ export class UserService {
    salida: objeto del nuevo usuario.  
   */
   async create(userDTO: UserDTO): Promise<User> {
-    const { tagName, name, email, avatar, asignado, password, type } = userDTO;
-    const activationToken = v4();
-    const hash = await this.hashPassword(password);
+    const {
+      tagName,
+      name,
+      email,
+      avatar,
+      asignado,
+      password,
+      googlePassword,
+      type,
+    } = userDTO;
+
+    const userData: any = {
+      name,
+      tagName,
+      email,
+      avatar,
+      asignado,
+      type,
+      color: 'grey',
+    };
+    if (password) {
+      userData.password = await this.hashPassword(password);
+    }
+    if (googlePassword) {
+      userData.googlePassword = await this.hashPassword(googlePassword);
+    }
     const userValidate = await this.findByEmail(userDTO.email);
     if (!userValidate) {
-      const user = new this.userModel({
-        name,
-        tagName,
-        email,
-        avatar,
-        asignado,
-        password: hash,
-        type,
-        color: 'grey'
-      });
+      const user = new this.userModel(userData);
       return await user.save();
     } else {
       return null;

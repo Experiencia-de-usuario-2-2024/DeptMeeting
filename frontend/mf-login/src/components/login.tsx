@@ -218,7 +218,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             },
             data : JSON.stringify({
                 email: session.profileObj.email,
-                password: session.profileObj.googleId,
+                googlePassword: session.profileObj.googleId,
             })
         };
 
@@ -254,7 +254,7 @@ const registerWithGoogle = (response)=> {
             data : JSON.stringify({
                 name: response.profileObj.name,
                 email: response.profileObj.email,
-                password: response.profileObj.googleId,
+                googlePassword: response.profileObj.googleId,
                 type: "profesor",
                 tagName: tagName,
             })

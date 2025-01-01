@@ -4,8 +4,9 @@ export const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
+  googlePassword: { type: String, required: false },
   avatar: { type: String, required: false }, // avatar del usuario en formato url (imagen almacenada en la nube)
-  asignado: { type: String, required: false }, 
+  asignado: { type: String, required: false },
   institution: { type: String, required: false },
   color: { type: String, required: false },
   type: { type: String, required: false },
@@ -25,6 +26,7 @@ export interface UserDocument extends Document {
   name: string;
   email: string;
   password: string;
+  googlePassword: string;
   avatar: string;
   asignado: string;
   institution: string;
