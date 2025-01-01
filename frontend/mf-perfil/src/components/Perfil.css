@@ -1,0 +1,105 @@
+.ProfileContainer {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.ProfileForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #E5F6F5;
+  border: 1px solid #00A499;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.FormField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.Label {
+  font-weight: 500;
+  color: #333;
+}
+
+.Input {
+  padding: 8px 12px;
+  border: 1px solid #00A499;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.Input:focus {
+  outline: none;
+  border-color: #008C82;
+}
+
+.StyledButton {
+  background-color: #00A499;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.StyledButton:hover {
+  background-color: #008C82;
+}
+
+.StyledButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.ProfileImage {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: block;
+  object-fit: cover;
+  border: 3px solid #00A499;
+}
+
+.ErrorMessage {
+  color: #ff0033;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.Modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.ModalContent {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.CloseButton {
+  background-color: transparent;
+  border: none;
+  font-size: 20px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}

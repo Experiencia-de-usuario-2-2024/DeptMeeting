@@ -1,41 +1,76 @@
 import React, { useEffect } from "react";
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
-import DynamicTable from '@atlaskit/dynamic-table';
-import Select from '@atlaskit/select';
-import Button from '@atlaskit/button';
-import { Inline, Box, xcss } from '@atlaskit/primitives';
-import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right'
-import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
-import TextField from '@atlaskit/textfield';
-import Form, { Field, FormFooter } from '@atlaskit/form';
-import ArchiveIcon from '@atlaskit/icon/glyph/archive'
+import styled from 'styled-components';
 
-// Se obtiene el token del usuario logeado
-const tokenUser = localStorage.getItem('tokenUser');
+// Custom styled components to replace Atlaskit
+const StyledButton = styled.button`
+  background-color: #00A499;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  
+  &:hover {
+    background-color: #008C82;
+  }
+`;
 
-const boxStyles = xcss({
-    borderColor: 'color.border.selected',
-    width: '100%',
-    backgroundColor: 'color.background.selected',
-    borderStyle: 'solid',
-    borderRadius: 'border.radius',
-    borderWidth: 'border.width',
-});
+const StyledTable = styled.div`
+  border: 1px solid #00A499;
+  background-color: #E5F6F5;
+  border-radius: 4px;
+  padding: 16px;
+  width: 100%;
+`;
 
-const boxStylesTarjetas = xcss({
-    borderColor: 'color.border.selected',
-    margin: '5%',
-    width: '90%',
-    backgroundColor: 'color.background.input',
-    borderStyle: 'solid',
-    borderRadius: 'border.radius',
-    borderWidth: 'border.width',
-});
+const StyledSelect = styled.select`
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #00A499;
+  border-radius: 4px;
+  background-color: white;
+`;
+
+const StyledInput = styled.input`
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #00A499;
+  border-radius: 4px;
+  
+  &:focus {
+    outline: none;
+    border-color: #008C82;
+  }
+`;
+
+const StyledForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const KanbanBoard = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+`;
+
+const KanbanColumn = styled.div`
+  flex: 1;
+  background-color: #E5F6F5;
+  border: 1px solid #00A499;
+  border-radius: 4px;
+  padding: 16px;
+  min-height: 300px;
+`;
 
 const Tareas: React.FC = () => {
 
-
+    // Se obtiene el token del usuario logeado
+    const tokenUser = localStorage.getItem('tokenUser');
 
     // Interfaz para los datos de las tareas/compromisos de un usuario
     interface Compromiso {
@@ -58,14 +93,12 @@ const Tareas: React.FC = () => {
         disagreement: JSON;
     }
 
-
     // Estado para almacenar las tareas del usuario
     const [compromisosUsuario, setcompromisosUsuario] = React.useState<Compromiso[]>();
     const [compromisosUsuarioOriginal, setcompromisosUsuarioOriginal] = React.useState<Compromiso[]>();
 
     // para determinar que seccion mostrar: Tabla de tareas vs kanban
     const [verKanban, setVerKanban] = React.useState(false);
-
 
     useEffect(() => {
         // Cada vez que se recargue la pagina, se dejara por defecto ver la tabla de tareas
@@ -98,7 +131,6 @@ const Tareas: React.FC = () => {
         obtenerCompromisosUsuario()
     }, []);
 
-    
     // Entrada: idCompromiso: string (id de la tarea seleccionada), nuevoEstado: string (nuevo estado seleccionado por el usuario)
     // Salida: ninguna
     // Funcion para actualizar el estado de una tarea
@@ -134,7 +166,6 @@ const Tareas: React.FC = () => {
         setcompromisosUsuario(updatedCompromisosUsuario);
     }
 
-
     const filtrarDatosTabla = () => {
         // capturar el valor del formulario
         const textoBuscar = (document.getElementsByName("filtrarResultados")[0] as HTMLInputElement).value;
@@ -153,243 +184,153 @@ const Tareas: React.FC = () => {
 
     // campo de formulario para que el usuario ingrese lo que desea buscar para realizar el filtrado
     const FiltrarResultados = () => (
-        <Field
-            aria-required={true}
+        <StyledInput
+            type="text"
+            placeholder="Ingrese el texto que desee buscar"
             name="filtrarResultados"
-            defaultValue=""
-            label="Ingrese el texto que desee buscar"
-        >
-            {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
-        </Field>
+        />
     );
 
+    // contenido que se visualiza en la página
+    return (
+        <div>
+            {verKanban ? (
+                // CASO MOSTRAR KANBAN
+                <>
+                    <h1 style={{ textAlign: 'center' }}>Mis tareas: Kanban</h1>
+                    <div style={{marginTop:"10px", marginBottom:"20px"}}>
+                        <StyledButton onClick={() => setVerKanban(false)}>Ver tabla</StyledButton>
+                    </div>
 
-    //**********************************************************************
-    //*******************  */ Funcion para la tabla de tareas/compromisos **
-    //**********************************************************************
-    function createKey(input: string) {
-        return input ? input.replace(/^(the|a|an)/, '').replace(/\s/g, '') : input;
-    }
-
-
-// contenido que se visualiza en la página
-return (
-    <div>
-        
-
-        {verKanban ? (
-            // CASO MOSTRAR KANBAN
-            <>
-                <h1 style={{ textAlign: 'center' }}>Mis tareas: Kanban</h1>
-                <div style={{marginTop:"10px", marginBottom:"20px"}}>
-                    <Button appearance="primary" onClick={() => setVerKanban(false)}>Ver tabla</Button>
-                </div>
-
-                <Inline space="space.100" alignBlock="stretch">
-                {/* Tareas nuevas */}
-                    <Box xcss={boxStyles}>
-                        <p><strong>Nuevas</strong></p>
-                        {compromisosUsuario?.map((compromiso) => (
-                            (compromiso.state === "nueva" || compromiso.state === "Nueva") && (
-                                <Box xcss={boxStylesTarjetas} key={compromiso._id}>
-                                    <div style={{margin: "5%"}}>
-                                        {new Date(compromiso.dateLimit) < new Date() && <h3 style={{color: "red", textAlign:"center"}}><strong>Tarea atrasada</strong></h3>}
-                                        <p>{compromiso.description}</p>
-                                        {/* <p><strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString()}</p> */}
-                                        <p><strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString('es-CL')}</p>
-                                        <Button onClick={() => actualizarEstadoTarea(compromiso._id, "desarrollo")} iconBefore={<ArrowRightIcon label="" size="medium" />} appearance="primary"></Button>
+                    <KanbanBoard>
+                        {/* Tareas nuevas */}
+                        <KanbanColumn>
+                            <p><strong>Nuevas</strong></p>
+                            {compromisosUsuario?.map((compromiso) => (
+                                (compromiso.state === "nueva" || compromiso.state === "Nueva") && (
+                                    <div key={compromiso._id}>
+                                        <div style={{margin: "5%"}}>
+                                            {new Date(compromiso.dateLimit) < new Date() && <h3 style={{color: "red", textAlign:"center"}}><strong>Tarea atrasada</strong></h3>}
+                                            <p>{compromiso.description}</p>
+                                            <p><strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString('es-CL')}</p>
+                                            <StyledButton onClick={() => actualizarEstadoTarea(compromiso._id, "desarrollo")}>Pasar a desarrollo</StyledButton>
+                                        </div>
                                     </div>
-                                </Box>
-                            )
-                        ))}
-                        
-                    </Box>
+                                )
+                            ))}
+                        </KanbanColumn>
 
-                    {/* Tareas en desarrollo */}
-                    <Box backgroundColor="color.background.discovery" xcss={boxStyles}>
-                        <p><strong>Desarrollo</strong></p>
-                        {compromisosUsuario?.map((compromiso) => (
-                            (compromiso.state === "desarrollo" || compromiso.state === "Desarrollo") && (
-                                <Box xcss={boxStylesTarjetas} key={compromiso._id}>
-                                    <div style={{margin: "5%"}}>
-                                        {new Date(compromiso.dateLimit) < new Date() && <h3 style={{color: "red", textAlign:"center"}}><strong>Tarea atrasada</strong></h3>}
-                                        <p>{compromiso.description}</p>
-                                        {/* <p><strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString()}</p> */}
-                                        <p><strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString('es-CL')}</p>
-                                        <Inline space="space.100" alignInline="center">
-                                            <Button onClick={() => actualizarEstadoTarea(compromiso._id, "nueva")} iconBefore={<ArrowLeftIcon label="" size="medium" />} appearance="primary"></Button>
-                                            <Button onClick={() => actualizarEstadoTarea(compromiso._id, "completada")} iconBefore={<ArrowRightIcon label="" size="medium" />} appearance="primary"></Button>
-                                        </Inline>
-                                        
+                        {/* Tareas en desarrollo */}
+                        <KanbanColumn>
+                            <p><strong>Desarrollo</strong></p>
+                            {compromisosUsuario?.map((compromiso) => (
+                                (compromiso.state === "desarrollo" || compromiso.state === "Desarrollo") && (
+                                    <div key={compromiso._id}>
+                                        <div style={{margin: "5%"}}>
+                                            {new Date(compromiso.dateLimit) < new Date() && <h3 style={{color: "red", textAlign:"center"}}><strong>Tarea atrasada</strong></h3>}
+                                            <p>{compromiso.description}</p>
+                                            <p><strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString('es-CL')}</p>
+                                            <StyledButton onClick={() => actualizarEstadoTarea(compromiso._id, "nueva")}>Pasar a nueva</StyledButton>
+                                            <StyledButton onClick={() => actualizarEstadoTarea(compromiso._id, "completada")}>Pasar a completada</StyledButton>
+                                        </div>
                                     </div>
-                                </Box>
-                            )
-                        ))}
-                    </Box>
+                                )
+                            ))}
+                        </KanbanColumn>
 
-                    {/* Tareas completadas */}
-                    <Box backgroundColor="color.background.discovery" xcss={boxStyles}>
-                        <p><strong>Completadas</strong></p>
-                        {compromisosUsuario?.map((compromiso) => (
-                            (compromiso.state === "completada" || compromiso.state === "Completada") && (
-                                <Box xcss={boxStylesTarjetas} key={compromiso._id}>
-                                    <div style={{margin: "5%"}}>
-                                        {/* si una tarea es finalizada, no se indicara si es atrasada o no, esto para evitar mal entendidos por una carga visual excesiva */}
-                                        {/* {new Date(compromiso.dateLimit) < new Date() && <h3 style={{color: "red", textAlign:"center"}}><strong>Tarea atrasada</strong></h3>} */}
-                                        <p>{compromiso.description}</p>
-                                        {/* <p><strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString()}</p> */}
-                                        <p><strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString('es-CL')}</p>
-                                        <Inline space="space.100" alignInline="center">
-                                            <Button onClick={() => actualizarEstadoTarea(compromiso._id, "desarrollo")} iconBefore={<ArrowLeftIcon label="" size="medium" />} appearance="primary"></Button>
-                                            <Button onClick={() => actualizarEstadoTarea(compromiso._id, "archivada")} iconBefore={<ArchiveIcon label="" size="medium" />}>Archivar</Button>
-                                        </Inline>
+                        {/* Tareas completadas */}
+                        <KanbanColumn>
+                            <p><strong>Completadas</strong></p>
+                            {compromisosUsuario?.map((compromiso) => (
+                                (compromiso.state === "completada" || compromiso.state === "Completada") && (
+                                    <div key={compromiso._id}>
+                                        <div style={{margin: "5%"}}>
+                                            {/* si una tarea es finalizada, no se indicara si es atrasada o no, esto para evitar mal entendidos por una carga visual excesiva */}
+                                            {/* {new Date(compromiso.dateLimit) < new Date() && <h3 style={{color: "red", textAlign:"center"}}><strong>Tarea atrasada</strong></h3>} */}
+                                            <p>{compromiso.description}</p>
+                                            <p><strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString('es-CL')}</p>
+                                            <StyledButton onClick={() => actualizarEstadoTarea(compromiso._id, "desarrollo")}>Pasar a desarrollo</StyledButton>
+                                            <StyledButton onClick={() => actualizarEstadoTarea(compromiso._id, "archivada")}>Archivar</StyledButton>
+                                        </div>
                                     </div>
-                                </Box>
-                            )
-                        ))}
+                                )
+                            ))}
+                        </KanbanColumn>
+                    </KanbanBoard>
 
-                    </Box>
-                </Inline>
-
-            {/* fin del caso kanban */}
-            </>
+                {/* fin del caso kanban */}
+                </>
 
 
-        ) : (
+            ) : (
 
-            
-            // CASO MOSTRAR TABLA DE TAREAS
-            <>
-                <h1 style={{ textAlign: 'center' }}>Mis tareas: Tabla</h1>
-                <div style={{marginTop:"10px", marginBottom:"30px"}}>
-                    <Button appearance="primary" onClick={() => setVerKanban(true)}>Ver Kanban</Button>
-                </div>
+                // CASO MOSTRAR TABLA DE TAREAS
+                <>
+                    <h1 style={{ textAlign: 'center' }}>Mis tareas: Tabla</h1>
+                    <div style={{marginTop:"10px", marginBottom:"30px"}}>
+                        <StyledButton onClick={() => setVerKanban(true)}>Ver Kanban</StyledButton>
+                    </div>
 
-                {/* CAMPO PARA FILTRAR DATOS */}
-                <Form<{ username: string }>
-                    onSubmit={(data) => {
-                        // console.log('form data', data);
-                        return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
-                            data.username === 'error' ? { username: 'IN_USE' } : undefined,
-                        );
-                    }}
-                >
-                    {({ formProps, submitting }) => (
-                        <form {...formProps}>
-                            <FiltrarResultados />
-                            <FormFooter>
-                                <Inline space="space.100" alignBlock="center">
-                                    <Button
-                                        type="submit"
-                                        onClick={() => setcompromisosUsuario(compromisosUsuarioOriginal)}
-                                    >
-                                        Restablecer
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        appearance="primary"
-                                        onClick={() => filtrarDatosTabla()}
-                                    >
-                                        Buscar
-                                    </Button>
-                                </Inline>
-                            </FormFooter>
-                        </form>
-                    )}
-                </Form>
-                <br />
-                {/* TABLA CON LAS TAREAS */}
-                <DynamicTable
-                    emptyView={<h2>El usuario no posee tareas</h2>}
-                    rowsPerPage={4}
-                    defaultPage={1}
-                    defaultSortKey="number" // Ordenar por número de reunión de forma predeterminada
-                    defaultSortOrder="ASC" // Orden ascendente de forma predeterminada
-                    head={{
-                        cells: [
-                            {
-                                key: 'number',
-                                content: 'id',
-                                isSortable: true,
-                                width: 1,
-                                
-                            },
-                            {
-                                key: 'description',
-                                content: 'Descripción',
-                                width: 20,
-                                
-                            },
-
-                            {
-                                key: 'state',
-                                content: 'Estado de la tarea',
-                                isSortable: true,
-                                width: 7,
-                                
-                            },
-                            {
-                                key: 'botonActualizar',
-                                content: '',
-                                width: 5,
-                            },
-                        ],
-                    }}
-                    rows={compromisosUsuario?.map((compromiso) => ({
-                        key: compromiso.number.toString() + "." + compromiso.position,
-                        isHighlighted: false,
-                        cells: [
-                            {
-                                // key: 'number',
-                                key: createKey(compromiso.number.toString() + "." + compromiso.position),
-                                content: compromiso.number + "." + compromiso.position,
-                            },
-                            {
-                                key: 'description',
-                                content: (
-                                    <>
-                                        {(new Date(compromiso.dateLimit) < new Date() && compromiso.state !== 'completada' && compromiso.state !== 'archivada') && <p style={{color: "red", margin:0}}><strong>Tarea atrasada</strong></p>}
-                                        {compromiso.description}
-                                        <br />
-                                        <strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString('es-CL')}
-                                        <hr />
-                                    </>
-                                ),
-                            },
-                            {
-                                key: createKey(compromiso.state),
-                                content: <Select
-                                            inputId="single-select-example"
-                                            className="single-select"
-                                            classNamePrefix="react-select"
-                                            defaultValue={{ label: compromiso.state, value: compromiso.state }}
-                                            options={[
-                                            { label: 'nueva', value: 'nueva' },
-                                            { label: 'desarrollo', value: 'desarrollo' },
-                                            { label: 'completada', value: 'completada' },
-                                            { label: 'archivada', value: 'archivada' },
-                                            ]}
-                                            onChange={(selected) => {
-                                                if (selected) {
-                                                    compromiso.state = selected.value;
-                                                }
-                                            }}
-                                            placeholder="Estado de la tarea"
-                                        />
-                            },
-                            {
-                                key: 'botonActualizar',
-                                content: <Button onClick={() => actualizarEstadoTarea(compromiso._id, compromiso.state)} appearance="primary">Actualizar</Button>,
-                            },
-                        ],
-                    }))}
-                />
-            {/* fin del caso tabla de tareas */}
-            </>
-        )}
-                
-    </div>
-);
+                    {/* CAMPO PARA FILTRAR DATOS */}
+                    <StyledForm onSubmit={(e) => e.preventDefault()}>
+                        <FiltrarResultados />
+                        <div>
+                            <StyledButton type="submit" onClick={() => setcompromisosUsuario(compromisosUsuarioOriginal)}>Restablecer</StyledButton>
+                            <StyledButton type="submit" onClick={() => filtrarDatosTabla()}>Buscar</StyledButton>
+                        </div>
+                    </StyledForm>
+                    <br />
+                    {/* TABLA CON LAS TAREAS */}
+                    <StyledTable>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>id</th>
+                                    <th>Descripción</th>
+                                    <th>Estado de la tarea</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {compromisosUsuario?.map((compromiso) => (
+                                    <tr key={compromiso._id}>
+                                        <td>{compromiso.number + "." + compromiso.position}</td>
+                                        <td>
+                                            {(new Date(compromiso.dateLimit) < new Date() && compromiso.state !== 'completada' && compromiso.state !== 'archivada') && <p style={{color: "red", margin:0}}><strong>Tarea atrasada</strong></p>}
+                                            {compromiso.description}
+                                            <br />
+                                            <strong>{"Fecha límite: "}</strong>{new Date(compromiso.dateLimit).toLocaleDateString('es-CL')}
+                                            <hr />
+                                        </td>
+                                        <td>
+                                            <StyledSelect
+                                                defaultValue={{ label: compromiso.state, value: compromiso.state }}
+                                                options={[
+                                                    { label: 'nueva', value: 'nueva' },
+                                                    { label: 'desarrollo', value: 'desarrollo' },
+                                                    { label: 'completada', value: 'completada' },
+                                                    { label: 'archivada', value: 'archivada' },
+                                                ]}
+                                                onChange={(selected) => {
+                                                    if (selected) {
+                                                        compromiso.state = selected.value;
+                                                    }
+                                                }}
+                                            />
+                                        </td>
+                                        <td>
+                                            <StyledButton onClick={() => actualizarEstadoTarea(compromiso._id, compromiso.state)}>Actualizar</StyledButton>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </StyledTable>
+                {/* fin del caso tabla de tareas */}
+                </>
+            )}
+        </div>
+    );
 };
 
 export default Tareas;

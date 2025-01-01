@@ -71,7 +71,7 @@ const contentStyles = xcss({
     padding: 'space.200',
     width: '600px',
     // height: '200px',
-    
+
 });
 
 // estados de la reunion (para la barra de progreso)
@@ -154,7 +154,7 @@ const FormularioPreReunion: React.FC = () => {
     const [messages, setMessages] = useState<string[]>([]);
 
     // funciona separando el chat en salas
-    const send = (value:string) => {
+    const send = (value: string) => {
         const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
         correoElectronico = decodedToken.email;
         const payload = {
@@ -211,7 +211,7 @@ const FormularioPreReunion: React.FC = () => {
     // interfaz para obtener los datos de los estudiantes invitados
     interface EstudiantesInvitados {
         color: string;
-        email: string; 
+        email: string;
         name: string;
         avatar: string;
         password: string;
@@ -223,9 +223,9 @@ const FormularioPreReunion: React.FC = () => {
         active: Boolean;
         accessDateLimit: string;
         createOn: Date;
-        currentProject: string; 
+        currentProject: string;
         currentProjectId: string;
-        currentMeeting: string; 
+        currentMeeting: string;
         currentMeetingId: string;
         proyectoPrincipal: string
         lastLink: string;
@@ -290,7 +290,7 @@ const FormularioPreReunion: React.FC = () => {
     // Interfaz para los datos del perfil de un usuario
     interface Usuario {
         color: string;
-        email: string; 
+        email: string;
         name: string;
         avatar: string;
         password: string;
@@ -559,7 +559,7 @@ const FormularioPreReunion: React.FC = () => {
                     console.log("Estudiante del proyecto:" + estudiante.email);
                     estudiantesProyectoAux.push(estudiante);
                     // setEstudiantesEnProyecto([...estudiantesEnProyecto, estudiante]);
-                    var eAux: ProfesorOwner = {email: estudiante.email, value: estudiante.email, label: estudiante.email};
+                    var eAux: ProfesorOwner = { email: estudiante.email, value: estudiante.email, label: estudiante.email };
                     listaAux.push(eAux);
                 }
                 else {
@@ -578,7 +578,7 @@ const FormularioPreReunion: React.FC = () => {
 
         // asegurar que las funciones se ejecuten en el orden establecido
         const fetchData = async () => {
-            await obtenerDatosUsuario ();
+            await obtenerDatosUsuario();
             await datosReunion();
             if (reunion?.state === "nueva" || reunion?.state === "Nueva" || reunion?.state === "new" || reunion?.state === "New") {
                 await cambiarEstado();
@@ -748,7 +748,7 @@ const FormularioPreReunion: React.FC = () => {
         const createEvent = async () => {
             try {
                 console.log("Me caigo4? No");
-                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/event`, {data}, {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting/event`, { data }, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -769,7 +769,7 @@ const FormularioPreReunion: React.FC = () => {
     // Entrada: ninguna
     // Salida: ninguna (guardar en variables globales los datos del formulario 2)
     // Funcion que se encarga de guardar los datos del formulario 2 en variables globales
-    const guardarFormulario2 = () => {
+    const guardarFormulario2 = async () => {
         const temasValue = (document.getElementsByName("temas")[0] as HTMLInputElement).value;
         //comprobar que el campo no este vacio
         if (temasValue === "" || temasValue === " ") {
@@ -797,7 +797,7 @@ const FormularioPreReunion: React.FC = () => {
     // Entrada: ninguna
     // Salida: ninguna (guardar en variables globales los datos del formulario 3)
     // Funcion que se encarga de guardar los datos del formulario 3 en variables globales
-    const guardarFormulario3 = () => {
+    const guardarFormulario3 = async () => {
         var enlacesValue = (document.getElementsByName("enlaces")[0] as HTMLInputElement).value;
         var descripcionEnlacesValue = (document.getElementsByName("descripcionEnlaces")[0] as HTMLInputElement).value;
         // si tiene un punto final, este se elimina, puesto que despues se agrega uno y la idea no es que hayan dos puntos
@@ -874,7 +874,7 @@ const FormularioPreReunion: React.FC = () => {
     // Entrada: ninguna
     // Salida: ninguna, cambia variables en local storage y realiza peticiones al backend
     // Funcion que realiza la comprobacion de los datos ingresados por el usuario (guardados en variables globales), y realiza dos peticiones al backend. La primera para cmabiar el estado de lar reunion y la segunda para crear el acta dialogica
-    const guardarFormularioFinal = () => {
+    const guardarFormularioFinal = async () => {
 
         // paso 1: revisar que los campos esten completos
         if (objetivoValue === "" || objetivoValue === " " || lugarValue === "" || lugarValue === " " || fechaInicioValue === "" || fechaInicioValue === " " || fechaTerminoValue === "" || fechaTerminoValue === " " || listaParticipantesValueFinal.length === 0 || listaAnfitrionesValueFinal.length === 0 || secretarioValue === "" || secretarioValue === " " || listaTemas.length === 0) {
@@ -966,7 +966,7 @@ const FormularioPreReunion: React.FC = () => {
         }
 
         // funcion para obtener datos de un usuario a partir de su correo electronico. Se utiliza con el proposito de determinar si el estudiante invitado pertence o no al proyecto, asi poder determinar si actualizar ciertos parametros dentro de su perfil
-        async function obtenerDatosUsuarioInvitado(correoEstudiante:string) {
+        async function obtenerDatosUsuarioInvitado(correoEstudiante: string) {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/user/perfil/email/` + correoEstudiante, {
@@ -982,7 +982,7 @@ const FormularioPreReunion: React.FC = () => {
             }
         }
 
-        // MEJORA QUE PIDIO EL PROFE: si el participante acude a una reunion que no es de su proyecto, no se le actualiza el atributo "currentMeetingId" --> esto para que en el home profesor, cuando se presione a un estudiante solo se vaya a sus reuniones
+        // MEJORA QUE PIDO EL PROFE: si el participante acude a una reunion que no es de su proyecto, no se le actualiza el atributo "currentMeetingId" --> esto para que en el home profesor, cuando se presione a un estudiante solo se vaya a sus reuniones
 
         // se recorre la lista de participantes, de tal forma actualizar todos
         listaParticipantesValueFinal.forEach((participante: string) => {
@@ -1081,7 +1081,7 @@ const FormularioPreReunion: React.FC = () => {
             user: correoElectronico,
         };
         socket?.emit('event_reload_ver4', payload);
-        
+
 
         // paso 5: recargar pagina
         // window.location.reload();
@@ -1095,7 +1095,7 @@ const FormularioPreReunion: React.FC = () => {
         <Field
             aria-required={true}
             name="objetivo"
-            defaultValue= {descripcionReunion}
+            defaultValue={descripcionReunion}
             label="Objetivo de la reunión"
             isRequired
         >
@@ -1382,6 +1382,10 @@ const FormularioPreReunion: React.FC = () => {
     //**********************************************************************
     //**********************************************************************
 
+    //**********************************************************************
+    //**********************************************************************
+    //**********************************************************************
+
     // Para modal dialog para "Temas" -> añadir tema
     const [isOpenTemas, setIsOpenTemas] = useState(false);
     const openModalTemas = useCallback(() => setIsOpenTemas(true), []);
@@ -1401,7 +1405,7 @@ const FormularioPreReunion: React.FC = () => {
     const [isOpenEnlacesBorrar, setIsOpenEnlacesBorrar] = useState(false);
     const openModalEnlacesBorrar = useCallback(() => setIsOpenEnlacesBorrar(true), []);
     const closeModalEnlacesBorrar = useCallback(() => setIsOpenEnlacesBorrar(false), []);
-    
+
     //**********************************************************************
     //**********************************************************************
     //**********************************************************************
@@ -1442,7 +1446,7 @@ const FormularioPreReunion: React.FC = () => {
                                 {/* <Button iconBefore={<WarningIcon label="" size="large" />} appearance="warning" style={{ height: "100%", width: "170px" }} {...tooltipProps}> IMPORTANTE </Button> */}
                                 {/* <ProgressTracker items={items} /> */}
                                 {/* PARTE FIJA DEL MICROFRONTEND: AVATAR GROUP, CHAT y BARRA DE PROGRESO DE LA REUNION */}
-                                <div style={{position: "fixed", top: 96, width: "100%", zIndex:10}}>
+                                <div style={{ position: "fixed", top: 96, width: "100%", zIndex: 10 }}>
                                     <Inline>
                                         {/* CONTENIDO DE LA IZQUIERDA: fotos de los participantes de la reunion y boton que da acceso al chat */}
                                         {/* <div style={{textAlign: "left", height: '100px', width: '450px', backgroundColor: 'white'}}> */}
@@ -1454,13 +1458,13 @@ const FormularioPreReunion: React.FC = () => {
                                         }}>
                                             <Inline space="space.200">
                                                 {/* fotos de los integrantes conectados */}
-                                                <div style={{marginTop: '28px'}}>
+                                                <div style={{ marginTop: '28px' }}>
                                                     <AvatarGroup appearance="stack" data={data} borderColor="#388BFF"
-                                                                 size="large" maxCount={4}/>
+                                                        size="large" maxCount={4} />
                                                 </div>
 
                                                 {/* popup para colocar un chat en la reunion */}
-                                                <div style={{marginTop: '28px'}}>
+                                                <div style={{ marginTop: '28px' }}>
                                                     <Popup
                                                         isOpen={isOpen}
                                                         onClose={() => setIsOpen(false)}
@@ -1468,21 +1472,21 @@ const FormularioPreReunion: React.FC = () => {
 
                                                         // aqui colocar el componente del chat
                                                         content={() => <Box xcss={contentStyles}>
-                                                            <MessagesInput send={send}/>
-                                                            <Messages messages={messages}/>
+                                                            <MessagesInput send={send} />
+                                                            <Messages messages={messages} />
                                                         </Box>}
 
                                                         trigger={(triggerProps) => (
                                                             <Button
-                                                                style={{height: 44}}
-                                                                iconBefore={<CommentIcon label="" size="medium"/>}
+                                                                style={{ height: 44 }}
+                                                                iconBefore={<CommentIcon label="" size="medium" />}
                                                                 {...triggerProps}
                                                                 appearance="primary"
                                                                 isSelected={isOpen}
                                                                 onClick={() => setIsOpen(!isOpen)}
                                                             >
                                                                 {isOpen ? '' : ''} <p
-                                                                style={{marginTop: 3, marginBottom: 0}}>chat</p>{' '}
+                                                                    style={{ marginTop: 3, marginBottom: 0 }}>chat</p>{' '}
                                                             </Button>
                                                         )}
                                                     />
@@ -1498,8 +1502,8 @@ const FormularioPreReunion: React.FC = () => {
                                             backgroundColor: 'white'
                                         }}>
                                             {/* barra de progreso en la renuion fija en pantalla*/}
-                                            <div style={{display: 'flex', justifyContent: 'center'}}>
-                                                <ProgressTracker items={items}/>
+                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                                <ProgressTracker items={items} />
                                             </div>
                                         </div>
 
@@ -1510,11 +1514,11 @@ const FormularioPreReunion: React.FC = () => {
                                             width: '550px',
                                             backgroundColor: 'white'
                                         }}>
-                                            <Button iconBefore={<WarningIcon label="" size="large"/>}
-                                                    appearance="warning" style={{
-                                                width: "170px",
-                                                marginTop: '30px'
-                                            }} {...tooltipProps}> IMPORTANTE </Button>
+                                            <Button iconBefore={<WarningIcon label="" size="large" />}
+                                                appearance="warning" style={{
+                                                    width: "170px",
+                                                    marginTop: '30px'
+                                                }} {...tooltipProps}> IMPORTANTE </Button>
                                         </div>
                                     </Inline>
                                 </div>
@@ -1528,142 +1532,142 @@ const FormularioPreReunion: React.FC = () => {
                     {/* ACTUALIZACION: ESTO YA NO ES ASI Y CUALQUIER USUARIO PUEDE COMPLETAR EL FORMULARIO DE PRE-REUNION */}
                     {/* OJO: Solo los usuarios de tipo "profesor" pueden interactuar con la etapa de "pre-reunion". Esto debido a que se hace uso de elementos que solo dichos usuarios tienen*/}
                     {/* {tipoDeUsuario === "profesor" || tipoDeUsuario === "Profesor" ? ( */}
-                        <>
-                            {/* FORMULARIO PRIMERA PARTE */}
-                            <Form<{ username: string }>
-                                onSubmit={(data) => {
-                                    // console.log('form data', data);
-                                    return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
-                                        data.username === 'error' ? { username: 'IN_USE' } : undefined,
-                                    );
-                                }}
-                            >
-                                {({ formProps, submitting }) => (
-                                    <form {...formProps}>
-                                        <br/>
-                                        <br/>
-                                        <br/>
-                                        <br/>
-                                        <br/>
-                                        <br/>
-                                        <Inline space="space.500" alignInline="center" shouldWrap>
-                                            <FechaInicio/>
-                                            <FechaTermino/>
-                                        </Inline>
-                                        <br/>
-                                        <Objetivo/>
-                                        <br/>
-                                        <Lugar/>
-                                        <br/>
-                                        <ListaParticipantes/>
-                                        <br/>
-                                        <ListaAnfitriones/>
-                                        <br/>
-                                        <Secretario/>
-                                        <br/>
-                                        <ListaParticipantesNoProyecto/>
-
-                                        <FormFooter>
-                                            <ButtonGroup>
-                                                <Button
-                                                    type="submit"
-                                                    appearance="primary"
-                                                    onClick={() => guardarFormulario1()}
-                                                    // style={{ marginLeft: '5px' }}
-                                                >
-                                                    Confirmar datos
-                                                </Button>
-                                            </ButtonGroup>
-                                        </FormFooter>
-                                    </form>
-                                )}
-                            </Form>
-
-                            {!iniciarFormulario && <>
-                                <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br /></>}
-
-                            {/* me aseguro que el usuario presione el boton antes de continuar */}
-                            {iniciarFormulario ? (
-                                <>
-                                    <div>
-                                        <br />
-                                        <hr></hr>
-                                    </div>
-
-                                    <Inline space="space.200">
-                                        <h2>Temas: </h2> 
-                                        {/* 19.920px */}
-                                        <div style={{ marginTop: '17px' }}>
-                                            <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="subtle" onClick={() => openModalTemas()}></Button>
-                                        </div>
+                    <>
+                        {/* FORMULARIO PRIMERA PARTE */}
+                        <Form<{ username: string }>
+                            onSubmit={(data) => {
+                                // console.log('form data', data);
+                                return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
+                                    data.username === 'error' ? { username: 'IN_USE' } : undefined,
+                                );
+                            }}
+                        >
+                            {({ formProps, submitting }) => (
+                                <form {...formProps}>
+                                    <br />
+                                    <br />
+                                    <br />
+                                    <br />
+                                    <br />
+                                    <br />
+                                    <Inline space="space.500" alignInline="center" shouldWrap>
+                                        <FechaInicio />
+                                        <FechaTermino />
                                     </Inline>
-                                    {/* FORMULARIO SEGUNDA PARTE: añadir los temas que se abordaran en la reunion */}
-                                    <div>
-                                        {listaTemas.map((tema, index) => (
-                                            <h3 style={{marginLeft:'20px'}} key={index}> {index + 1}. {tema}</h3>
-                                        ))}
-                                    </div>
+                                    <br />
+                                    <Objetivo />
+                                    <br />
+                                    <Lugar />
+                                    <br />
+                                    <ListaParticipantes />
+                                    <br />
+                                    <ListaAnfitriones />
+                                    <br />
+                                    <Secretario />
+                                    <br />
+                                    <ListaParticipantesNoProyecto />
+
                                     <FormFooter>
-                                        <Inline space="space.200" shouldWrap>
-                                            {/* <Button appearance="danger" onClick={() => borrarUltimoTema()}>Borrar último tema</Button> */}
-                                            <Button iconBefore={<TrashIcon label="" size="medium" />} appearance="danger" onClick={() => openModalTemasBorrar()}>Borrar último tema</Button>
-                                            {/* <Button onClick={() => verTemasActuales()}>Ver temas añadidos</Button> */}
-                                            <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="primary" onClick={() => openModalTemas()}> Añadir tema </Button>
-                                        </Inline>
-                                    </FormFooter>
-                                    <div>
-                                        <br />
-                                        <hr></hr>
-                                    </div>
-
-
-                                    <Inline space="space.200" shouldWrap>
-                                        <h2>Enlaces: </h2>
-                                        <div style={{ marginTop: '17px' }}>
-                                        <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="subtle" onClick={() => openModalEnlaces()}></Button>
-                                        </div>
-                                    </Inline>
-                                    {/* FORMULARIO TERCERA PARTE: añadir links que se compartiran con los participantes de la reunion */}
-                                    <div>
-                                        {listaEnlaces.map((enlace, index) => (
-                                            <h3 style={{marginLeft:'20px'}} key={index}> {index + 1}. {enlace}</h3>
-                                        ))}
-                                    </div>
-                                    <FormFooter>
-                                        <Inline space="space.200" shouldWrap>
-                                            {/* <Button appearance="danger" onClick={() => borrarUltimoTema()}>Borrar último tema</Button> */}
-                                            <Button iconBefore={<TrashIcon label="" size="medium" />} appearance="danger" onClick={() => openModalEnlacesBorrar()}>Borrar último enlace</Button>
-                                            {/* <Button onClick={() => verTemasActuales()}>Ver temas añadidos</Button> */}
-                                            <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="primary" onClick={() => openModalEnlaces()}> Añadir enlace </Button>
-                                        </Inline>
-                                    </FormFooter>
-
-
-                                    {/* Boton para finalizar el formulario (realizar la peticion al backend) */}
-                                    <div>
-                                        <br />
-                                        <hr />
-                                        <br />
-                                    </div>
-
-                                    <ButtonGroup>
-                                        <Inline space="space.200" alignInline="center">
-                                            <Button onClick={() => cancelarOperacion()} style={{ marginTop: '20px', marginBottom: '20px' }}>Cancelar</Button>
-                                            <Button appearance="primary" onClick={() => {
-                                                guardarFormularioFinal();
-                                            }}
-                                                style={{ marginTop: '20px', marginBottom: '20px' }}>
-                                                Finalizar Pre-reunión
+                                        <ButtonGroup>
+                                            <Button
+                                                type="submit"
+                                                appearance="primary"
+                                                onClick={() => guardarFormulario1()}
+                                            // style={{ marginLeft: '5px' }}
+                                            >
+                                                Confirmar datos
                                             </Button>
-                                        </Inline>
-                                    </ButtonGroup>
-
-                                </>
-                            ) : (
-                                <>
-                                </>
+                                        </ButtonGroup>
+                                    </FormFooter>
+                                </form>
                             )}
-                        </>
+                        </Form>
+
+                        {!iniciarFormulario && <>
+                            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /></>}
+
+                        {/* me aseguro que el usuario presione el boton antes de continuar */}
+                        {iniciarFormulario ? (
+                            <>
+                                <div>
+                                    <br />
+                                    <hr></hr>
+                                </div>
+
+                                <Inline space="space.200">
+                                    <h2>Temas: </h2>
+                                    {/* 19.920px */}
+                                    <div style={{ marginTop: '17px' }}>
+                                        <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="subtle" onClick={() => openModalTemas()}></Button>
+                                    </div>
+                                </Inline>
+                                {/* FORMULARIO SEGUNDA PARTE: añadir los temas que se abordaran en la reunion */}
+                                <div>
+                                    {listaTemas.map((tema, index) => (
+                                        <h3 style={{ marginLeft: '20px' }} key={index}> {index + 1}. {tema}</h3>
+                                    ))}
+                                </div>
+                                <FormFooter>
+                                    <Inline space="space.200" shouldWrap>
+                                        {/* <Button appearance="danger" onClick={() => borrarUltimoTema()}>Borrar último tema</Button> */}
+                                        <Button iconBefore={<TrashIcon label="" size="medium" />} appearance="danger" onClick={() => openModalTemasBorrar()}>Borrar último tema</Button>
+                                        {/* <Button onClick={() => verTemasActuales()}>Ver temas añadidos</Button> */}
+                                        <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="primary" onClick={() => openModalTemas()}> Añadir tema </Button>
+                                    </Inline>
+                                </FormFooter>
+                                <div>
+                                    <br />
+                                    <hr></hr>
+                                </div>
+
+
+                                <Inline space="space.200" shouldWrap>
+                                    <h2>Enlaces: </h2>
+                                    <div style={{ marginTop: '17px' }}>
+                                        <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="subtle" onClick={() => openModalEnlaces()}></Button>
+                                    </div>
+                                </Inline>
+                                {/* FORMULARIO TERCERA PARTE: añadir links que se compartiran con los participantes de la reunion */}
+                                <div>
+                                    {listaEnlaces.map((enlace, index) => (
+                                        <h3 style={{ marginLeft: '20px' }} key={index}> {index + 1}. {enlace}</h3>
+                                    ))}
+                                </div>
+                                <FormFooter>
+                                    <Inline space="space.200" shouldWrap>
+                                        {/* <Button appearance="danger" onClick={() => borrarUltimoTema()}>Borrar último tema</Button> */}
+                                        <Button iconBefore={<TrashIcon label="" size="medium" />} appearance="danger" onClick={() => openModalEnlacesBorrar()}>Borrar último enlace</Button>
+                                        {/* <Button onClick={() => verTemasActuales()}>Ver temas añadidos</Button> */}
+                                        <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="primary" onClick={() => openModalEnlaces()}> Añadir enlace </Button>
+                                    </Inline>
+                                </FormFooter>
+
+
+                                {/* Boton para finalizar el formulario (realizar la peticion al backend) */}
+                                <div>
+                                    <br />
+                                    <hr />
+                                    <br />
+                                </div>
+
+                                <ButtonGroup>
+                                    <Inline space="space.200" alignInline="center">
+                                        <Button onClick={() => cancelarOperacion()} style={{ marginTop: '20px', marginBottom: '20px' }}>Cancelar</Button>
+                                        <Button appearance="primary" style={{ backgroundColor: '#00A499' }} onClick={() => {
+                                            guardarFormularioFinal();
+                                        }}
+                                            style={{ marginTop: '20px', marginBottom: '20px' }}>
+                                            Finalizar Pre-reunión
+                                        </Button>
+                                    </Inline>
+                                </ButtonGroup>
+
+                            </>
+                        ) : (
+                            <>
+                            </>
+                        )}
+                    </>
                     {/* ACTUALIZACION: YA NO APLICA ESTE CASO PORQUE CUALQUIER USUARIO PUEDE COMPLETAR EL FORMULARIO */}
                     {/* //     // Caso el usuario que ingresa es de tipo estudiante
                     // ) : (
@@ -1707,7 +1711,7 @@ const FormularioPreReunion: React.FC = () => {
                                         <Button appearance="subtle" onClick={closeModalTemas}>
                                             Cancelar
                                         </Button>
-                                        <Button appearance="primary" onClick={() => guardarFormulario2()} type="submit">
+                                        <Button appearance="primary" style={{ backgroundColor: '#00A499' }} onClick={() => guardarFormulario2()} type="submit">
                                             Añadir
                                         </Button>
                                     </ModalFooter>
@@ -1766,22 +1770,12 @@ const FormularioPreReunion: React.FC = () => {
                 )}
             </ModalTransition>
 
-
-            {/* ********************************************************************************************************************************************************** */}
-            {/* ********************************************************************************************************************************************************** */}
-            {/* ********************************************************************************************************************************************************** */}
-
-
-
-
-
             {/* ********************************************************************************************************************************************************** */}
             {/* ******************************************************************** Modal dialog de Enlaces ************************************************************* */}
             {/* ********************************************************************************************************************************************************** */}
             <ModalTransition>
                 {isOpenEnlaces && (
                     <Modal onClose={closeModalEnlaces} shouldScrollInViewport>
-
                         <Form<{ username: string }>
                             onSubmit={(data) => {
                                 // console.log('form data', data);
@@ -1793,11 +1787,9 @@ const FormularioPreReunion: React.FC = () => {
                             {/* <form> */}
                             {({ formProps, submitting }) => (
                                 <form {...formProps}>
-
                                     <ModalHeader>
                                         <ModalTitle>Añadir Enlace</ModalTitle>
                                     </ModalHeader>
-
                                     <ModalBody>
                                         <Enlaces />
                                         <DescripcionEnlaces />
@@ -1807,7 +1799,7 @@ const FormularioPreReunion: React.FC = () => {
                                         <Button appearance="subtle" onClick={closeModalEnlaces}>
                                             Cancelar
                                         </Button>
-                                        <Button appearance="primary" onClick={() => guardarFormulario3()} type="submit">
+                                        <Button appearance="primary" style={{ backgroundColor: '#00A499' }} onClick={() => guardarFormulario3()} type="submit">
                                             Añadir
                                         </Button>
                                     </ModalFooter>
@@ -1817,13 +1809,6 @@ const FormularioPreReunion: React.FC = () => {
                     </Modal>
                 )}
             </ModalTransition>
-
-
-            {/* ********************************************************************************************************************************************************** */}
-            {/* ********************************************************************************************************************************************************** */}
-            {/* ********************************************************************************************************************************************************** */}
-
-
 
             {/* ********************************************************************************************************************************************************** */}
             {/* ******************************************************************** Modal dialog de Enlaces: borrar un enlace******************************************** */}
@@ -1843,8 +1828,6 @@ const FormularioPreReunion: React.FC = () => {
                             {/* <form> */}
                             {({ formProps, submitting }) => (
                                 <form {...formProps}>
-
-
                                     <ModalHeader>
                                         <ModalTitle appearance="warning">Eliminar enlace</ModalTitle>
                                     </ModalHeader>
@@ -1867,15 +1850,7 @@ const FormularioPreReunion: React.FC = () => {
                     </Modal>
                 )}
             </ModalTransition>
-
-            {/* ********************************************************************************************************************************************************** */}
-            {/* ********************************************************************************************************************************************************** */}
-            {/* ********************************************************************************************************************************************************** */}
-
-
         </div>
-
-
 
     );
 };

@@ -45,9 +45,9 @@ var numeroTemaSeleccionado: number;
 var stringTemaSeleccionado: string;
 
 const boxStyles = xcss({
-    borderColor: 'color.border.selected',
+    borderColor: '#00A499',
     // width: '500px',
-    backgroundColor: 'color.background.selected',
+    backgroundColor: '#E5F6F5',
     borderStyle: 'solid',
     borderRadius: 'border.radius',
     borderWidth: 'border.width',
@@ -57,7 +57,7 @@ const boxStyles2 = xcss({
     // borderColor: 'color.border.neutral',
     // width: '1000px',
     width: '100%',
-    backgroundColor: 'color.background.neutral',
+    backgroundColor: '#00A499',
     borderStyle: 'solid',
     borderRadius: 'border.radius',
     borderWidth: 'border.width',
@@ -923,7 +923,7 @@ const FormularioPostReunion: React.FC = () => {
                         {/* se muestran los compromisos previos */}
                         {compromisosProyecto?.length != 0 && (
                                             <>
-                                                <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles2}>
+                                                <Box padding="space.400" backgroundColor="#E5F6F5" xcss={boxStyles2}>
                                                     <h2 style={{ marginTop: '0px', textAlign: 'center' }}>Estado del proyecto</h2>
                                                     <br />
                                                     <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Compromisos previos:</h3>
@@ -982,7 +982,7 @@ const FormularioPostReunion: React.FC = () => {
 
 
 
-                        <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles}>
+                        <Box padding="space.400" backgroundColor="#E5F6F5" xcss={boxStyles}>
 
 
                             {/* temas */}
@@ -1131,7 +1131,7 @@ const FormularioPostReunion: React.FC = () => {
                                         </ModalTitle>
                                     </ModalHeader>
                                     <ModalBody>
-                                        <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles}>
+                                        <Box padding="space.400" backgroundColor="#E5F6F5" xcss={boxStyles}>
                                             <h2 style={{ marginTop: '0px', textAlign: 'center' }}>Descripción</h2>
                                             <br />
                                             <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Objetivo: {meetingminute?.title}</h3>
@@ -1181,81 +1181,8 @@ const FormularioPostReunion: React.FC = () => {
                                                     <br />
                                                 </>
                                             )}
-
-                                            {/* AQUI */}
-                                            {/* se muestran los compromisos atrasados que se encuentran en compromisosProyecto */}
-                                            {/* se añade una condicion de mostrar el campo solo si existen compromisos atrasados */}
-                                            {/* FORMATO ANTIGUO */}
-                                            {/* {compromisosProyecto?.length != 0 && (
-                                    <>
-                                    <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Compromisos atrasados:</h3>
-                                    {compromisosProyecto?.map((compromiso, index) => (
-                                        <>
-                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>Encargado/a: {compromiso.participants}</h4>
-                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>Descripción: {compromiso.description}</h4>
-                                            <br />
-                                        </>
-                                    ))}
-                                    </>
-                                )} */}
                                         </Box>
-
                                         <br />
-
-                                        {/* {compromisosProyecto?.length != 0 && (
-                                            <>
-                                                <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles2}>
-                                                    <h2 style={{ marginTop: '0px', textAlign: 'center' }}>Estado del proyecto</h2>
-                                                    <br />
-                                                    <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Compromisos previos:</h3>
-                                                    {compromisosProyecto?.map((compromiso, index) => (
-                                                        <>
-                                                            {compromiso.number < (meetingminute?.number ?? 0) && (
-                                                                <>
-                                                                    {index == 0 && (
-                                                                        <>
-                                                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{compromiso.participants}</h4>
-                                                                        </>
-                                                                    )}
-
-                                                                    {index !== 0 && (
-                                                                        <>
-                                                                            {Array.from(compromisosProyecto[index - 1].participants).map((char: string, charIndex: number) => (
-                                                                                <>
-                                                                                    <h4 key={charIndex} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>
-                                                                                        {char === compromiso.participants[charIndex] ? '' : (compromiso.participants)}
-                                                                                    </h4>
-                                                                                </>
-                                                                            ))}
-                                                                        </>
-                                                                    )}
-                                                                    <Inline>
-                                                                        {new Date(compromiso.dateLimit) < new Date() && (
-                                                                            <>
-                                                                                <Stack>
-                                                                                    <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px", color: 'red' }}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
-                                                                                    <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'red' }}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
-                                                                                </Stack>
-                                                                            </>
-                                                                        )}
-                                                                        {new Date(compromiso.dateLimit) > new Date() && (
-                                                                            <>
-                                                                                <Stack>
-                                                                                    <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px", color: 'green' }}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
-                                                                                    <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'green' }}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
-                                                                                </Stack>
-                                                                            </>
-                                                                        )}
-                                                                    </Inline>
-
-                                                                </>
-                                                            )}
-                                                        </>
-                                                    ))}
-                                                </Box>
-                                            </>
-                                        )} */}
-
                                     </ModalBody>
                                     <ModalFooter>
                                         <Button appearance="subtle" onClick={closeModalInfoReu}>

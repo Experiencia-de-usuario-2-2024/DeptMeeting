@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3014
 
 # Comando para iniciar tu aplicación
-CMD [ "bun", "start" ]
+CMD ["bun", "start"]

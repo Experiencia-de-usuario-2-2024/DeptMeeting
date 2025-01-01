@@ -4,11 +4,9 @@ import { theme } from './theme';
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background-color: ${theme.colors.background};
-  padding: 20px;
+  margin: 0 auto;
+  max-width: 600px; 
+  padding: 0 1rem;
 `;
 
 export const FormCard = styled.div`
@@ -16,9 +14,11 @@ export const FormCard = styled.div`
   border-radius: 8px;
   padding: 2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
   @media (min-width: ${theme.breakpoints.tablet}) {
     padding: 3rem;
   }
@@ -27,9 +27,18 @@ export const FormCard = styled.div`
 export const Title = styled.h1`
   color: ${theme.colors.primary};
   text-align: center;
+  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-weight: normal; /* Remove bold */
+`;
+
+export const Subtitle = styled.h2`
+  text-align: center;
   margin-bottom: 2rem;
   font-size: 2rem;
-  width: 100%;
+  font-family: 'Bebas Neue', sans-serif;
+  font-weight: normal; /* Remove bold */
 `;
 
 export const FormGroup = styled.div`
@@ -58,6 +67,7 @@ export const Label = styled.label`
   font-size: 1rem;
   line-height: 1.5;
   width: 100%;
+  max-width: 200px; /* Ensure all labels have the same width */
 `;
 
 export const Input = styled.input`
@@ -84,6 +94,7 @@ export const PasswordWrapper = styled(InputWrapper)`
   input {
     padding-right: 40px;
   }
+  width: 100%; /* Ensure the wrapper takes the full width */
 `;
 
 export const PasswordToggle = styled.button`
@@ -138,6 +149,7 @@ export const Button = styled.button<{ variant?: 'primary' | 'google' }>`
   border-radius: 4px;
   font-size: 1rem;
   font-weight: 500;
+  font-family: 'Bebas Neue', sans-serif; /* Set font family */
   cursor: pointer;
   transition: opacity 0.2s;
   margin-bottom: 1rem;
@@ -147,7 +159,7 @@ export const Button = styled.button<{ variant?: 'primary' | 'google' }>`
   gap: 8px;
   
   background-color: ${props => 
-    props.variant === 'google' ? theme.colors.white : theme.colors.primary};
+    props.variant === 'google' ? theme.colors.white : '#EA7600'};
   color: ${props => 
     props.variant === 'google' ? theme.colors.text : theme.colors.white};
   border: ${props => 
@@ -177,5 +189,43 @@ export const LinkText = styled.p`
     &:hover {
       text-decoration: underline;
     }
+  }
+`;
+
+export const Modal = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+`;
+
+export const ModalContent = styled.div`
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  text-align: center;
+`;
+
+export const CloseButton = styled.span`
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  &:hover,
+  &:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
   }
 `;

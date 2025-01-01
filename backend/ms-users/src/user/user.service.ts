@@ -85,8 +85,8 @@ export class UserService {
   Método para obtener todos los usuarios registrados.
   salida: llista con todos los usuarios registrados.  
   */
-  async findAll(): Promise<UserDocument[]> {
-    return await this.userModel.find().exec();
+  async findAll(): Promise<IUser[]> {
+    return this.userModel.find().exec();
   }
 
   /*  

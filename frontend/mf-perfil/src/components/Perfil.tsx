@@ -1,481 +1,271 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, xcss, Stack } from '@atlaskit/primitives';
-import Avatar from '@atlaskit/avatar';
-import Form, { Field } from '@atlaskit/form';
-import TextField from '@atlaskit/textfield';
-import CheckIcon from '@atlaskit/icon/glyph/check'
-import Button from '@atlaskit/button';
-import { jwtDecode } from 'jwt-decode';
-
-import WatchIcon from '@atlaskit/icon/glyph/watch'
-import WatchFilledIcon from '@atlaskit/icon/glyph/watch-filled'
-
-
-// Se obtiene el token del usuario logeado
-const tokenUser = localStorage.getItem('tokenUser');
-
-// estilo para el contenedor de la información del perfil
-const boxStylePerfil = xcss({
-    // width: '400px', //500
-    width: '100%', //500
-    height: '100%',
-    borderColor: 'color.border.information',
-    borderStyle: 'solid',
-    borderRadius: 'border.radius',
-    borderWidth: 'border.width',
-    // padding: 'space.100', //400
-    backgroundColor: 'color.background.information',
-    // marginLeft: 'space.400', // Add left margin
-    // marginRight: 'space.400', // Add left margin
-    marginTop: 'space.400', // Add top margin
-    // marginBottom: 'space.400', // Add bottom margin
-});
+import './Perfil.css';
 
 const Perfil: React.FC = () => {
-    // Estado utilizado para mostrar el perfil del usuario
-    const [verPerfil, setVerPerfil] = React.useState(Boolean);
-
-    // Interfaz para los datos del perfil de un usuario
-    interface Usuario {
-        color: string;
-        email: string; 
-        name: string;
-        avatar: string;
-        password: string;
-        tagName: string;
-        type: string;
-        __v: number;
-        _id: string;
-        asignado: string;
-        active: Boolean;
-        accessDateLimit: string;
-        createOn: Date;
-    }
-
-    // Interfaz para los datos de las tareas/compromisos de un usuario
-    interface Compromiso {
-        description: string; // *
-        type: string; // *
-        participants: string; // *
-        topic: number;
-        meeting: string; // *
-        project: string; // *
-        meetingMinute: string;
-        state: string; // *
-        number: number;
-        dateLimit: string;
-        timeLimit: string;
-        postition: string;
-        isSort: string;
-        _id: string;
-        createdAt: string;
-        updatedAt: string;
-        disagreement: JSON;
-    }
-
-    // Estado para almacenar el perfil del usuario
-    const [usuarioPerfil, setusuarioPerfil] = React.useState<Usuario>(); 
-    // Estado para tener la informacion del usuario logeado
-    const [usuarioPerfilLog, setusuarioPerfilLog] = React.useState<Usuario>(); 
-    // Estado para almacenar las tareas del usuario
-    const [compromisosUsuario, setcompromisosUsuario] = React.useState<Compromiso[]>();
+    const [profileData, setProfileData] = useState({
+        name: '',
+        email: '',
+        photoUrl: '',
+        initials: '',
+        password: '',
+        confirmPassword: '',
+        assignedProfessor: ''
+    });
     
+    const [errors, setErrors] = useState({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    });
 
-    // ya no se utiliza
-    let emailUsuarioPerfil: string;
-    let emailUsuarioLog: string;
+    const [verPerfil, setVerPerfil] = React.useState(Boolean);
+    const [usuarioPerfil, setusuarioPerfil] = React.useState<any>();
+    const [usuarioPerfilLog, setusuarioPerfilLog] = React.useState<any>();
+    const [compromisosUsuario, setcompromisosUsuario] = React.useState<any[]>();
+    const [modalMessage, setModalMessage] = useState('');
 
+    const tokenUser = localStorage.getItem('tokenUser');
 
     useEffect(() => {
-        // Obtener de local storage el valor de verPerfil (para saber si tiene que mostrar el perfil o no)
         const storedValue = localStorage.getItem('verPerfil');
         if (storedValue) {
             const parsedValue = JSON.parse(storedValue);
             setVerPerfil(parsedValue);
         }
 
-        // Obtener de local storage el id del usuario cuyo perfil se va a cargar
         const idPerfil = localStorage.getItem('idPerfil');
-        // Obtener los datos del usuario al principio para asi cargar el perfil (requiere del id del usuario)
-        async function obtenerDatosUsuario() {
+        const obtenerDatosUsuario = async () => {
             try {
-                // Solo se requiere del token del usuario para realizar la petición
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/perfil/` + idPerfil, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
                 });
-                console.log("INFORMACION DEL USUARIO");
-                console.log(response.data);
                 setusuarioPerfil(response.data);
-                emailUsuarioPerfil = response.data.email;
-
+                setProfileData({
+                    name: response.data.name,
+                    email: response.data.email,
+                    photoUrl: response.data.avatar,
+                    initials: response.data.tagName,
+                    password: '',
+                    confirmPassword: '',
+                    assignedProfessor: response.data.asignado
+                });
             } catch (error) {
                 console.error(error);
-                console.error("NO HAY NINGUN ID EN LOCAL STORAGE PARA CARGAR EL PERFIL DEL USUARIO");
             }
-        }
-        // obtenerDatosUsuario();
+        };
+        obtenerDatosUsuario();
 
-        // EL FUNCIONAMIENTO DE LA PLATAFORMA SE CAMBIO, SOLAMENTE EL USUARIO LOGEADO PUEDE MODIFICAR SU PERFIL, NADIE MAS
-        // Obtener los datos del usuario logeado, para asi saber si puede o no modificar el perfil (un profesor puede ver el perfil de un estudiante pero no puede modificar sus datos)
-        async function obtenerDatosUsuarioLog() {
+        const obtenerDatosUsuarioLog = async () => {
             try {
                 const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
                 const correoElectronico = decodedToken.email;
-                // Solo se requiere del token del usuario para realizar la petición
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/perfil/email/` + correoElectronico, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
                 });
-                console.log("INFORMACION DEL USUARIO LOGEADO");
-                console.log(response.data);
                 setusuarioPerfilLog(response.data);
-                emailUsuarioLog = response.data.email;
-
             } catch (error) {
                 console.error(error);
             }
-        }
+        };
+        obtenerDatosUsuarioLog();
 
-        // funcion para obtener las tareas del usuario 
-        async function obtenerCompromisosUsuario() {
+        const obtenerCompromisosUsuario = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/element/participants/` + emailUsuarioPerfil, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/element/participants/` + usuarioPerfil?.email, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
                 });
-                console.log("*** COMPROMISOS DEL USUARIO CUYO PERFIL ES VISIBLE***");
-                console.log(emailUsuarioPerfil);
-                console.log(response.data);
                 setcompromisosUsuario(response.data);
-
             } catch (error) {
                 console.error(error);
             }
-        }
-
-        // garantizar el orden de las funciones asincronas
-        async function obtenerDatos() {
-            await obtenerDatosUsuario();
-            await obtenerDatosUsuarioLog();
-            await obtenerCompromisosUsuario();
-        }
-        obtenerDatos();
-
-
+        };
+        obtenerCompromisosUsuario();
     }, []);
-    
 
-    // Entrada: ninguna
-    // Salida: ninguna
-    // Funcion: actualiza la informacion del usuario, para esto se recoge directamente la informacion ingresada en el formulario. La funcion se ejecuta con el presionar de un boton
-    const actualizarInformacion = () => {
-        const fotoAvatarValue = (document.getElementsByName("fotoAvatar")[0] as HTMLInputElement).value;
-        const nameValue = (document.getElementsByName("name")[0] as HTMLInputElement).value;
-        const tagnameValue = (document.getElementsByName("tagname")[0] as HTMLInputElement).value;
-        const emailValue = (document.getElementsByName("email")[0] as HTMLInputElement).value;
-        const passwordValue = (document.getElementsByName("password")[0] as HTMLInputElement).value;
-
-        let asignarEstudianteProfesorValue: string = "";
-        // este campo solamente se mostrara si el usuario logeado es estudiante
-        const tipoDeUsuario = localStorage.getItem('tipoUsuario');
-        if (tipoDeUsuario === 'estudiante' || tipoDeUsuario === 'Estudiante') {
-            asignarEstudianteProfesorValue = (document.getElementsByName("asignarEstudianteProfesor")[0] as HTMLInputElement).value;
+    useEffect(() => {
+        if (usuarioPerfil?.type) {
+            console.log(`User type: ${usuarioPerfil.type}`);
         }
-        if (tipoDeUsuario === 'profesor' || tipoDeUsuario === 'Profesor') {
-            asignarEstudianteProfesorValue = "";
+        if (usuarioPerfilLog?.type) {
+            console.log(`Logged user type: ${usuarioPerfilLog.type}`);
         }
-        
-        // verificar que los campos obligatorios no esten vacios
-        if (passwordValue === "" || passwordValue === null || passwordValue === undefined || passwordValue === " ") {
-            window.alert("La contraseña no puede estar vacía, porfavor ingrese una contraseña válida");
-            return;
-        }
+    }, [usuarioPerfil, usuarioPerfilLog]);
 
-        if (nameValue === "" || nameValue === null || nameValue === undefined || nameValue === " ") {
-            window.alert("El nombre no puede estar vacío, porfavor ingrese un nombre de usuario válido");
-            return;
-        }
-
-        if (emailValue === "" || emailValue === null || emailValue === undefined || emailValue === " " || !emailValue.includes("@") || !emailValue.includes(".")) {
-            window.alert("El correo electrónico no es válido, porfavor ingrese un correo electrónico válido");
-            return;
-        }
-
-        // Realizar la peticion que actualiza la informacion del usuario
-        async function peticionActualizar() {
-            try {            
-                
-                const responsePerfil = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/user/update/` + usuarioPerfil?._id + '/profile', {
-                    avatar: fotoAvatarValue,
-                    name: nameValue,
-                    tagName: tagnameValue,
-                    email: emailValue,
-                    password: passwordValue,
-                    asignado: asignarEstudianteProfesorValue
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${tokenUser}`
-                    }
-                });
-                console.log("Perfil actualizado correctamente");
-            
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        peticionActualizar();
-        window.alert("Perfil actualizado correctamente");
-        window.location.reload();
-    }
-
-    // YA NO SE UTILIZA DEBIDO A QUE LAS TARAS SE DEJARON EN UN MICROFRONTEND APARTE
-    const actualizarEstadoTarea = (idCompromiso: string, nuevoEstado: string) => {
-        console.log("ID DE LA TAREA A ACTUALIZAR: " + idCompromiso);
-        console.log("NUEVO ESTADO DE LA TAREA: " + nuevoEstado);
-        async function peticionActualizarEstadoTarea() {
-            try {            
-                
-                const responsePerfil = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/element/update/` + idCompromiso, {
-                    state: nuevoEstado,
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${tokenUser}`
-                    }
-                });
-                console.log("Estado de la tarea actualizado correctamente");
-            
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        peticionActualizarEstadoTarea();
-        window.alert("Tarea actualizada correctamente");
-        window.location.reload();
-    }
-
-    // YA NO SE UTILIZA DEBIDO A QUE EL PERFIL AHORA SE ACCEDE DESDE UN DIALOGO MODAL
-    const volverHome = () => {
-        const newValue = !verPerfil;
-
-        localStorage.setItem('verPerfil', JSON.stringify(newValue));
-        localStorage.setItem('verActaDialogica', JSON.stringify(newValue));
-        
-        if (verPerfil == false) {
-            setVerPerfil(true);
-        }
-        else{
-            setVerPerfil(false);    
-        }
-        window.location.reload();
-    }
-
-
-    //**********************************************************************
-    //*******************  */ CAMPOS DEL FORMULARIO ************************
-    //**********************************************************************
-
-    const FotoAvatar = () => (
-        <Field
-            aria-required={true}
-            name="fotoAvatar"
-            defaultValue={usuarioPerfil?.avatar}
-            label="URL de la foto de perfil"
-        >
-            {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
-        </Field>
-    );
-
-    const Name = () => (
-        <Field
-            aria-required={true}
-            name="name"
-            defaultValue={usuarioPerfil?.name}
-            label="Nombre del usuario"
-            isRequired
-        >
-            {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
-        </Field>
-    );
-
-    const Tagname = () => (
-        <Field
-            aria-required={true}
-            name="tagname"
-            defaultValue={usuarioPerfil?.tagName}
-            label="Iniciales del usuario"            
-        >
-            {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
-        </Field>
-    );
-
-    const Email = () => (
-        <Field
-            aria-required={true}
-            name="email"
-            defaultValue={usuarioPerfil?.email}
-            label="Correo electrónico"
-            isRequired
-        >
-            {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
-        </Field>
-    );
-
-    const [showPassword, setShowPassword] = useState(false);
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setProfileData(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
-    const Password = () => (
+
+    const validateForm = () => {
+        let isValid = true;
+        const newErrors = { ...errors };
+
+        if (!profileData.name) {
+            newErrors.name = 'El nombre es requerido';
+            isValid = false;
+        }
+
+        if (!profileData.email) {
+            newErrors.email = 'Correo electrónico es requerido';
+            isValid = false;
+        } else if (!/\S+@\S+\.\S+/.test(profileData.email)) {
+            newErrors.email = 'Formato de correo electrónico inválido';
+            isValid = false;
+        }
+
+        if (profileData.password !== profileData.confirmPassword) {
+            newErrors.confirmPassword = 'Las contraseñas no coinciden';
+            isValid = false;
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    const closeWindow = () => {
+        window.close();
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
         
+        if (!validateForm()) {
+            return;
+        }
 
-       
+        try {
+            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/user/update/` + usuarioPerfil?._id + '/profile', {
+                avatar: profileData.photoUrl,
+                name: profileData.name,
+                tagName: profileData.initials,
+                email: profileData.email,
+                password: profileData.password,
+                asignado: profileData.assignedProfessor
+            }, {
+                headers: {
+                    Authorization: `Bearer ${tokenUser}`
+                }
+            });
+            localStorage.setItem('modalMessage', 'Perfil actualizado correctamente');
+            window.location.href = '/home'; // Redirect to /home
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            localStorage.setItem('modalMessage', 'Error actualizando el perfil');
+            window.location.href = '/home'; // Redirect to /home
+        }
+    };
 
-    <Field
-        aria-required={true}
-        name="password"
-        defaultValue=""
-        label="Contraseña (repita la actual o ingrese una nueva)"
-        isRequired
-    >
-        {({ fieldProps, error, valid }) => (
-            <div style={{ position: 'relative' }}>
-                <TextField
-                    {...fieldProps}
-                    type={showPassword ? 'text' : 'password'}
+    return (
+        <div className="ProfileContainer">
+            <h1>Mi perfil: {usuarioPerfil?.type === 'profesor' ? 'Profesor/a guía' : 'Estudiante'}</h1>
+            
+            <form className="ProfileForm" onSubmit={handleSubmit}>
+                <img 
+                    className="ProfileImage"
+                    src={usuarioPerfil?.avatar || 'default-avatar.png'} 
+                    alt="Profile" 
                 />
-                <Button
-                    onClick={togglePasswordVisibility}
-                    appearance="subtle"
-                    spacing="none"
-                    style={{
-                        position: 'absolute',
-                        top: '50%',
-                        right: '8px',
-                        transform: 'translateY(-50%)',
-                    }}
-                >
-                        {showPassword ? <WatchIcon /> : <WatchFilledIcon />}
-                </Button>
-            </div>
-        )}
-    </Field>
-    );
+                
+                <div className="FormField">
+                    <label className="Label">URL de la foto de perfil</label>
+                    <input
+                        className="Input"
+                        type="text"
+                        name="photoUrl"
+                        value={profileData.photoUrl}
+                        onChange={handleInputChange}
+                    />
+                </div>
 
-    // este campo solamente se mostrara si el usuario logeado es estudiante
-    const AsignarEstudianteProfesor = () => (
-        <Field
-            aria-required={true}
-            name="asignarEstudianteProfesor"
-            defaultValue={usuarioPerfil?.asignado}
-            label="Profesor/a asignado/a (correo electrónico)"
-            // isRequired
-        >
-            {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
-        </Field>
-    );
+                <div className="FormField">
+                    <label className="Label">Nombre del usuario*</label>
+                    <input
+                        className="Input"
+                        type="text"
+                        name="name"
+                        value={profileData.name}
+                        onChange={handleInputChange}
+                    />
+                    {errors.name && <div className="ErrorMessage">{errors.name}</div>}
+                </div>
 
-    //**********************************************************************
-    //**********************************************************************
-    //**********************************************************************
+                <div className="FormField">
+                    <label className="Label">Iniciales del usuario</label>
+                    <input
+                        className="Input"
+                        type="text"
+                        name="initials"
+                        value={profileData.initials}
+                        onChange={handleInputChange}
+                    />
+                </div>
 
+                <div className="FormField">
+                    <label className="Label">Correo electrónico*</label>
+                    <input
+                        className="Input"
+                        type="email"
+                        name="email"
+                        value={profileData.email}
+                        onChange={handleInputChange}
+                    />
+                    {errors.email && <div className="ErrorMessage">{errors.email}</div>}
+                </div>
 
-
-    //**********************************************************************
-    //*******************  */ Funcion para la tabla de tareas/compromisos ** -------> YA NO SE UTILIZA
-    //**********************************************************************
-    function createKey(input: string) {
-        return input ? input.replace(/^(the|a|an)/, '').replace(/\s/g, '') : input;
-    }
-        
-
-    //**********************************************************************
-    //**********************************************************************
-    //**********************************************************************
-
-return (    
-    <div>
-
-        {/* Informacion del perfil del usuario */}
-        <Box xcss={boxStylePerfil}>
-            {/* Forma alternativa de indicar el tipo de usuario. Se descarta para aprovechar el titulo */}
-            {/* <h3 style={{textAlign:'left', marginBottom:'0px', marginLeft:'20px'}}>Usuario: {usuarioPerfil?.type}</h3> */}
-            <Stack alignInline="center">
-                {/* <h1>Mi perfil: {usuarioPerfil?.type}</h1> */}
-                {/* se separa en dos casos para que muestre Profesor/a --> "no sexista" */}
-                {usuarioPerfil?.type === 'profesor' && (
-                    // <h1>Mi perfil: {usuarioPerfil?.type}/a</h1>
-                    <h1>Mi perfil: Profesor/a guía</h1>
-                )}
-                {usuarioPerfil?.type === 'estudiante' && (
-                    // <h1>Mi perfil: {usuarioPerfil?.type}</h1>
-                    <h1>Mi perfil: Estudiante</h1>
+                {usuarioPerfil?.type?.toLowerCase() === 'estudiante' && (
+                    <div className="FormField">
+                        <label className="Label">Profesor/a asignado/a (correo electrónico)</label>
+                        <input
+                            className="Input"
+                            type="text"
+                            name="assignedProfessor"
+                            value={profileData.assignedProfessor}
+                            onChange={handleInputChange}
+                        />
+                    </div>
                 )}
 
-                <Avatar 
-                    appearance="circle"
-                    src={usuarioPerfil?.avatar}
-                    size="xxlarge"
-                    name={usuarioPerfil?.name}
-                />
-                {/* <Button style={{padding:0}} appearance="link" href="https://youtu.be/MpuM6YYn3w8">Como cambiar la foto del perfil</Button> */}
-                <Button style={{padding:0}} appearance="link" href="https://youtu.be/MpuM6YYn3w8" target="_blank" rel="noopener noreferrer">Como cambiar la foto del perfil</Button>
+                <div className="FormField">
+                    <label className="Label">Contraseña (repita la actual o ingrese una nueva)*</label>
+                    <input
+                        className="Input"
+                        type="password"
+                        name="password"
+                        value={profileData.password}
+                        onChange={handleInputChange}
+                    />
+                    {errors.password && <div className="ErrorMessage">{errors.password}</div>}
+                </div>
 
-                <Form<{ username: string }>
-                    onSubmit={(data) => {
-                        // console.log('form data', data);
-                        return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
-                            data.username === 'error' ? { username: 'IN_USE' } : undefined,
-                        );
-                    }}
-                >
-                    {({ formProps, submitting }) => (
-                        <form {...formProps} style={{ width: '50%',}}>
-                            <div style={{ textAlign: 'center' }}>
-                                <FotoAvatar />
-                                <Name />
-                                <Tagname />
-                                <Email />
-                            </div>
+                <div className="FormField">
+                    <label className="Label">Confirmar contraseña*</label>
+                    <input
+                        className="Input"
+                        type="password"
+                        name="confirmPassword"
+                        value={profileData.confirmPassword}
+                        onChange={handleInputChange}
+                    />
+                    {errors.confirmPassword && <div className="ErrorMessage">{errors.confirmPassword}</div>}
+                </div>
 
-                            {/* Este campo solamente se mostrara si el usuario logeado es estudiante */}
-                            {usuarioPerfilLog?.type === 'estudiante' && (
-                                <div style={{ textAlign: 'center' }}>
-                                    <AsignarEstudianteProfesor />
-                                </div>
-                            )}
-                            <div style={{ textAlign: 'center' }}>
-                                <Password />
-                            </div>
-
-                            {/* SE REEEMPLAZO POR UN DIV PARA QUE LOS BOTONES QUEDEN CENTRADOS, esto debido a que el FormFooter automaticamente da un margen izquierdo de 24px, y para este formulario en particular queda raro */}
-                            {/* <FormFooter> */} 
-                            <div style={{ textAlign: 'center' }}>
-                                <br />
-                                <Button
-                                    iconBefore={<CheckIcon label="" size="medium" />}
-                                    type="submit"
-                                    appearance="primary"
-                                    onClick={() => actualizarInformacion()}
-                                    isDisabled={usuarioPerfilLog?.email !== usuarioPerfil?.email}
-                                    // style={{marginBottom: '10px'}}
-                                >
-                                    Actualizar perfil
-                                </Button>
-                                <br />
-                                <br />
-                            </div>
-                        </form>
-                    )}
-                </Form>
-
-            </Stack>
-        </Box>            
-    </div>
-);
+                <button className="StyledButton" type="submit" disabled={!profileData.password}>
+                    Actualizar perfil
+                </button>
+            </form>
+        </div>
+    );
 };
 
 export default Perfil;

@@ -44,7 +44,7 @@ export class UserController {
   salida: llista con todos los usuarios registrados.  
   */
   @MessagePattern(UserMSG.FIND_ALL)
-  findAll() {
+  async findAll() {
     return this.userService.findAll();
   }
 

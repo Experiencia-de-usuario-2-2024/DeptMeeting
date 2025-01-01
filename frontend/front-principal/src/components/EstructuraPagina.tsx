@@ -126,14 +126,14 @@ const EstructuraPagina = () => {
                             className={styles.button}
                             onClick={() => setIsLeftSidebarVisible(!isLeftSidebarVisible)}
                         >
-                            <MenuIcon color="white" />
+                            <MenuIcon color={isLeftSidebarVisible ? "#FF9200" : "white"} />
                         </button>
                         <button 
-                            className={`${styles.button} ${styles.withText}`}
+                            className={`${styles.button} ${styles.withText} ${isMobile ? styles.hideText : ''}`}
                             onClick={() => setIsInfoModalOpen(true)}
                         >
                             <InfoIcon color="white" />
-                            <span>Información</span>
+                            <span className={styles.buttonText}>INFORMACIÓN</span>
                         </button>
                     </div>
 
@@ -143,39 +143,39 @@ const EstructuraPagina = () => {
                             onClick={handleHomeClick}
                         >
                             <HomeIcon color="white" />
-                            <span>DeptMeeting</span>
+                            <span className={styles.buttonText}>DeptMeeting</span>
                         </button>
                     </div>
 
                     <div className={styles.headerRight}>
                         {usuarioPerfilLog?.type === 'profesor' && (
                             <button 
-                                className={`${styles.button} ${styles.withText}`}
+                                className={`${styles.button} ${styles.withText} ${isMobile ? styles.hideText : ''}`}
                                 onClick={() => setIsKanbanModalOpen(true)}
                             >
                                 <TableIcon color="white" />
-                                <span>Kanban++</span>
+                                <span className={styles.buttonText}>KANBAN++</span>
                             </button>
                         )}
                         <button 
-                            className={`${styles.button} ${styles.withText}`}
+                            className={`${styles.button} ${styles.withText} ${isMobile ? styles.hideText : ''}`}
                             onClick={() => setIsProfileModalOpen(true)}
                         >
                             <PersonIcon color="white" />
-                            <span>Mi perfil</span>
+                            <span className={styles.buttonText}>MI PERFIL</span>
                         </button>
                         <button 
-                            className={`${styles.button} ${styles.withText}`}
+                            className={`${styles.button} ${styles.withText} ${isMobile ? styles.hideText : ''}`}
                             onClick={handleLogout}
                         >
                             <LogoutIcon color="white" />
-                            <span>Cerrar sesión</span>
+                            <span className={styles.buttonText}>CERRAR SESIÓN</span>
                         </button>
                         <button 
                             className={styles.button}
                             onClick={() => setIsRightSidebarVisible(!isRightSidebarVisible)}
                         >
-                            <MenuIcon color="white" />
+                            <MenuIcon color={isRightSidebarVisible ? "#FF9200" : "white"} />
                         </button>
                     </div>
                 </div>
@@ -214,7 +214,7 @@ const EstructuraPagina = () => {
                             onClick={() => setIsInfoModalOpen(false)}
                             style={{ color: '#000' }}
                         >
-                            Cerrar
+                            CERRAR
                         </button>
                     </div>
                 </>
@@ -230,7 +230,7 @@ const EstructuraPagina = () => {
                             onClick={() => setIsProfileModalOpen(false)}
                             style={{ color: '#000' }}
                         >
-                            Cerrar
+                            CERRAR
                         </button>
                     </div>
                 </>
@@ -246,7 +246,7 @@ const EstructuraPagina = () => {
                             onClick={() => setIsKanbanModalOpen(false)}
                             style={{ color: '#000' }}
                         >
-                            Cerrar
+                            CERRAR
                         </button>
                     </div>
                 </>

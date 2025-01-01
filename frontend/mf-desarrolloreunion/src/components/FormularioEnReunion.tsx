@@ -59,42 +59,46 @@ import i__TextoLibreBlanco from "../assets/static/i__TextoLibreBlanco.png";
 var listaEstudiantes: string[] = [];
 
 const boxStyles = xcss({
-    borderColor: 'color.border.selected',
-    // width: '1000px',
+    borderColor: '#00A499',
     width: '100%',
-    backgroundColor: 'color.background.selected',
+    maxWidth: '100%',
+    backgroundColor: '#E5F6F5',
     borderStyle: 'solid',
     borderRadius: 'border.radius',
     borderWidth: 'border.width',
+    overflowX: 'hidden',
+    padding: '16px',
 });
 
 const boxStyles2= xcss({
-    // borderColor: 'color.border.neutral',
-    // width: '1000px',
     width: '100%',
-    backgroundColor: 'color.background.neutral',
+    maxWidth: '100%',
+    backgroundColor: '#E5F6F5',
     borderStyle: 'solid',
     borderRadius: 'border.radius',
     borderWidth: 'border.width',
+    overflowX: 'hidden',
+    padding: '16px',
 });
 
 const contentStyles = xcss({
     padding: 'space.200',
-    width: '600px',
-    // height: '200px',
-    
+    width: '100%',
+    maxWidth: '600px',
+    margin: '0 auto',
 });
 
 const contentStylesInformacion = xcss({
     padding: 'space.200',
-    width: '600px',
-    // height: '200px',
-    
+    width: '100%',
+    maxWidth: '600px',
+    margin: '0 auto',
 });
 
 const InlineDialog = styled(TooltipPrimitive)({
     background: 'white',
-    width: '1000px',
+    width: '100%',
+    maxWidth: '1000px',
     borderRadius: token('border.radius', '4px'),
     boxShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
     boxSizing: 'content-box',
@@ -1810,97 +1814,67 @@ return (
                         {/* seccion para mostrar compromisos previos a la reunion */}
                         {compromisosProyecto?.length != 0 && (
                             <>
-                                <Box padding="space.400" backgroundColor="color.background.neutral" xcss={boxStyles2}>
-                                    {/* FORMATO NUEVO */}
-                                    <h2 style={{marginTop:'0px', textAlign:'center'}}>Estado del proyecto</h2>
-                                    <br />
-                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Compromisos previos:</h3>
-                                        {compromisosProyecto?.map((compromiso, index) => (
-                                            <>
-                                                {/* con esto me aseguro que no se muestren compromisos de reuniones futuras */}
-                                                {compromiso.number < (meetingminute?.number ?? 0) && (
+                                <Stack space="space.200">
+                                    <Box xcss={boxStyles}>
+                                        <div style={{ width: '100%', maxWidth: '100%', overflowX: 'auto' }}>
+                                            {/* FORMATO NUEVO */}
+                                            <h2 style={{marginTop:'0px', textAlign:'center'}}>Estado del proyecto</h2>
+                                            <br />
+                                                <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Compromisos previos:</h3>
+                                                {compromisosProyecto?.map((compromiso, index) => (
                                                     <>
-                                                        {index == 0 && (
+                                                        {/* con esto me aseguro que no se muestren compromisos de reuniones futuras */}
+                                                        {compromiso.number < (meetingminute?.number ?? 0) && (
                                                             <>
-                                                                <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{compromiso.participants}</h4>
-                                                            </>
-                                                        )}
-
-                                                        {index !== 0 && (
-                                                            <>
-                                                                {/* // recorrer cada caracter de compromisosProyecto[index - 1].participants, de tal forma comparar caracter por caracter con compromiso.participants*/}    
-                                                                {Array.from(compromisosProyecto[index - 1].participants).map((char: string, charIndex: number) => (
+                                                                {index == 0 && (
                                                                     <>
-                                                                        <h4 key={charIndex} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px"}}>
-                                                                            {char === compromiso.participants[charIndex] ? '' : (compromiso.participants)}
-                                                                        </h4>
+                                                                        <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{compromiso.participants}</h4>
                                                                     </>
-                                                                ))}
+                                                                )}
+
+                                                                {index !== 0 && (
+                                                                    <>
+                                                                        {/* // recorrer cada caracter de compromisosProyecto[index - 1].participants, de tal forma comparar caracter por caracter con compromiso.participants*/}    
+                                                                        {Array.from(compromisosProyecto[index - 1].participants).map((char: string, charIndex: number) => (
+                                                                            <>
+                                                                                <h4 key={charIndex} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px"}}>
+                                                                                    {char === compromiso.participants[charIndex] ? '' : (compromiso.participants)}
+                                                                                </h4>
+                                                                            </>
+                                                                        ))}
+                                                                    </>
+                                                                )}
+                                                                        
+                                                                <Inline>
+                                                                    {new Date(compromiso.dateLimit) < new Date() && (
+                                                                        <>
+                                                                            <Stack>
+                                                                                <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px", color: 'red'}}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
+                                                                                <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'red'}}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
+                                                                            </Stack>
+                                                                        </>
+                                                                    )}
+                                                                    {new Date(compromiso.dateLimit) > new Date() && (
+                                                                        <>
+                                                                            <Stack>
+                                                                                <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px", color: 'green'}}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
+                                                                                <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'green'}}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
+                                                                            </Stack>
+                                                                        </>
+                                                                    )}
+                                                                </Inline>
+                                                                        
                                                             </>
                                                         )}
-                                                        
-                                                        {/* caso "compromiso.dateLimit" es menor a la fecha actual -> significa atrasado, por lo que es color rojo */}
-                                                        <Inline>
-                                                            {new Date(compromiso.dateLimit) < new Date() && (
-                                                                <>
-                                                                    <Stack>
-                                                                        <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px", color: 'red'}}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
-                                                                        <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'red'}}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
-                                                                    </Stack>
-                                                                    {/* OPCION EN FORMATO BOTON, DE TAL FORMA SE PUEDA PINCHAR Y ABRIR UN DIALOGO MODAL CON MAS INFORMACION */}
-                                                                    {/* <Button style={{ marginLeft: '50px'}} appearance="subtle"><h4 key={index} style={{margin:0, color: 'red'}}>{compromiso.number}.{compromiso.position}</h4></Button> */}
-                                                                </>
-                                                            )}
-                                                            {/* caso "compromiso.dateLimit" es mayor a la fecha actual -> significa a tiempo, por lo que color verde */}
-                                                            {new Date(compromiso.dateLimit) > new Date() && (
-                                                                <>
-                                                                    <Stack>
-                                                                        <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px", color: 'green'}}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
-                                                                        <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'green'}}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
-                                                                    </Stack>
-                                                                    {/* OPCION EN FORMATO BOTON, DE TAL FORMA SE PUEDA PINCHAR Y ABRIR UN DIALOGO MODAL CON MAS INFORMACION */}
-                                                                    {/* <Button style={{ marginLeft: '50px'}} appearance="subtle"><h4 key={index} style={{margin:0, color: 'green'}}>{compromiso.number}.{compromiso.position}</h4></Button> */}
-                                                                </>
-                                                            )}
-                                                            {/* caso "compromiso.dateLimit" es igual a la fecha actual */}
-
-
-                                                            {/* Mostrar la informacion sin los colores */}
-                                                            {/* <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px" }}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4> */}
-                                                            {/* <br /> */}
-                                                        </Inline>
-                                                        
                                                     </>
-                                                )}
-                                            </>
-                                        ))}
-                                </Box>
+                                                ))}
+                                        </div>
+                                    </Box>
+                                </Stack>
                             </>
                         )}
 
 
-
-                        <br />
-                        <br />
-
-                        {/* solamente los usuarios con rol de anfitrion o secretario pueden comenzar la reunion */}
-                        {meetingminute?.leaders.includes(usuarioPerfilLog?.email ?? '') || meetingminute?.secretaries.includes(usuarioPerfilLog?.email ?? '') ? (
-                            <>
-                                {!iniciarReunion ? (
-                                    <Button appearance="primary" onClick={() => botonIniciarReunion()}>Comenzar reunión</Button>
-                                ):(
-                                    <Button isDisabled appearance="primary" onClick={() => botonIniciarReunion()}>Comenzar reunión</Button>
-                                )}
-                            </>
-                        ) : (
-                            <>
-                                {!iniciarReunion ? (
-                                    <Button isDisabled appearance="primary" onClick={() => botonIniciarReunion()}>Comenzar reunión</Button>
-                                ):(
-                                    <Button isDisabled appearance="primary" onClick={() => botonIniciarReunion()}>Comenzar reunión</Button>
-                                )}
-                            </>
-                        )}                        
 
                         <br />
                         <br />
@@ -2724,132 +2698,109 @@ return (
                         </ModalHeader>
                         <ModalBody>
                             
-                            <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles}>
-                                <h2 style={{marginTop:'0px', textAlign:'center'}}>Descripción</h2>
-                                <br />
-                                <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Objetivo: {meetingminute?.title}</h3>
-                                <br />
-                                <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Lugar: {meetingminute?.place}</h3>
-                                <br />
-
-                                {/* si aun no inicia la reunion, se muestra la lista de temas que se van a tratar */}
-                                {!iniciarReunion ? (
-                                    <>
-                                    <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Temas:</h3>
-                                    {meetingminute?.topics.map((topic, index) => (
-                                        <>
-                                            {/* <h3 key={index}>{topic}</h3> */}
-                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{topic}</h4>
-                                            <br />
-                                        </>
-                                    ))}
-                                    <br />
-                                    </>
-                                ):(
-                                    <>
-                                    </>
-                                )}
-
-                                <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Anfitrión/a:</h3>
-                                {meetingminute?.leaders.map((leader, index) => (
-                                    <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{leader}</h4>
-                                ))}
-                                <br />
-                                <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Secretario/a:</h3>
-                                {meetingminute?.secretaries.map((secretari, index) => (
-                                    <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{secretari}</h4>
-                                ))}
-                                <br />
-                                <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Invitados/as:</h3>
-                                {meetingminute?.participants.map((participant, index) => (
-                                    <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{participant}</h4>
-                                ))}
-                                <br />
-                                {/* condicion para mostrar la informacion siempre y cuando haya informacion que mostrar */}
-                                {meetingminute?.externals.length != 0 && (
-                                    <>
-                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Externos:</h3>
-                                        {meetingminute?.externals.map((external, index) => (
-                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{external}</h4>
-                                        ))}
-                                    </>
-                                )}
-
-                                {/* LOS ASISTENTES SON LOS QUE FUERON INVITADOS Y SI FUERON... ESTO SOLO SE MOSTRATA EN LA ETAPA DE POST-REUNION */}
-                                {/* <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Asistentes: {meetingminute?.assistants}</h3> */}
-                                {/* <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Asistentes:</h3>
-                                {meetingminute?.assistants.map((assistant, index) => (
-                                    <h3 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}> {assistant}</h3>
-                                ))} */}                    
-
-                                {/* <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Links: {meetingminute?.links}</h3> */}
-                                {meetingminute?.links.length != 0 && (
-                                    <>
-                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Links:</h3>
-                                        {meetingminute?.links.map((link, index) => (
-                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{link}</h4>
-                                        ))}
+                            <Stack space="space.200">
+                                <Box xcss={boxStyles}>
+                                    <div style={{ width: '100%', maxWidth: '100%', overflowX: 'auto' }}>
+                                        <h2 style={{marginTop:'0px', textAlign:'center'}}>Descripción</h2>
                                         <br />
-                                    </>
-                                )}
-                            </Box>
-                            <br />
-                            
-
-                            {/* {compromisosProyecto?.length != 0 && (
-                                <>
-                                    <Box padding="space.400" backgroundColor="color.background.neutral" xcss={boxStyles2}>
-                                        <h2 style={{marginTop:'0px', textAlign:'center'}}>Estado del proyecto</h2>
+                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Objetivo: {meetingminute?.title}</h3>
                                         <br />
-                                            <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Compromisos previos:</h3>
-                                            {compromisosProyecto?.map((compromiso, index) => (
+                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Lugar: {meetingminute?.place}</h3>
+                                        <br />
+
+                                        {/* si aun no inicia la reunion, se muestra la lista de temas que se van a tratar */}
+                                        {!iniciarReunion ? (
+                                            <>
+                                            <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Temas:</h3>
+                                            {meetingminute?.topics.map((topic, index) => (
                                                 <>
-                                                    {compromiso.number < (meetingminute?.number ?? 0) && (
-                                                        <>
-                                                            {index == 0 && (
-                                                                <>
-                                                                    <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{compromiso.participants}</h4>
-                                                                </>
-                                                            )}
-                                                            {index !== 0 && (
-                                                                <>
-                                                                    {Array.from(compromisosProyecto[index - 1].participants).map((char: string, charIndex: number) => (
-                                                                        <>
-                                                                            <h4 key={charIndex} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px"}}>
-                                                                                {char === compromiso.participants[charIndex] ? '' : (compromiso.participants)}
-                                                                            </h4>
-                                                                        </>
-                                                                    ))}
-                                                                </>
-                                                            )}
-                                                            
-                                                            <Inline>
-                                                                {new Date(compromiso.dateLimit) < new Date() && (
-                                                                    <>
-                                                                        <Stack>
-                                                                            <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px", color: 'red'}}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
-                                                                            <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'red'}}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
-                                                                        </Stack>
-                                                                    </>
-                                                                )}
-                                                                {new Date(compromiso.dateLimit) > new Date() && (
-                                                                    <>
-                                                                        <Stack>
-                                                                            <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px", color: 'green'}}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
-                                                                            <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'green'}}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
-                                                                        </Stack>
-                                                                    </>
-                                                                )}
-                                                            </Inline>
-                                                            
-                                                        </>
-                                                    )}
+                                                    {/* <h3 key={index}>{topic}</h3> */}
+                                                    <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{topic}</h4>
+                                                    <br />
                                                 </>
                                             ))}
-                                    </Box>
-                                </>
-                            )} */}
+                                            <br />
+                                            </>
+                                        ):(
+                                            <>
+                                            </>
+                                        )}
 
+                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Anfitrión/a:</h3>
+                                        {meetingminute?.leaders.map((leader, index) => (
+                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{leader}</h4>
+                                        ))}
+                                        <br />
+                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Secretario/a:</h3>
+                                        {meetingminute?.secretaries.map((secretari, index) => (
+                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{secretari}</h4>
+                                        ))}
+                                        <br />
+                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Invitados/as:</h3>
+                                        {meetingminute?.participants.map((participant, index) => (
+                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{participant}</h4>
+                                        ))}
+                                        <br />
+                                        {/* condicion para mostrar la informacion siempre y cuando haya informacion que mostrar */}
+                                        {meetingminute?.externals.length != 0 && (
+                                            <>
+                                                <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Externos:</h3>
+                                                {meetingminute?.externals.map((external, index) => (
+                                                    <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{external}</h4>
+                                                ))}
+                                            </>
+                                        )}
+
+                                        {/* LOS ASISTENTES SON LOS QUE FUERON INVITADOS Y SI FUERON... ESTO SOLO SE MOSTRATA EN LA ETAPA DE POST-REUNION */}
+                                        {/* <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Asistentes: {meetingminute?.assistants}</h3> */}
+                                        {/* <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Asistentes:</h3>
+                                        {meetingminute?.assistants.map((assistant, index) => (
+                                            <h3 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}> {assistant}</h3>
+                                        ))}                    
+
+                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Links: {meetingminute?.links}</h3> */}
+                                        {meetingminute?.links.length != 0 && (
+                                            <>
+                                                <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Links:</h3>
+                                                {meetingminute?.links.map((link, index) => (
+                                                    <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{link}</h4>
+                                                ))}
+                                                <br />
+                                            </>
+                                        )}
+                                    </div>
+                                </Box>
+                                <Box xcss={boxStyles2}>
+                                    <div style={{ width: '100%', maxWidth: '100%', overflowX: 'auto' }}>
+                                        <h2 style={{marginTop:'0px', textAlign:'center'}}>Participantes</h2>
+                                        <br />
+                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Anfitrión/a:</h3>
+                                        {meetingminute?.leaders.map((leader, index) => (
+                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{leader}</h4>
+                                        ))}
+                                        <br />
+                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Secretario/a:</h3>
+                                        {meetingminute?.secretaries.map((secretari, index) => (
+                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{secretari}</h4>
+                                        ))}
+                                        <br />
+                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Invitados/as:</h3>
+                                        {meetingminute?.participants.map((participant, index) => (
+                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{participant}</h4>
+                                        ))}
+                                        <br />
+                                        {/* condicion para mostrar la informacion siempre y cuando haya informacion que mostrar */}
+                                        {meetingminute?.externals.length != 0 && (
+                                            <>
+                                                <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Externos:</h3>
+                                                {meetingminute?.externals.map((external, index) => (
+                                                    <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{external}</h4>
+                                                ))}
+                                            </>
+                                        )}
+                                    </div>
+                                </Box>
+                            </Stack>
                         </ModalBody>
                         <ModalFooter>
                             <Button appearance="subtle" onClick={closeModalInfoReu}>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaEye, FaEyeSlash, FaGoogle } from 'react-icons/fa';
 import GoogleLogin from 'react-google-login';
-import {gapi} from "gapi-script";
+import { gapi } from "gapi-script";
 import { validateEmail, validatePassword, validateRut } from '../utils/validation';
 import axios from 'axios';
 import {
@@ -17,6 +17,10 @@ import {
   PasswordStrengthBar,
   ErrorText,
   LinkText,
+  Modal,
+  ModalContent,
+  CloseButton,
+  Subtitle,
 } from '../styles/login.styles';
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
@@ -34,6 +38,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsViewed, setTermsViewed] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
 
   interface LoginProps {
     onLogin: (token: string) => void;
@@ -42,14 +47,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/api/auth`;
   
   useEffect(() => {
-          const start = () => {
-          gapi.auth2.init({
-              clientId: googleId,
-              scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.profile',
-          })
-      }
-      gapi.load("client:auth2", start);
-      }, [])
+    const start = () => {
+      gapi.auth2.init({
+        clientId: googleId,
+        scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.profile',
+      })
+    }
+    gapi.load("client:auth2", start);
+  }, [])
   
   const googleId = process.env.REACT_APP_GOOGLE_CLIENT_ID || '';
 
@@ -125,8 +130,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             'Content-Type': 'application/json'
           },
           data: JSON.stringify({
-            ...formData,
-            type: isRegisterMode ? "estudiante" : undefined // Set default type for registration
+            name: formData.fullName,
+            email: formData.email,
+            password: formData.password,
+            type: isRegisterMode ? "estudiante" : undefined,
+            tagName: formData.fullName.split(' ').map(word => word[0]).join(''),
           }),
         };
 
@@ -135,9 +143,18 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           localStorage.setItem('tokenUser', response.data.token);
           localStorage.setItem('primerInicio', 'true');
           window.location.href = "/home";
+        } else if (isRegisterMode) {
+          setModalMessage("Usuario creado con éxito");
+          setTimeout(() => {
+            setIsRegisterMode(false); //Vuelve a la pantalla de inicio de sesión
+          }, 5000); //Delay de 5 segundos
         }
       } catch (error) {
-        setErrors({ submit: error.response?.data?.error?.message || "Error de conexión" });
+        if (isRegisterMode && error.response?.data?.error?.message === "User already exists") {
+          setModalMessage("El usuario ya existe, intenta con otro correo");
+        } else {
+          setModalMessage(error.response?.data?.error?.message || "Error de conexión");
+        }
       }
     }
   };
@@ -187,7 +204,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   const handleGoogleFailure = (error: any) => {
     console.error('Google Sign In Error:', error);
-    setErrors({ submit: 'Error al iniciar sesión con Google' });
+    setModalMessage('Error al iniciar sesión con Google');
   };
 
   const loginWithGoogle = (session)=> {
@@ -246,13 +263,17 @@ const registerWithGoogle = (response)=> {
         axios.request(config)
             .then((response) => {
                 console.log(JSON.stringify(response.data));
-                //Cambio de vista ocurre con delay para evitar perder la notificación
+                setModalMessage("Usuario creado con éxito");
                 setTimeout(() => {
                     setIsRegisterMode(false); //Vuelve a la pantalla de inicio de sesión
                 }, 5000); //Delay de 5 segundos
             })
             .catch((error) => {
-                console.log(error);
+                if (error.response?.data?.error?.message === "User already exists") {
+                    setModalMessage("El usuario ya existe, intenta con otro correo");
+                } else {
+                    console.log(error);
+                }
             })
     } catch (error) {
         console.log(error);
@@ -261,39 +282,40 @@ const registerWithGoogle = (response)=> {
 
   return (
     <Container>
-      <FormCard>
-        <Title>DeptMeeting</Title>
-        <form onSubmit={handleSubmit}>
-          {isRegisterMode && (
-            <>
-              <FormGroup>
-                <Label>Nombre completo</Label>
-                <Input
-                  type="text"
-                  name="fullName"
-                  placeholder="Juan Pérez González"
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                />
-                {errors.fullName && <ErrorText>{errors.fullName}</ErrorText>}
-              </FormGroup>
+      <Title>DeptMeeting</Title>
+      <Subtitle>{isRegisterMode ? 'REGISTRO' : 'INICIO DE SESIÓN'}</Subtitle>
+      <form onSubmit={handleSubmit}>
+        {isRegisterMode && (
+          <>
+            <FormGroup>
+              <Label>Nombre completo</Label>
+              <Input
+                type="text"
+                name="fullName"
+                placeholder="Juan Pérez González"
+                value={formData.fullName}
+                onChange={handleInputChange}
+              />
+              {errors.fullName && <ErrorText>{errors.fullName}</ErrorText>}
+            </FormGroup>
 
-              <FormGroup>
-                <Label>RUT</Label>
-                <Input
-                  type="text"
-                  name="rut"
-                  placeholder="20058348-5"
-                  value={formData.rut}
-                  onChange={handleInputChange}
-                />
-                {errors.rut && <ErrorText>{errors.rut}</ErrorText>}
-              </FormGroup>
-            </>
-          )}
+            <FormGroup>
+              <Label>RUT</Label>
+              <Input
+                type="text"
+                name="rut"
+                placeholder="20058348-5"
+                value={formData.rut}
+                onChange={handleInputChange}
+              />
+              {errors.rut && <ErrorText>{errors.rut}</ErrorText>}
+            </FormGroup>
+          </>
+        )}
 
-          <FormGroup>
-            <Label>Correo electrónico</Label>
+        <FormGroup>
+          <Label>Correo institucional</Label>
+          <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
             <Input
               type="email"
               name="email"
@@ -301,180 +323,184 @@ const registerWithGoogle = (response)=> {
               value={formData.email}
               onChange={handleInputChange}
             />
-            {errors.email && <ErrorText>{errors.email}</ErrorText>}
-          </FormGroup>
+          </div>
+          {errors.email && <ErrorText>{errors.email}</ErrorText>}
+        </FormGroup>
 
-          <FormGroup>
-            <Label>Contraseña</Label>
-            <PasswordWrapper>
-              <Input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-              />
-              <PasswordToggle
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </PasswordToggle>
-            </PasswordWrapper>
-            {isRegisterMode && formData.password && (
-              <>
-                <PasswordStrengthBar strength={passwordStrength} />
-                <ErrorText>
-                  {passwordStrength === 'weak' && 'La contraseña es débil. Debe incluir mayúsculas, minúsculas, números y caracteres especiales.'}
-                  {passwordStrength === 'medium' && 'La contraseña es moderada. Añade más variedad para mayor seguridad.'}
-                  {passwordStrength === 'strong' && 'La contraseña es fuerte.'}
-                </ErrorText>
-              </>
-            )}
-            {errors.password && <ErrorText>{errors.password}</ErrorText>}
-          </FormGroup>
-
-          {isRegisterMode && (
+        <FormGroup>
+          <Label>Contraseña</Label>
+          <PasswordWrapper>
+            <Input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+            />
+            <PasswordToggle
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </PasswordToggle>
+          </PasswordWrapper>
+          {isRegisterMode && formData.password && (
             <>
-              <FormGroup>
-                <Label>Confirmar contraseña</Label>
-                <PasswordWrapper>
-                  <Input
-                    type={showPassword ? 'text' : 'password'}
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                  />
-                </PasswordWrapper>
-                {formData.confirmPassword && errors.confirmPassword && (
-                  <ErrorText>{errors.confirmPassword}</ErrorText>
-                )}
-              </FormGroup>
-
-              <FormGroup>
-                <Label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Input
-                    type="checkbox"
-                    checked={termsAccepted}
-                    onChange={() => setTermsAccepted(!termsAccepted)}
-                    disabled={!termsViewed}
-                    style={{ margin: 0 }}
-                  />
-                  <span>
-                    Acepto los términos y condiciones
-                  </span>
-                </Label>
-                <Button type="button" onClick={viewTerms}>
-                  Ver términos y condiciones
-                </Button>
-                {errors.terms && <ErrorText>{errors.terms}</ErrorText>}
-              </FormGroup>
+              <PasswordStrengthBar strength={passwordStrength} />
+              <ErrorText>
+                {passwordStrength === 'weak' && 'La contraseña es débil. Debe incluir mayúsculas, minúsculas, números y caracteres especiales.'}
+                {passwordStrength === 'medium' && 'La contraseña es moderada. Añade más variedad para mayor seguridad.'}
+                {passwordStrength === 'strong' && 'La contraseña es fuerte.'}
+              </ErrorText>
             </>
           )}
+          {errors.password && <ErrorText>{errors.password}</ErrorText>}
+        </FormGroup>
 
-          <Button type="submit" style={{ width: '100%', marginTop: '1rem' }}>
-            {isRegisterMode ? 'Registrarse' : 'Iniciar sesión'}
+        {isRegisterMode && (
+          <>
+            <FormGroup>
+              <Label>Confirmar contraseña</Label>
+              <PasswordWrapper>
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                />
+              </PasswordWrapper>
+              {formData.confirmPassword && errors.confirmPassword && (
+                <ErrorText>{errors.confirmPassword}</ErrorText>
+              )}
+            </FormGroup>
+
+            <FormGroup>
+              <Label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Input
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={() => setTermsAccepted(!termsAccepted)}
+                  disabled={!termsViewed}
+                  style={{ margin: 0 }}
+                />
+                <span style={{ whiteSpace: 'nowrap' }}>
+                  Acepto los <a href="#" onClick={viewTerms}>términos y condiciones</a>
+                </span>
+              </Label>
+              {errors.terms && <ErrorText>{errors.terms}</ErrorText>}
+            </FormGroup>
+          </>
+        )}
+
+        <Button type="submit" variant="primary" style={{ width: '100%', marginTop: '1rem' }}>
+          {isRegisterMode ? 'Registrarse' : 'Iniciar sesión'}
+        </Button>
+
+        {!isRegisterMode && (
+          <Button
+            type="button"
+            onClick={handlePasswordRecovery}
+            style={{
+              backgroundColor: 'transparent',
+              color: '#4285f4',
+              border: 'none',
+              marginTop: '0.5rem'
+            }}
+          >
+            Recuperar contraseña
           </Button>
+        )}
 
-          {!isRegisterMode && (
-            <Button
-              type="button"
-              onClick={handlePasswordRecovery}
-              style={{
-                backgroundColor: 'transparent',
-                color: '#4285f4',
-                border: 'none',
-                marginTop: '0.5rem'
-              }}
-            >
-              Recuperar contraseña
-            </Button>
-          )}
-
-          {/* Separator */}
-          <div style={{ 
-            textAlign: 'center', 
-            margin: '1rem 0', 
-            position: 'relative' 
+        {/* Separator */}
+        <div style={{ 
+          textAlign: 'center', 
+          margin: '1rem 0', 
+          position: 'relative' 
+        }}>
+          <span style={{ 
+            backgroundColor: 'white', 
+            padding: '0 10px',
+            color: '#666',
+            position: 'relative',
+            zIndex: 1
           }}>
-            <span style={{ 
-              backgroundColor: 'white', 
-              padding: '0 10px',
-              color: '#666',
-              position: 'relative',
-              zIndex: 1
-            }}>
-              O
-            </span>
-            <hr style={{ 
-              margin: '-0.7rem 0 1rem',
-              borderColor: '#ddd'
-            }} />
-          </div>
+            O
+          </span>
+          <hr style={{ 
+            margin: '-0.7rem 0 1rem',
+            borderColor: '#ddd'
+          }} />
+        </div>
 
-          {/* Google Login Button */}
-          {!isRegisterMode && (
-            <GoogleLogin
-              clientId={googleId}
-              render={renderProps => (
-                <Button 
-                  type="button"
-                  onClick={renderProps.onClick}
-                  disabled={renderProps.disabled}
-                  style={{ 
-                    backgroundColor: '#4285f4',
-                    marginBottom: '1rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem'
-                  }}
-                >
-                  <FaGoogle /> Iniciar sesión con Google
-                </Button>
-              )}
-              onSuccess={loginWithGoogle}
-              onFailure={handleGoogleFailure}
-              cookiePolicy={'single_host_origin'}
-            />
-          )}
+        {/* Google Login Button */}
+        {!isRegisterMode && (
+          <GoogleLogin
+            clientId={googleId}
+            render={renderProps => (
+              <Button 
+                type="button"
+                onClick={renderProps.onClick}
+                disabled={renderProps.disabled}
+                style={{ 
+                  backgroundColor: '#4285f4',
+                  marginBottom: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <FaGoogle /> Iniciar sesión con Google
+              </Button>
+            )}
+            onSuccess={loginWithGoogle}
+            onFailure={handleGoogleFailure}
+            cookiePolicy={'single_host_origin'}
+          />
+        )}
 
-          {/* Google Register Button */}
-          {isRegisterMode && (
-            <GoogleLogin
-              clientId={googleId}
-              render={renderProps => (
-                <Button 
-                  type="button"
-                  onClick={renderProps.onClick}
-                  disabled={renderProps.disabled}
-                  style={{ 
-                    backgroundColor: '#4285f4',
-                    marginBottom: '1rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem'
-                  }}
-                >
-                  <FaGoogle /> Registrarse con Google
-                </Button>
-              )}
-              onSuccess={registerWithGoogle}
-              onFailure={handleGoogleFailure}
-              cookiePolicy={'single_host_origin'}
-            />
-          )}
-        </form>
-
-        <LinkText>
-          {isRegisterMode ? '¿Ya tienes una cuenta?' : '¿No tienes una cuenta?'}
-          <br />
-          <a href="#" onClick={() => setIsRegisterMode(!isRegisterMode)}>
-            {isRegisterMode ? 'Inicia sesión ahora' : 'Regístrate aquí'}
-          </a>
-        </LinkText>
-        {successMessage && <ErrorText style={{ color: 'green' }}>{successMessage}</ErrorText>}
-      </FormCard>
+        {isRegisterMode && (
+          <GoogleLogin
+            clientId={googleId}
+            render={renderProps => (
+              <Button 
+                type="button"
+                onClick={renderProps.onClick}
+                disabled={renderProps.disabled}
+                style={{ 
+                  backgroundColor: '#4285f4',
+                  marginBottom: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <FaGoogle /> Registrarse con Google
+              </Button>
+            )}
+            onSuccess={registerWithGoogle}
+            onFailure={handleGoogleFailure}
+            cookiePolicy={'single_host_origin'}
+          />
+        )}
+      </form>
+      {errors.submit && <ErrorText>{errors.submit}</ErrorText>}
+      {successMessage && <ErrorText style={{ color: 'green' }}>{successMessage}</ErrorText>}
+      <LinkText>
+        {isRegisterMode ? '¿Ya tienes una cuenta?' : '¿No tienes una cuenta?'}
+        <br />
+        <a href="#" onClick={() => setIsRegisterMode(!isRegisterMode)}>
+          {isRegisterMode ? 'Inicia sesión ahora' : 'Regístrate aquí'}
+        </a>
+      </LinkText>
+      {modalMessage && (
+        <Modal>
+          <ModalContent>
+            <CloseButton onClick={() => setModalMessage('')}>&times;</CloseButton>
+            <p>{modalMessage}</p>
+          </ModalContent>
+        </Modal>
+      )}
     </Container>
   );
 };
