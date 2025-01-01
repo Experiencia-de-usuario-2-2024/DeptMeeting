@@ -56,6 +56,7 @@ import i__DudaBlanco from "../assets/static/i__DudaBlanco.png";
 import i__TextoLibre from "../assets/static/i__TextoLibre.png";
 import i__TextoLibreBlanco from "../assets/static/i__TextoLibreBlanco.png";
 import TextField from "@atlaskit/textfield";
+import Vote from "./DeptMeeting/Vote";
 
 
 var listaEstudiantes: string[] = [];
@@ -117,6 +118,7 @@ var correoElectronico: string;
 var idReunionAux: string;
 var idProyectoAux: string;
 const googleMeetLink = localStorage.getItem('googleMeetLink');
+const ultimateReunion = localStorage.getItem('idReunion');
 
 // estados de la reunion (para la barra de progreso)
 const items: Stages = [
@@ -161,7 +163,7 @@ var numeroReunion: number;
 const FormularioEnReunion: React.FC = () => {
 
     const [googleMeet, setGoogleMeet] = useState(googleMeetLink);
-    const [options, setOptions] = useState(['']);
+    const [options, setOptions] = useState(['', '']);
     const [error, setError] = useState(null);
     // para el popup del chat
     const [isOpen, setIsOpen] = useState(false)
@@ -224,6 +226,7 @@ const FormularioEnReunion: React.FC = () => {
             return;
         }
         console.log('Datos enviados:', { ...data, options });
+        guardarVote({...data, options});
         alert('¡Votación creada con éxito!');
     };
 
@@ -366,6 +369,7 @@ const FormularioEnReunion: React.FC = () => {
     const [iniciarReunion, setIniciarReunion] = React.useState(false);
     // para guardar los datos del acta dialogica (meetingminute)
     const [meetingminute, setMeetingMinute] = React.useState<MeetingMinute>();
+    const [idReunion, setIdReunion] = React.useState<string>("");
 
     // para indicar a los estudiantes seleccionados en los diferentes dialogos modales -> separandolos se dejan los campos de forma independiente y si se selecciona en uno no se seleccionara en el otro
     const [selectedStudentCompromiso, setSelectedStudentCompromiso] = useState<PropsValue<Estudiantes>>([]);
@@ -554,10 +558,11 @@ const FormularioEnReunion: React.FC = () => {
 
 
         // peticion para obtener los datos del acta dialogica previamente creada
+        setIdReunion(localStorage.getItem('idReunion'));
         async function obtenerMeetingMinutePorId() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + localStorage.getItem('idMeetingMinute'), {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/meeting/` + localStorage.getItem('idReunion'), {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -587,6 +592,7 @@ const FormularioEnReunion: React.FC = () => {
         
         // Obtener datos de la reunion a partir del id
         // const idReunion = localStorage.getItem('idReunion') ?? ''; // id de la reunion traido desde local storage -> ya no se obtiene de local storage, se obtiene a partir de la minuta
+
         async function datosReunion() {
             try {
                 // window.alert("id de la reunion EN REUNION: " + localStorage.getItem('idReunion'));            
@@ -1685,8 +1691,102 @@ const FormularioEnReunion: React.FC = () => {
         closeModalTextoLibre();
     }
 
-    const guardarVote = () => {
+    const guardarVote = (data: any) => {
 
+
+        // paso 2: realizar la peticion para crear el elemento dialogico desacuerdo
+        // variables traidas del local storage
+        const idReunion = localStorage.getItem('idReunion') ?? '';
+        const idProyecto = localStorage.getItem('idProyecto') ?? '';
+        const idMeetingMinute = localStorage.getItem('idMeetingMinute') ?? '';
+        async function crearVotacion() {
+            try {
+                const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/element`, {
+                    description: data.tituloVotacion,
+                    type: "Votacion",
+                    participants: [],
+                    topic: numeroTemaSeleccionado,
+                    meeting: idReunion,
+                    project: idProyecto,
+                    meetingMinute: idMeetingMinute,
+                    state: "nueva",
+                    number: reunion?.number,
+                    position: ((meetingminute?.cantElementos ?? 0) + 1).toString(),
+                    dateLimit: data.deadline,
+                    timeLimit: "",
+                    createdAt: new Date(), //.toLocaleString('es-CL'),
+                    vote: {
+                        type: data.isAnonymous ? "Anonima" : "Publica",
+                        options: data.options,
+                    }
+                },{
+                    headers: {
+                        Authorization: `Bearer ${tokenUser}`
+                    }
+                });
+                console.log("Votacion creada exitosamente");
+                setElementoDialogico(response.data);
+                console.log(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        crearVotacion();
+
+        // crear un arreglo de string, igualarlo al arreglo de topics y luego modificar el valor del topic seleccionado con el nuevo elemento dialogico creado
+        var listaTemas: string[] = [];
+        listaTemas = meetingminute?.topics ?? [];
+        // window.alert("Lista de temas originales: " + listaTemas);
+        //checkpoint2
+        listaTemas[numeroTemaSeleccionado - 1] = listaTemas[numeroTemaSeleccionado - 1] + "\n\n" + reunion?.number + "." + ((meetingminute?.cantElementos ?? 0) + 1).toString() + " Votación: " + data.tituloVotacion +".\n" + options.map((option: any) => "- " + option + ".\n" ).join("");
+        // window.alert("Lista de temas modificada: " + listaTemas);
+
+        // se aumenta el valor de contadorElementosDialogicos en 1
+        contadorElementosDialogicos = contadorElementosDialogicos + 1;
+
+        // realizar peticion al backend para actualizar el acta dialogica, entregando una nueva lista de topics
+        async function actualizarActa() {
+            try {
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
+                    topics: listaTemas,
+                    cantElementos: (meetingminute?.cantElementos ?? 0) + 1,
+                },{
+                    headers: {
+                        Authorization: `Bearer ${tokenUser}`
+                    }
+                });
+                console.log("Acta actualizada exitosamente (elemento dialogico añadido al tema)");
+                console.log(response.data);
+                // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
+                localStorage.setItem('idMeetingMinute', response.data._id);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        actualizarActa();
+        // mostrar mensaje de exito
+        window.alert("Votacion creada exitosamente");
+        // recargar pagina
+        // window.location.reload();
+
+        // antes de cerrar el desacuerdo, se debe vaciar las listas que contiene a los integrantes seleccionados, para que cuando se vuelva a abrir el dialogo modal, no se muestren los integrantes seleccionados anteriormente
+        setOptions(['','']);
+
+
+        // websocket
+        // paso final: recargar la pagina para todos los usuarios conectados a la sala utilizando websockets
+        // const idMeetingMinute = localStorage.getItem('idMeetingMinute');
+        const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
+        correoElectronico = decodedToken.email;
+        const payload = {
+            room: idMeetingMinute,
+            user: correoElectronico,
+        };
+        socket?.emit('event_reload', payload);
+
+        // en vez de recargar la pagina, se cerrara el dialogo modal
+        closeModalVote();
     }
 
     // Funcion encargada de emitir una alerta mediante websockets a los participantes de la reunion, de tal forma todos sepan que participante esta añadiendo un elemento a un respectivo tema
@@ -1964,6 +2064,7 @@ return (
 
                         {meetingminute?.comenzoReunion && (
                             <>
+                                // checkpoint1
                                 {/* <h3>INFORMACION OCULTA (temas con la opcion de añadir elementos dialogicos)</h3>  */}
                                 <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Temas:</h3>
                                 {meetingminute?.topics.map((topic, index) => (
@@ -1975,6 +2076,7 @@ return (
                                             {/* para escoger el elemento dialogico, el usuario debera de presionar uno de los 4 botones que se le presentan. */}
                                             {/* una vez presionado uno de estos botones, se abrira un cuadro modal (https://atlassian.design/components/modal-dialog/examples) el cual le solicitara al usuario ingresar el texto correspondiente */}
                                             <br />
+                                            <Vote voteElement={{_id: '677469103168a534f714dc88', description: 'seguir o no seguir', number: 4, position: '6', dateLimit: '', vote: {type: 'Anonima', options: [{option: 'seguir', votes: 0}, {option: 'no seguir', votes: 0}], voters: []}}} />
                                             <Inline space="space.200" alignInline="center" shouldWrap>
 
                                                 {/* <Button appearance="primary" onClick={() => {openModalCompromiso(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1;}}>Compromiso</Button> */}
@@ -2760,7 +2862,7 @@ return (
             </ModalTransition>
 
             {/* ********************************************************************************************************************************************************** */}
-            {/* ******************************************************************** Modal dialog de DESACUERDO ********************************************************** */}
+            {/* ******************************************************************** Modal dialog de VOTACION ************************************************************ */}
             {/* ********************************************************************************************************************************************************** */}
             <ModalTransition>
                 {isOpenVote && (
@@ -2770,6 +2872,7 @@ return (
                         <Form<{ username: string }>
                             onSubmit={(data) => {
                                 // console.log('form data', data);
+                                handleSubmit(data);
                                 return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
                                     data.username === 'error' ? { username: 'IN_USE' } : undefined,
                                 );
@@ -2784,35 +2887,15 @@ return (
                                     </ModalHeader>
                                     <ModalBody>
 
-                                        {/* Campo para que escriban el origenDesacuerdo */}
-                                        <Field
-                                            id="origenDesacuerdo"
-                                            name="origenDesacuerdo"
-                                            label="Escriba el titulo de la votación"
-                                            isRequired
-                                        >
-                                            {({ fieldProps }) => (
-                                                <Fragment>
-                                                    {({ fieldProps }) => <TextField {...fieldProps} placeholder="Título de la votación" />}
-                                                    {/* <HelperMessage>
-                                    {name ? `Hello, ${name}` : ''}
-                                </HelperMessage> */}
-                                                </Fragment>
-                                            )}
+                                        <Field name="tituloVotacion" label="Título de la votación" isRequired>
+                                            {({ fieldProps }) => <TextField {...fieldProps} placeholder="Título de la votación" />}
                                         </Field>
 
                                         {/* Campo para indicar dueño de la postura uno */}
-                                        <Field
-                                            aria-required={true}
-                                            name="listaParticipantesUno"
-                                            defaultValue=""
-                                            label="Dueño de la primera postura"
-                                        >
-                                            {({ fieldProps, error, valid }) =>
-                                                (
-
-                                                    <TextArea {...fieldProps} placeholder="Opcional: describe los detalles" />
-                                                )}
+                                        <Field name="descripcionVotacion" label="Descripción de la votación">
+                                            {({ fieldProps }) => (
+                                                <TextArea {...fieldProps} placeholder="Opcional: describe los detalles" />
+                                            )}
                                         </Field>
 
                                         {/* Opciones */}
@@ -2851,10 +2934,10 @@ return (
 
                                     </ModalBody>
                                     <ModalFooter>
-                                        <Button appearance="subtle" onClick={closeModalDesacuerdo}>
+                                        <Button appearance="subtle" onClick={() => {setIsOpenVote(false); setOptions(['',''])}}>
                                             Cancelar Votación
                                         </Button>
-                                        <Button appearance="primary" onClick={() => handleSubmit()} type="submit">
+                                        <Button appearance="primary" type="submit">
                                             Crear votación
                                         </Button>
                                     </ModalFooter>

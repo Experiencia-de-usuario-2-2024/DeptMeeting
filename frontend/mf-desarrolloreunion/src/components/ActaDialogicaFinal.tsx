@@ -270,7 +270,7 @@ const ActaDialogicaFinal: React.FC = () => {
         async function obtenerMeetingMinutePorId() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/`+ idMeetingMinute, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/meeting/`+ localStorage.getItem('idReunion'), {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }

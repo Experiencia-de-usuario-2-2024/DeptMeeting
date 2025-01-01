@@ -47,6 +47,7 @@ const tipoDeUsuario = localStorage.getItem('tipoUsuario');
 
 const descripcionReunion = localStorage.getItem('descripcionReunion');
 const googleMeetLink = localStorage.getItem('googleMeetLink');
+const ultimateIdReunion = localStorage.getItem('idReunion');
 
 var correoUserOwner: string = "";
 correoUserOwner = localStorage.getItem('userOwner') ?? "";
@@ -597,6 +598,7 @@ const FormularioPreReunion: React.FC = () => {
                 console.log(response.data);
                 if (response.data){
                     setMeetingMinute(response.data[0]);
+                    localStorage.setItem('idActaDialogica', response.data[0]._id);
                     nombreCortoProyectoAux = response.data[0].nombreCortoProyecto;
                     const anfitrionEmail = response.data[0].leaders[0];
                     setSelectedAnfitriones({ value: anfitrionEmail, label: anfitrionEmail, email: anfitrionEmail });
@@ -621,6 +623,9 @@ const FormularioPreReunion: React.FC = () => {
                     secretarioValue = response.data[0].secretaries[0];
                     listaParticipantesValueFinal = response.data[0].participants;
                     listaAnfitrionesValueFinal = response.data[0].leaders;
+                    if (!localStorage.getItem('idMeetingMinute')) {
+                        localStorage.setItem('idMeetingMinute', response.data._id);
+                    }
                 }
             } catch (error) {
                 console.log("ERROR AL OBTENER LA INFORMACION DEL ACTA DIALOGICA");
@@ -1022,7 +1027,7 @@ const FormularioPreReunion: React.FC = () => {
                 // eliminar todos los elementos vacios de la lista de participantes -> en caso de que no se hayan añadido invitados externos al proyecto
                 listaParticipantesValueFinal = listaParticipantesValueFinal.filter((participante) => participante !== '');
                 listaAnfitrionesValueFinal = listaAnfitrionesValueFinal.filter((anfitrion) => anfitrion !== '');
-                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute`,{
+                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/${localStorage.getItem('idMeetingMinute')}`, {
                     title: objetivoValue,
                     place: lugarValue,
                     startTime: fechaInicio,

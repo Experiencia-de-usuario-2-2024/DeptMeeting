@@ -40,6 +40,7 @@ import Messages from "./Messages";
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
 const googleMeetLink = localStorage.getItem('googleMeetLink');
+const ultimateIdReunion = localStorage.getItem('idReunion');
 
 var numeroTemaSeleccionado: number;
 
@@ -435,12 +436,11 @@ const FormularioPostReunion: React.FC = () => {
         }
 
 
-
         async function obtenerMeetingMinutePorId() {
             // window.alert("id de la minuta DENTRO DE LA FUNCION: " + idMeetingMinute);
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + localStorage.getItem('idMeetingMinute'), {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/${localStorage.getItem('idMeetingMinute')}`, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -455,7 +455,6 @@ const FormularioPostReunion: React.FC = () => {
                 response.data[0].participants.forEach((participante: string) => {
                     obtenerCompromisosUsuario(participante);
                 });
-
                 // localStorage.setItem('idReunion', response.data[0].meeting);
             } catch (error) {
                 console.log("ERROR AL OBTENER LA INFORMACION DEL ACTA DIALOGICA ******** post reunion *****");

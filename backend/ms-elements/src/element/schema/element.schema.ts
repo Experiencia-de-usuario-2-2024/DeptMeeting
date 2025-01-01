@@ -31,7 +31,12 @@ export const elementSchema = new mongoose.Schema(
     },
     vote: {
       type: { type: String, required: false },
-      options: [{ type: String, required: false }],
+      options: [
+          {
+          option: {type: String, required: false},
+          votes: {type: Number, required: false},
+        },
+      ],
       voters: [
         {
           voter: { type: String, required: false },
