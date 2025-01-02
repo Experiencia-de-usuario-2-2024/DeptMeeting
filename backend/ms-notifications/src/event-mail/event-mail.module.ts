@@ -33,48 +33,6 @@ export class EventMailModule {
     console.log("valor de la condicional: ", meetingMinuteDTO.fase === 'pre-reunión');
     if (meetingMinuteDTO.fase === 'pre-reunión') {
       console.log("ENTRE AL IF DE PRE-REUNION")
-      let s = 0;
-      while (s < 1) {
-        console.log("ENTRE AL WHILE DE PRE-REUNION")
-        this.mailService.sendMail({
-          to: meetingMinuteDTO.secretaries[s],
-          from: process.env.EMAIL_USER,
-          template: 'actacreada',
-          // subject: 'Soporte MemFollow: Has sido invitado a una nueva reunión con el rol de secretario/a el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
-          subject: 'DeptMeeting: Ha sido invitado a una nueva reunión del consejo del departamento.',
-          context: {
-            name: user.email,
-            acta: meetingMinuteDTO.title,
-            meet: meetingMinuteDTO.number,
-            lugar: meetingMinuteDTO.place,
-            fase: meetingMinuteDTO.fase,
-            linky: "ENLACE",
-          },
-          attachments: [],
-        });
-        s++;
-      }
-
-      let l = 0;
-      while (l < meetingMinuteDTO.leaders.length) {
-        this.mailService.sendMail({
-          to: meetingMinuteDTO.leaders[l],
-          from: process.env.EMAIL_USER,
-          template: 'actecreada',
-          // subject: 'Soporte MemFollow: Has sido invitado a una nueva reunión con el rol de anfitrión/a el día ' + new Date(meetingMinuteDTO.startTime).toLocaleDateString() + ' a las ' + meetingMinuteDTO.startHour.toString().split('-')[0],
-          subject: 'DeptMeeting: Ha sido invitado a una nueva reunión del consejo del departamento.',
-          context: {
-            name: user.email,
-            acta: meetingMinuteDTO.title,
-            meet: meetingMinuteDTO.number,
-            lugar: meetingMinuteDTO.place,
-            fase: meetingMinuteDTO.fase,
-            linky: "ENLACE"
-          },
-          attachments: [],
-        });
-        l++;
-      }
 
       let u = 0;
       while (u < meetingMinuteDTO.participants.length) {
@@ -125,52 +83,6 @@ export class EventMailModule {
 
       }
 
-      let s = 0;
-      while (s < meetingMinuteDTO.secretaries.length) {
-        this.mailService.sendMail({
-          to: meetingMinuteDTO.secretaries[s],
-
-          from: process.env.EMAIL_USER,
-          template: 'inmeeting',
-          // subject: 'Soporte Meetflow: Ha comenzado la reunión , no olvides que eres secretario/a',
-          subject: 'DeptMeeting: Ha comenzado la reunión número ' + meetingMinuteDTO.number.toString() + ' del consejo para el periodo 2024.',
-          context: {
-            name: user.email,
-            titulo: meetingMinuteDTO.title,
-            numeroReunion: meetingMinuteDTO.number,
-            lugar: meetingMinuteDTO.place,
-            fecha: meetingMinuteDTO.startTime,
-            hora: meetingMinuteDTO.startHour,
-            googleMeet: "xdddd",
-            temas: ["No se que hablaremos", "Pero de algo hay que hablar"]
-          },
-          attachments: [],
-        });
-        s++;
-      }
-
-      let l = 0;
-      while (l < meetingMinuteDTO.leaders.length) {
-        this.mailService.sendMail({
-          to: meetingMinuteDTO.leaders[l],
-          from: process.env.EMAIL_USER,
-          template: 'inmeeting',
-          // subject: 'Soporte Meetflow: Ha comenzado la reunión, no olvides que eres anfitrión/a',
-          subject: 'DeptMeeting: Ha comenzado la reunión número ' + meetingMinuteDTO.number.toString() + ' del consejo para el periodo 2024.',
-          context: {
-            name: user.email,
-            titulo: meetingMinuteDTO.title,
-            numeroReunion: meetingMinuteDTO.number,
-            lugar: meetingMinuteDTO.place,
-            fecha: meetingMinuteDTO.startTime,
-            hora: meetingMinuteDTO.startHour,
-            googleMeet: "xdddd",
-            temas: ["No se que hablaremos", "Pero de algo hay que hablar"]
-          },
-          attachments: [],
-        });
-        l++;
-      }
 
     // En caso de que el acta este en fase de post-reunión
     } else if (meetingMinuteDTO.fase === 'post-reunión') {
@@ -196,46 +108,6 @@ export class EventMailModule {
 
       }
 
-      let s = 0;
-      while (s < meetingMinuteDTO.secretaries.length) {
-        this.mailService.sendMail({
-          to: meetingMinuteDTO.secretaries[s],
-
-          from: process.env.EMAIL_USER,
-          template: 'postmeeting',
-          // subject: 'Soporte Meetflow: Ha finalizado la reunión, no olvides que eres secretario/a',
-          subject: 'DeptMeeting: Ha finalizado la reunión número ' + meetingMinuteDTO.number.toString() + ' del consejo para el periodo 2024.',
-          context: {
-            titulo: meetingMinuteDTO.title,
-            numeroReunion: meetingMinuteDTO.number,
-            lugar: meetingMinuteDTO.place,
-            fecha: meetingMinuteDTO.startTime,
-            hora: meetingMinuteDTO.startHour,
-          },
-          attachments: [],
-        });
-        s++;
-      }
-      let l = 0;
-      while (l < meetingMinuteDTO.leaders.length) {
-        this.mailService.sendMail({
-          to: meetingMinuteDTO.leaders[l],
-
-          from: process.env.EMAIL_USER,
-          template: 'postmeeting',
-          // subject: 'Soporte Meetflow: Ha finalizado la reunión, no olvides que eres anfitrión/a',
-          subject: 'DeptMeeting: Ha finalizado la reunión número ' + meetingMinuteDTO.number.toString() + ' del consejo para el periodo 2024.',
-          context: {
-            titulo: meetingMinuteDTO.title,
-            numeroReunion: meetingMinuteDTO.number,
-            lugar: meetingMinuteDTO.place,
-            fecha: meetingMinuteDTO.startTime,
-            hora: meetingMinuteDTO.startHour,
-          },
-          attachments: [],
-        });
-        l++;
-      }
     // En caso de que el acta este en fase de finish
     } else if (meetingMinuteDTO.fase === 'finalizada') {
       let i = 0;
@@ -252,40 +124,6 @@ export class EventMailModule {
           attachments: [],
         });
         i++;
-      }
-
-      let s = 0;
-      while (s < meetingMinuteDTO.secretaries.length) {
-        this.mailService.sendMail({
-          to: meetingMinuteDTO.secretaries[s],
-          from: process.env.EMAIL_USER,
-          template: 'finishmeeting',
-          // subject: 'Soporte Meetflow: La reunión ha sido archivada, no olvides que eres secretario/a',
-          subject: 'DeptMeeting: El acta de la reunión número ' + meetingMinuteDTO.number.toString() + ' del consejo ha sido aprobada',
-          context: {
-            numeroReunion: meetingMinuteDTO.number,
-            periodo: "2024"
-          },
-          attachments: [],
-        });
-        s++;
-      }
-
-      let l = 0;
-      while (l < meetingMinuteDTO.leaders.length) {
-        this.mailService.sendMail({
-          to: meetingMinuteDTO.leaders[l],
-          from: process.env.EMAIL_USER,
-          template: 'finishmeeting',
-          // subject: 'Soporte Meetflow: La reunión ha sido archivada, no olvides que eres anfitrión/a',
-          subject: 'DeptMeeting: El acta de la reunión número ' + meetingMinuteDTO.number.toString() + ' del consejo ha sido aprobada',
-          context: {
-            numeroReunion: meetingMinuteDTO.number,
-            periodo: "2024"
-          },
-          attachments: [],
-        });
-        l++;
       }
     }
   }
