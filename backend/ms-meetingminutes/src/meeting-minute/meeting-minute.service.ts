@@ -119,6 +119,11 @@ export class MeetingMinuteService {
 
     async borrarTema(id: string): Promise<any> {
         await this.modelTopic.findByIdAndDelete(id);
+        await this.model.findOneAndUpdate(
+          { topics: id },
+          { $pull: { topics: id } },
+          { new: true }
+      );
         return {
         status: HttpStatus.OK,
         msg: 'Deleted',
