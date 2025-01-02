@@ -18,6 +18,7 @@ import { MeetingMinuteMSG } from 'src/common/constants';
 import { IMeetingMinute } from 'src/common/interfaces/meeting-minute.interface';
 import { Observable } from 'rxjs';
 import { MeetingMinuteService } from './meeting-minute.service';
+import {TopicDto} from "./dto/topic.dto";
 
 @ApiTags('Microservicio de actas dialógicas (microservice-meetingminutes)')
 @UseGuards(JwtAuthGuard)
@@ -212,4 +213,31 @@ export class MeetingMinuteController {
       id,
     );
   }
+
+  @Put('/topic/:id')
+  @ApiOperation({ summary: 'Actualizar tema de acta dialogica' })
+  updateTopic(@Param('id') id: string, @Body() topicDTO: TopicDto) {
+      const params = {
+      id: id,
+      topicDTO: topicDTO,
+      }
+      return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.UPDATE_TOPIC, params);
+  }
+
+  @Post('/:id/topic')
+  @ApiOperation({ summary: 'Agregar tema a acta dialogica' })
+  createTopic(@Param('id') id: string, @Body() topicDTO: TopicDto) {
+    const params = {
+      id: id,
+      topicDTO: topicDTO,
+    }
+    return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.CREATE_TOPIC, params);
+  }
+
+  @Delete('/topic/:id')
+    @ApiOperation({ summary: 'Eliminar tema de acta dialogica' })
+    deleteTopic(@Param('id') id: string) {
+        return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.DELETE_TOPIC, id);
+    }
+
 }

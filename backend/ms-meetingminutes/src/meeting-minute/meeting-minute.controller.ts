@@ -82,4 +82,20 @@ export class MeetingMinuteController {
         return this.meetingMinuteService.encontrarPorReunion(payload);
     }
 
+    @MessagePattern(MeetingMinuteMSG.UPDATE_TOPIC)
+    actualizarTema(@Payload() payload: any) {
+        return this.meetingMinuteService.actualizarTema(payload.id, payload.topicDTO);
+    }
+
+    @MessagePattern(MeetingMinuteMSG.CREATE_TOPIC)
+    crearTema(@Payload() payload: any) {
+        return this.meetingMinuteService.crearTema(payload.id, payload.topicDTO);
+    }
+
+    @MessagePattern(MeetingMinuteMSG.DELETE_TOPIC)
+    borrarTema(@Payload() id: string) {
+        return this.meetingMinuteService.borrarTema(id);
+    }
+
+
 }

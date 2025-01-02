@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MEETINGMINUTE } from 'src/common/models/models';
+import {MEETINGMINUTE, TOPIC} from 'src/common/models/models';
 import { MeetingMinuteController } from './meeting-minute.controller';
 import { MeetingMinuteService } from './meeting-minute.service';
 import { MeetingMinuteSchema } from './schema/meeting-minute.schema';
+import {TopicSchema} from "./schema/topic.schema";
 
 @Module({
   imports: [
@@ -11,7 +12,11 @@ import { MeetingMinuteSchema } from './schema/meeting-minute.schema';
       {
         name: MEETINGMINUTE.name,
         useFactory: ()=> MeetingMinuteSchema,
-      }
+      },
+        {
+        name: TOPIC.name,
+        useFactory: ()=> TopicSchema,
+        }
     ])
   ],
   controllers: [MeetingMinuteController],
