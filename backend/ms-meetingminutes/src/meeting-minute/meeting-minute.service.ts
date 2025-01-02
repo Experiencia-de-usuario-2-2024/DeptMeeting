@@ -5,6 +5,7 @@ import { IMeetingMinute } from 'src/common/interfaces/meeting-minute.interface';
 import { MEETINGMINUTE, TOPIC } from 'src/common/models/models';
 import { MeetingMinuteDTO } from './dto/meeting-minute.dto';
 import {TopicDto} from "./dto/topic.dto";
+import {ITopic} from "../common/interfaces/topic.interface";
 
 @Injectable()
 export class MeetingMinuteService {
@@ -12,7 +13,7 @@ export class MeetingMinuteService {
     @InjectModel(MEETINGMINUTE.name)
     private readonly model: Model<IMeetingMinute>,
     @InjectModel(TOPIC.name)
-    private readonly modelTopic: Model<any>,
+    private readonly modelTopic: Model<ITopic>,
   ) {}
 
   /*  
