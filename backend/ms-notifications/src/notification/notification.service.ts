@@ -5,7 +5,6 @@ import { INotification } from 'src/common/interfaces/notification.interface';
 import { NOTIFICATION } from 'src/common/models/models';
 import { NotificationDTO } from './dto/notification.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import {GoogleAuthService} from "./google-auth.service";
 
 @Injectable()
 export class NotificationService {
@@ -14,7 +13,6 @@ export class NotificationService {
         @InjectModel(NOTIFICATION.name)
         private readonly model: Model<INotification>,
         private readonly eventEmitter2: EventEmitter2,
-        private readonly googleAuthService: GoogleAuthService
     ) { }
 
     /* 
@@ -101,16 +99,6 @@ export class NotificationService {
             meetingminute: meetingMinuteDTO,
             user: user
         }
-
-        try {
-            const events = await this.googleAuthService.listEvents();
-            console.log('Events:', events);
-            return events;
-        } catch (error) {
-            console.log('Failed to fetch calendar events', error);
-            throw error;
-        }
-
         return await this.eventEmitter2.emit('meetingMinute.created', meetingMinuteDTO, user);
     }
 

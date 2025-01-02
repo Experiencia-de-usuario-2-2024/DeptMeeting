@@ -7,7 +7,7 @@ export const MeetingMinuteSchema = new mongoose.Schema({
   endTime: { type: String, required: false }, // fecha estimada de termino
   endHour: { type: String, required: false },  // hora estimada de finalización
   startHour: { type: String, required: false }, // hora estimada de inicio
-  topics: [{ type: String }], // nombres de los temas añadidos al acta
+  topics: [{ type: mongoose.Schema.Types.ObjectId, ref: 'topics' }], // nombres de los temas añadidos al acta
   participants: [{ type: String }], // emails de invitados
   assistants: [{ type: String }], // emails de invitados que si asistieron
   externals: [{ type: String }],  // emails de usuarios invitados externamente (no miembros del proyecto)

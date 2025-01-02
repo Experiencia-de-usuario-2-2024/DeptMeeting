@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
 import { MeetingMinuteDTO } from './dto/meeting-minute.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -8,14 +18,17 @@ import { MeetingMinuteMSG } from 'src/common/constants';
 import { IMeetingMinute } from 'src/common/interfaces/meeting-minute.interface';
 import { Observable } from 'rxjs';
 import { MeetingMinuteService } from './meeting-minute.service';
+import {TopicDto} from "./dto/topic.dto";
 
 @ApiTags('Microservicio de actas dialógicas (microservice-meetingminutes)')
 @UseGuards(JwtAuthGuard)
 @Controller('api/meeting-minute')
 export class MeetingMinuteController {
-
   // Entrada: cliente proxy global
-  constructor(private readonly clientProxy: ClientProxyMeetflow, private readonly meetingMinuteService: MeetingMinuteService) { }
+  constructor(
+    private readonly clientProxy: ClientProxyMeetflow,
+    private readonly meetingMinuteService: MeetingMinuteService,
+  ) {}
 
   // cliente proxy de actas dialógicas
   private _clientProxyMeetingMinute =
@@ -45,11 +58,14 @@ export class MeetingMinuteController {
   */
   @Post()
   @ApiOperation({ summary: 'Crear una acta dialógica' })
-  create(@Body() meetingMinuteDTO: MeetingMinuteDTO, @Req() req: any): Observable<IMeetingMinute> {
+  create(
+    @Body() meetingMinuteDTO: MeetingMinuteDTO,
+    @Req() req: any,
+  ): Observable<IMeetingMinute> {
     const params = {
       meetingMinuteDTO: meetingMinuteDTO,
-      user: req.user
-    }
+      user: req.user,
+    };
     return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.CREATE, params);
   }
 
@@ -60,7 +76,7 @@ export class MeetingMinuteController {
   @Get()
   @ApiOperation({ summary: 'Obtener todas las actas dialógicas' })
   findAll(): Observable<IMeetingMinute> {
-    console.log("solicitando obtener actas")
+    console.log('solicitando obtener actas');
     return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.FIND_ALL, '');
   }
 
@@ -82,12 +98,20 @@ export class MeetingMinuteController {
   */
   @Put(':id')
   @ApiOperation({ summary: 'Actualizar acta dialógica por id' })
-  update(@Param('id') id: string, @Body() meetingMinuteDTO: MeetingMinuteDTO): Observable<IMeetingMinute> {
-    console.log('MeetingMinuteController.update() id: ', id, 'meetingMinuteDTO: ', meetingMinuteDTO);
+  update(
+    @Param('id') id: string,
+    @Body() meetingMinuteDTO: MeetingMinuteDTO,
+  ): Observable<IMeetingMinute> {
+    console.log(
+      'MeetingMinuteController.update() id: ',
+      id,
+      'meetingMinuteDTO: ',
+      meetingMinuteDTO,
+    );
     const params = {
       id: id,
-      meetingMinuteDTO: meetingMinuteDTO
-    }
+      meetingMinuteDTO: meetingMinuteDTO,
+    };
     return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.UPDATE, params);
   }
 
@@ -112,8 +136,8 @@ export class MeetingMinuteController {
   sendNotification(@Body() meetingMinuteDTO: any, @Req() req: any) {
     const params = {
       meetingMinuteDTO: meetingMinuteDTO,
-      user: req.user
-    }
+      user: req.user,
+    };
     return this._clientProxyNotifications.send('sendNotification', params);
   }
 
@@ -127,9 +151,12 @@ export class MeetingMinuteController {
   sendNotificationRemember(@Body() remember: any, @Req() req: any) {
     const params = {
       remember: remember,
-      user: req.user
-    }
-    return this._clientProxyNotifications.send('sendNotificationRemember', params);
+      user: req.user,
+    };
+    return this._clientProxyNotifications.send(
+      'sendNotificationRemember',
+      params,
+    );
   }
 
   /*  
@@ -142,9 +169,12 @@ export class MeetingMinuteController {
   sendNotificationRememberTask(@Body() remember: any, @Req() req: any) {
     const params = {
       remember: remember,
-      user: req.user
-    }
-    return this._clientProxyNotifications.send('sendNotificationRememberTask', params);
+      user: req.user,
+    };
+    return this._clientProxyNotifications.send(
+      'sendNotificationRememberTask',
+      params,
+    );
   }
 
   /*  
@@ -153,23 +183,61 @@ export class MeetingMinuteController {
   salida: correo electronico enviado a invitado externo.
   */
   @Post('/notify/user/invited/external')
-  @ApiOperation({ summary: 'notificar al invitado externo con su nueva cuenta creada' })
+  @ApiOperation({
+    summary: 'notificar al invitado externo con su nueva cuenta creada',
+  })
   sendNotificationExternal(@Body() meetingMinuteDTO: any, @Req() req: any) {
-   console.log("Invitando a usuario: ",meetingMinuteDTO.emailExternal + " con contraseña: "+ meetingMinuteDTO.passTemp  )
+    console.log(
+      'Invitando a usuario: ',
+      meetingMinuteDTO.emailExternal +
+        ' con contraseña: ' +
+        meetingMinuteDTO.passTemp,
+    );
     const params = {
       meetingMinuteDTO: meetingMinuteDTO,
-      user: req.user
-    }
-    return this._clientProxyNotifications.send('sendNotificationExternal', params);
+      user: req.user,
+    };
+    return this._clientProxyNotifications.send(
+      'sendNotificationExternal',
+      params,
+    );
   }
-
 
   @Get('/meeting/:id')
   @ApiOperation({ summary: 'Obtener acta dialogica por id de reunion' })
-  getMeetingMinuteByMeeting(@Param('id') id: string): Observable<IMeetingMinute> {
-    return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.FIND_BY_MEETING, id);
+  getMeetingMinuteByMeeting(
+    @Param('id') id: string,
+  ): Observable<IMeetingMinute> {
+    return this._clientProxyMeetingMinute.send(
+      MeetingMinuteMSG.FIND_BY_MEETING,
+      id,
+    );
   }
 
+  @Put('/topic/:id')
+  @ApiOperation({ summary: 'Actualizar tema de acta dialogica' })
+  updateTopic(@Param('id') id: string, @Body() topicDTO: TopicDto) {
+      const params = {
+      id: id,
+      topicDTO: topicDTO,
+      }
+      return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.UPDATE_TOPIC, params);
+  }
 
+  @Post('/:id/topic')
+  @ApiOperation({ summary: 'Agregar tema a acta dialogica' })
+  createTopic(@Param('id') id: string, @Body() topicDTO: TopicDto) {
+    const params = {
+      id: id,
+      topicDTO: topicDTO,
+    }
+    return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.CREATE_TOPIC, params);
+  }
+
+  @Delete('/topic/:id')
+    @ApiOperation({ summary: 'Eliminar tema de acta dialogica' })
+    deleteTopic(@Param('id') id: string) {
+        return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.DELETE_TOPIC, id);
+    }
 
 }

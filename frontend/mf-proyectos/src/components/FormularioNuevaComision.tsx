@@ -186,12 +186,14 @@ const FormularioNuevaComision: React.FC = () => {
 
         //  1. Realizar peticion para crear proyecto
         async function peticionCrearProyecto() {
-            try {            
+            try {
+                const period = localStorage.getItem('periodoSeleccionado')
                 const responseProyecto = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/project/create`, {
                     shortName: shortNameValue,
                     name: nameValue,
                     description: descriptionValueVer2,
-                    userOwner: userOwnerValue
+                    userOwner: userOwnerValue,
+                    idPeriod: JSON.parse(period)._id
                 }, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`

@@ -1,9 +1,9 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { IElement } from 'src/common/interfaces/element.interface';
-import { ELEMENT } from 'src/common/models/models';
-import { ElementDTO } from './dto/element.dto';
+import {HttpStatus, Injectable} from '@nestjs/common';
+import {InjectModel} from '@nestjs/mongoose';
+import {Model} from 'mongoose';
+import {IElement} from 'src/common/interfaces/element.interface';
+import {ELEMENT} from 'src/common/models/models';
+import {ElementDTO} from './dto/element.dto';
 
 @Injectable()
 export class ElementService {
@@ -162,4 +162,20 @@ salida: valor booleano de confirmación.
     return await this.model.where({ participants: email, type:['compromiso', 'Compromiso'] }); // mediante el frontend se realiza una nueva verificacion para que solo se muestren los compromisos
   }
 
+  async updateVote(id: string, vote: any): Promise<any> {
+    const response = await this.model.findOneAndUpdate(
+        {
+          _id: id,
+          "vote.options.option": vote.option,
+          "vote.voters.voter": { $ne: vote.email },
+        },
+        {
+          $inc: {"vote.options.$.votes": 1}, // Incrementa los votos de la opción seleccionada
+          $push: {"vote.voters": {voter: vote.email, option: vote.option}}, // Añade el votante a la lista
+        },
+        {new: true}, // Devuelve el documento actualizado
+    );
+    console.log("Respuesta de la actualización de votos: ", response);
+    return response;
+  }
 }

@@ -104,7 +104,7 @@ export class MeetingController {
   }
 
   /*  
-  Método para  obtener runiones a partir del id de un proyecto.
+  Método para obtener runiones a partir del id de un proyecto.
   entrada: el id del proyecto. 
   salida: objeto de las reuniones encontrada para el proyecto.  
   */

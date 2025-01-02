@@ -242,7 +242,7 @@ services:
       - REACT_APP_ALLOWED_HOSTS=jyrproject.com
       - REACT_APP_MF_DESARROLLOREUNION_PORT=3024
       - REACT_APP_BACKEND_GATEWAY=https://jyrproject.com/gateway
-      - REACT_APP_BACKEND_IO=http://jyrproject.com:84
+      - REACT_APP_BACKEND_IO=https://jyrproject.com/sw
 
   mf-kanbanplus:
     image: jyr20/mf-kanbanplus:latest

@@ -69,7 +69,7 @@ entrada: id de la reunion vinculada.
 salida: objeto del elemento encontrado.  
 */
   @MessagePattern(ElementMSG.FIND_BY_MEET)
-  findByMeeting(@Payload() id: string) {
+  findByMeeting(@Payload() id: string){
     return this.elementService.findByMeeting(id);
   }
 
@@ -85,8 +85,8 @@ salida: objeto del elemento encontrado.
 
   /*  
    Método para  obtener los elementos en estado no terminado a partir del id del proyecto.
-   entrada: id del proyecto vinculado. 
-   salida: objeto del elemento encontrado.  
+   entrada: id del proyecto vinculado.
+   salida: objeto del elemento encontrado.
   */
   @MessagePattern(ElementMSG.FIND_BY_PROJECT_PREVIEW)
   findByProjectPrevew(@Payload() id: string) {
@@ -155,7 +155,11 @@ salida: objeto del elemento encontrado.
     return await this.elementService.compromisosUsuarios(email);
   }
 
-
+  @MessagePattern(ElementMSG.UPDATE_VOTE)
+  async updateVote(@Payload() payload: any) {
+    console.log("Copiado:" + payload);
+    return this.elementService.updateVote(payload.id, payload.vote);
+  }
 
 
 }

@@ -18,7 +18,6 @@ module.exports = {
     mode: "development",
     devServer: {
         port: process.env.REACT_APP_MF_LOGIN_PORT, // Modificar (listo)
-        // port: 3001, // Modificar (listo)
         hot: false,
         allowedHosts: process.env.REACT_APP_ALLOWED_HOSTS ? [process.env.REACT_APP_ALLOWED_HOSTS] : [], // Convierte la variable en un array con un solo host
     },
@@ -67,7 +66,7 @@ module.exports = {
                 process.env.REACT_APP_BACKEND_URL
             ),
             "process.env.REACT_APP_GOOGLE_CLIENT_ID": JSON.stringify(
-            process.env.REACT_APP_GOOGLE_CLIENT_ID
+                process.env.REACT_APP_GOOGLE_CLIENT_ID
             )
         }),
     

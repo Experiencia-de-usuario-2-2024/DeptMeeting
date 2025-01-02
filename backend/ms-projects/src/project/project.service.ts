@@ -4,12 +4,14 @@ import { Model } from 'mongoose';
 import { IProject } from 'src/common/interfaces/project.interface';
 import { PROJECT } from 'src/common/models/models';
 import { ProjectDTO } from './dto/project.dto';
+import { PeriodService } from './period.service';
 
 @Injectable()
 export class ProjectService {
   constructor(
     @InjectModel(PROJECT.name) private readonly model: Model<IProject>,
-  ) { }
+    private readonly periodService: PeriodService,
+  ) {}
 
   /*  
   Método para crear un nueva proyecto a partir de un usuario. 
@@ -18,9 +20,16 @@ export class ProjectService {
   salida: objeto de nueva proyecto.  
   */
   async createProject(projectDTO: any) {
-    const newProject = new this.model(projectDTO);
-    return await newProject.save();
-
+    console.log('projectDTO:', projectDTO);
+    const { idPeriod, ...restProject } = projectDTO;
+    const newProject = new this.model(restProject);
+    const project = await newProject.save();
+    const period = await this.periodService.findById(idPeriod);
+    if (!period) {
+      throw new Error('Period not found');
+    }
+    await this.periodService.addCommission(idPeriod, project._id.toString());
+    return project;
   }
 
   /*  
@@ -68,13 +77,15 @@ export class ProjectService {
   salida: objeto del proyecto con nuevo invitado añadido.  
   */
   async addGuest(projectId: string, guestId: string): Promise<IProject> {
-    return await this.model.findByIdAndUpdate(
-      projectId,
-      {
-        $addToSet: { guests: guestId },
-      },
-      { new: true },
-    ).populate('guests');
+    return await this.model
+      .findByIdAndUpdate(
+        projectId,
+        {
+          $addToSet: { guests: guestId },
+        },
+        { new: true },
+      )
+      .populate('guests');
   }
 
   /*  
@@ -83,7 +94,7 @@ export class ProjectService {
   salida: objeto del proyecto encontrado.  
   */
   async findAllForUser(user: any) {
-    let projectsByUser = await this.model.find({ "userMembers": user.email });
+    const projectsByUser = await this.model.find({ userMembers: user.email });
     return projectsByUser;
   }
 
@@ -101,5 +112,4 @@ export class ProjectService {
       { new: true },
     );
   }
-
 }

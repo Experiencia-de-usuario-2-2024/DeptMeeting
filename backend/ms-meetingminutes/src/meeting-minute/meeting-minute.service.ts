@@ -2,23 +2,28 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AnyArray, Model } from 'mongoose';
 import { IMeetingMinute } from 'src/common/interfaces/meeting-minute.interface';
-import { MEETINGMINUTE } from 'src/common/models/models';
+import { MEETINGMINUTE, TOPIC } from 'src/common/models/models';
 import { MeetingMinuteDTO } from './dto/meeting-minute.dto';
+import {TopicDto} from "./dto/topic.dto";
 
 @Injectable()
 export class MeetingMinuteService {
-
   constructor(
     @InjectModel(MEETINGMINUTE.name)
-    private readonly model: Model<IMeetingMinute>
-  ) { }
+    private readonly model: Model<IMeetingMinute>,
+    @InjectModel(TOPIC.name)
+    private readonly modelTopic: Model<any>,
+  ) {}
 
   /*  
      Método para crear una nueva acta dialógica.
      entrada: datos del acta dialógica. 
      salida: objeto de nueva acta dialógica.  
   */
-  async create(meetingMinuteDTO: MeetingMinuteDTO, user: any): Promise<IMeetingMinute> {
+  async create(
+    meetingMinuteDTO: MeetingMinuteDTO,
+    user: any,
+  ): Promise<IMeetingMinute> {
     const newMeetingMinute = new this.model(meetingMinuteDTO);
     return await newMeetingMinute.save();
   }
@@ -28,7 +33,7 @@ export class MeetingMinuteService {
     salida: objeto de actas dialógicas encontradas. 
   */
   async findAll(): Promise<any[]> {
-    console.log("Buscando en la base de datos todas las actas")
+    console.log('Buscando en la base de datos todas las actas');
     return await this.model.find();
   }
 
@@ -65,15 +70,58 @@ export class MeetingMinuteService {
     await this.model.findByIdAndDelete(id);
     return {
       status: HttpStatus.OK,
-      msg: 'Deleted'
-    }
+      msg: 'Deleted',
+    };
   }
-
 
   // metodos nuevos
   async encontrarPorReunion(idReunion: string): Promise<any> {
+    console.log(
+      'Buscando en la base de datos todas las actas de la reunion: ',
+      idReunion,
+    );
     const meetingMinute = await this.model.find({ meeting: idReunion });
+    console.log('Actas encontradas: ', meetingMinute);
     return meetingMinute;
   }
+
+  async actualizarTema(
+    id: string,
+    topicDTO: TopicDto,
+  ): Promise<any> {
+    const response = await this.modelTopic.findByIdAndUpdate(
+        id,
+        {$set: topicDTO},
+        {new: true},
+    );
+    console.log('Tema actualizado: ', response);
+    return response;
+  }
+
+  async crearTema(
+    idMeetingMinute: string,
+    topicDTO: TopicDto,
+  ): Promise<any> {
+    const topic = new this.modelTopic(topicDTO);
+    const newTopic = await topic.save();
+    console.log('Tema creado: ', newTopic);
+    const meetingMinute = await this.model.findByIdAndUpdate(
+        idMeetingMinute,
+        {$push: {topics: newTopic._id}},
+        {new: true},
+    )
+        .populate('topics')
+        .exec();
+    console.log('Acta actualizada: ', meetingMinute);
+    return meetingMinute;
+  }
+
+    async borrarTema(id: string): Promise<any> {
+        await this.modelTopic.findByIdAndDelete(id);
+        return {
+        status: HttpStatus.OK,
+        msg: 'Deleted',
+        };
+    }
 
 }

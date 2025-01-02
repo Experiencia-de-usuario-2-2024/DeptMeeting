@@ -5,7 +5,7 @@ export const UserSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   avatar: { type: String, required: false }, // avatar del usuario en formato url (imagen almacenada en la nube)
-  asignado: { type: String, required: false }, 
+  asignado: { type: String, required: false },
   institution: { type: String, required: false },
   color: { type: String, required: false },
   type: { type: String, required: false },

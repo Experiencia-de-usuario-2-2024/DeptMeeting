@@ -92,7 +92,7 @@ const ActaDialogicaFinal: React.FC = () => {
 
     useEffect(() => {
         // websocket
-        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`);
+        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`, {cert: '/etc/letsen', path: '/socket.io',});
         setSocket(newSocket);
 
         // Obtener los datos del usuario logeado
@@ -270,7 +270,7 @@ const ActaDialogicaFinal: React.FC = () => {
         async function obtenerMeetingMinutePorId() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/`+ idMeetingMinute, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/meeting/`+ localStorage.getItem('idReunion'), {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }

@@ -156,6 +156,17 @@ export class ElementController {
     return this._clientProxyElement.send(ElementMSG.UPDATE, params);
   }
 
+  @Put('/:id/vote')
+  @ApiOperation({ summary: 'Actualizar votacion' })
+  updateVote(@Param('id') id: string, @Body() vote: any) {
+    console.log("Todo bien desde el gateway:" + id, vote);
+      const params = {
+        id: id,
+        vote: vote,
+      }
+      return this._clientProxyElement.send(ElementMSG.UPDATE_VOTE, params);
+    }
+
   /*  
      Metodo para borrar permanentemente un elemento a partir del id.
      entrada: id del elemento.
