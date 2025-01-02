@@ -95,10 +95,6 @@ export class NotificationService {
     */
     async sendNotification(meetingMinuteDTO: any, user: any): Promise<any> {
         console.log("Solicitando enviar notificación SERVICE", meetingMinuteDTO);
-        let params = {
-            meetingminute: meetingMinuteDTO,
-            user: user
-        }
         return await this.eventEmitter2.emit('meetingMinute.created', meetingMinuteDTO, user);
     }
 

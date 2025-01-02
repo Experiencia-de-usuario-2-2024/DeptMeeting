@@ -84,11 +84,13 @@ export class MeetingMinuteController {
 
     @MessagePattern(MeetingMinuteMSG.UPDATE_TOPIC)
     actualizarTema(@Payload() payload: any) {
+        console.log('params', payload);
         return this.meetingMinuteService.actualizarTema(payload.id, payload.topicDTO);
     }
 
     @MessagePattern(MeetingMinuteMSG.CREATE_TOPIC)
     crearTema(@Payload() payload: any) {
+        console.log('params', payload);
         return this.meetingMinuteService.crearTema(payload.id, payload.topicDTO);
     }
 

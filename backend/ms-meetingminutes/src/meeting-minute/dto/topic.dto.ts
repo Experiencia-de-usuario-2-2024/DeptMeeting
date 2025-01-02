@@ -1,7 +1,7 @@
 export class TopicDto {
     proposed: string;
     accepted: string;
-    description: string;F
+    description: string;
     inMeetingMinute: boolean;
     elements: string[];
     _id: string;

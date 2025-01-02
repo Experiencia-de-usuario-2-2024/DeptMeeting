@@ -90,6 +90,7 @@ export class MeetingMinuteService {
     id: string,
     topicDTO: TopicDto,
   ): Promise<any> {
+    console.log('params', topicDTO);
     const response = await this.modelTopic.findByIdAndUpdate(
         id,
         {$set: topicDTO},
@@ -103,6 +104,7 @@ export class MeetingMinuteService {
     idMeetingMinute: string,
     topicDTO: TopicDto,
   ): Promise<any> {
+    console.log('params', topicDTO);
     const topic = new this.modelTopic(topicDTO);
     const newTopic = await topic.save();
     console.log('Tema creado: ', newTopic);

@@ -1,8 +1,105 @@
-
-La reunión {{meet}} ha comenzado. Para acceder y participar en la reunión, ingrese a la plataforma MemFollow mediante el siguiente link: http://191.239.118.117:3001/
-<br>
-Para mayor información, por favor contactar a {{name}}.
-
-{{!-- Se le invita a la reunión:  {{meet}}, usted puede revisar la tabla y los "compromisos previos" que aún están en curso. <br>
-Notificación enviada por: {{name}}, <br>
-ingresar mediante el siguiente link: "{{linky}}" --}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notificación de Reunión</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ecf0f1;
+      color: #2c3e50;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .header {
+      background-color: #1abc9c;
+      color: #ffffff;
+      text-align: center;
+      padding: 20px 10px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .content {
+      padding: 20px;
+    }
+    .content h2 {
+      font-size: 22px;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    .content p, .content ul {
+          font-size: 15px;
+          color: #7f8c8d;
+          margin-bottom: 15px;
+          line-height: 1.6;
+        }
+        .content ul {
+          list-style-type: disc;
+          margin-left: 20px;
+        }
+        .content ul li {
+          margin-bottom: 5px;
+        }
+    .button {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .button a {
+      text-decoration: none;
+      color: #ffffff;
+      background-color: #e74c3c;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      color: #7f8c8d;
+      padding: 15px;
+      background-color: #ecf0f1;
+    }
+    .footer a {
+      color: #16a085;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      ¡La Reunión ha Comenzado!
+    </div>
+    <div class="content">
+      <h2>Detalles de la Reunión</h2>
+      <p><strong>Título:</strong> {{ titulo }} </p>
+      <p><strong>Fecha:</strong> {{ fecha }}</p>
+      <p><strong>Hora:</strong> {{ hora }}</p>
+      <p><strong>Lugar:</strong> {{ lugar }}</p>
+      <p><strong>Conexión remota:</strong> <a href={{ googleMeet }}> Google Meet</a></p>
+      <p>La reunión n°{{numeroReunion}} del consejo ya ha iniciado. Los temas ha tratar son los siguientes:</p>
+      <ul>
+          {{#each temas}}
+            <li>{{this}}</li>
+          {{/each}}
+        </ul>
+      <div class="button">
+        <a href="https://deptmeeting.diinf.usach.cl" target="_blank">Ir a DeptMeeting</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p>Este correo fue generado automáticamente por <strong>DeptMeeting</strong>.</p>
+    </div>
+  </div>
+</body>
+</html>

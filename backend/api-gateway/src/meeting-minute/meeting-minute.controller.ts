@@ -221,6 +221,7 @@ export class MeetingMinuteController {
       id: id,
       topicDTO: topicDTO,
       }
+      console.log('params', topicDTO);
       return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.UPDATE_TOPIC, params);
   }
 
@@ -231,6 +232,7 @@ export class MeetingMinuteController {
       id: id,
       topicDTO: topicDTO,
     }
+    console.log('params', topicDTO);
     return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.CREATE_TOPIC, params);
   }
 

@@ -1,11 +1,95 @@
-
-Has sido invitado a la reunión {{meet}}, la cual se encuentra en la fase: "{{fase}}".
-<br>
-Para acceder y visualizar la información de la reunión, ingrese a la plataforma MemFollow mediante el siguiente link: http://191.239.118.117:3001/
-<br>
-Para mayor información, por favor contactar a {{name}}.
-
-{{!-- La reunión {{meet}} 
-se encuentra en fase: "{{fase}}", por favor coordinense entre lider y secretario para establecer los temas y detalles de la reunión antes de citar a los miembros que participarán.<br>
-<br> <br> Notificación enviada por: {{name}}. <br>
-<br> <br> Ingresar mediante el siguiente link: "{{linky}}" --}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notificación de Reunión</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ecf0f1;
+      color: #2c3e50;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .header {
+      background-color: #1abc9c;
+      color: #ffffff;
+      text-align: center;
+      padding: 20px 10px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .content {
+      padding: 20px;
+    }
+    .content h2 {
+      font-size: 22px;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    .content p {
+      font-size: 15px;
+      color: #7f8c8d;
+      margin-bottom: 10px;
+    }
+    .button {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .button a {
+      text-decoration: none;
+      color: #ffffff;
+      background-color: #e74c3c;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      color: #7f8c8d;
+      padding: 15px;
+      background-color: #ecf0f1;
+    }
+    .footer a {
+      color: #16a085;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      ¡Nueva Reunión en DeptMeeting!
+    </div>
+    <div class="content">
+      <h2>Detalles de la Reunión</h2>
+      <p><strong>Título:</strong> {{ titulo }} </p>
+      <p><strong>Fecha:</strong> {{ fecha }}</p>
+      <p><strong>Hora:</strong> {{ hora }}</p>
+      <p><strong>Lugar:</strong> {{ lugar }}</p>
+      <p><strong>Agendar:</strong> <a href={{ eventoCalendario }}> Google Calendar</a></p>
+      <p>Ha sido invitado a la reunión n°{{ numeroReunion }} del consejo del Departamento de Ingeniería Informática del periodo {{ periodo }}.</p>
+      <p>Recuerde dejar sus sugerencias para los temas que se discutirán en la reunión. Las sugerencias se deshabilitarán cuando termine la fase <strong>pre-reunión</strong>.</p>
+      <p>Para más detalles, ingrese a DeptMeeting.</p>
+      <div class="button">
+        <a href="https://deptmeeting.diinf.usach.cl/" target="_blank">Ir a DeptMeeting</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p>Este correo fue generado automáticamente por <strong>DeptMeeting</strong>.</p>
+      {{!-- <p><a href="jyrproject.com">Cancelar suscripción</a></p>  --}}
+    </div>
+  </div>
+</body>
+</html>

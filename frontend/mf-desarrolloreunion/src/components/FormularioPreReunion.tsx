@@ -472,7 +472,7 @@ const FormularioPreReunion: React.FC = () => {
                 else {
                     listaTemas.push("Revisar compromisos previos");
                     setTemasUsuarios(listaTemas);
-                }
+                    }
                 if (response.data.googleMeetLink){
                     localStorage.setItem('googleMeetLink', response.data.googleMeetLink);
                     setGoogleMeet(response.data.googleMeetLink);
@@ -874,6 +874,22 @@ const FormularioPreReunion: React.FC = () => {
                 setMeetingMinute(response.data)
                 // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
                 localStorage.setItem('idMeetingMinute', response.data._id);
+                if (response.data.number !== 0) {
+                    const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
+                    const correoElectronico = decodedToken.email;
+                    const data = {
+                        proposed: "meetingware.support@usach.cl",
+                        accepted: "Predeterminado",
+                        description: "Revisar compromisos previos",
+                        inMeetingMinute: true,
+                    }
+                    const newTopic = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/${response.data._id}/topic`, data, {
+                        headers: {
+                            Authorization: `Bearer ${tokenUser}`
+                        }
+                    });
+                    console.log("Nuevo topico creado:", newTopic.data);
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -888,6 +904,8 @@ const FormularioPreReunion: React.FC = () => {
     // Funcion que se encarga de guardar los datos del formulario 2 en variables globales
     const guardarFormulario2 = () => {
         const temasValue = (document.getElementsByName("temas")[0] as HTMLInputElement).value;
+        const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
+        const correoElectronico = decodedToken.email;
         //comprobar que el campo no este vacio
         if (temasValue === "" || temasValue === " ") {
             window.alert("Debe completar el campo para añadir un tema");
