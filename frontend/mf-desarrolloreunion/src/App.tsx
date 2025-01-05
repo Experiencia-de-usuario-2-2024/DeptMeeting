@@ -1,7 +1,8 @@
 import React from "react";
-import "./App.css";
-
+//import "./App.css";
+import {MeetingManagementProvider} from "./components/MeetingManagementContext";
 import FormularioPreReunion from "./components/FormularioPreReunion";
+import MeetingManagement from "./components/MeetingManagement";
 
 
 
@@ -9,19 +10,14 @@ import FormularioPreReunion from "./components/FormularioPreReunion";
 function App() {
   return (
 
-
-    <div className="App">
-      {/* <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-      </header> */}
-
+      /*
+      <div className="App">
       <FormularioPreReunion />
-
     </div>
-
-
+      */
+    <MeetingManagementProvider>
+        <MeetingManagement />
+    </MeetingManagementProvider>
 
 
   );
