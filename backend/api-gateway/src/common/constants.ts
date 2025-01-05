@@ -105,6 +105,7 @@ export enum MeetingMinuteMSG {
   UPDATE_TOPIC = 'UPDATE_TOPIC',
   CREATE_TOPIC = 'CREATE_TOPIC',
   DELETE_TOPIC = 'DELETE_TOPIC',
+  GET_TOPICS_BY_ID = 'GET_TOPICS_BY_ID',
 }
 
 export enum ElementMSG {
@@ -119,6 +120,7 @@ export enum ElementMSG {
   FIND_BY_USER_PROJECT = 'FIND_BY_USER_PROJECT',
   FIND_BY_T_PROJECT = 'FIND_BY_T_PROJECT',
   UPDATE_VOTE= 'UPDATE_VOTE',
+  GET_BY_IDS = 'GET_BY_IDS',
 }
 
 export enum TaskMSG {

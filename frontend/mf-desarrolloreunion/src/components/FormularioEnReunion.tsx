@@ -55,6 +55,7 @@ import i__DudaBlanco from "../assets/static/i__DudaBlanco.png";
 
 import i__TextoLibre from "../assets/static/i__TextoLibre.png";
 import i__TextoLibreBlanco from "../assets/static/i__TextoLibreBlanco.png";
+import i__VotacionBlanco from "../assets/static/i__VotacionBlanco.png";
 import TextField from "@atlaskit/textfield";
 import Vote from "./DeptMeeting/Vote";
 import FreeText from "./DeptMeeting/FreeText";
@@ -382,7 +383,9 @@ const FormularioEnReunion: React.FC = () => {
     const [selectedStudentDesacuerdoDos, setSelectedStudentDesacuerdoDos] = useState<PropsValue<Estudiantes>>([]);
     const [selectedStudentDuda, setSelectedStudentDuda] = useState<PropsValue<Estudiantes>>([]);
     const [selectedStudentTextoLibre, setSelectedStudentTextoLibre] = useState<PropsValue<Estudiantes>>([]);
-    
+
+    const [topicsInMinute, setTopicsInMinute] = useState<any[]>([]);
+
     // Estado para tener la informacion del usuario logeado
     const [usuarioPerfilLog, setusuarioPerfilLog] = React.useState<Usuario>(); 
 
@@ -587,6 +590,36 @@ const FormularioEnReunion: React.FC = () => {
                 response.data[0].participants.forEach((participante: string) => {
                     obtenerCompromisosUsuario(participante);
                 });
+
+                const topicsInMeetingMinute = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/get/topics/byIds`,
+                    response.data[0].topics
+                , {
+                    headers: {
+                        Authorization: `Bearer ${tokenUser}`
+                    }
+                });
+                console.log("Temas de la reunion:", topicsInMeetingMinute.data);
+
+                const updatedTopics = await Promise.all(
+                    topicsInMeetingMinute.data.map(async (topic: any) => {
+                        const elementsResponse = await axios.post(
+                            `${process.env.REACT_APP_BACKEND_GATEWAY}/api/element/get/byIds`,
+                            topic.elements,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${tokenUser}`,
+                                },
+                            }
+                        );
+                        console.log("Elementos del tema:", elementsResponse.data);
+
+                        // Reemplazar la lista de IDs con los datos completos
+                        topic.elements = elementsResponse.data;
+                        return topic;
+                    })
+                );
+
+                setTopicsInMinute(updatedTopics);
 
             } catch (error) {
                 console.log("ERROR AL OBTENER LA INFORMACION DEL ACTA DIALOGICA");
@@ -1404,6 +1437,10 @@ const FormularioEnReunion: React.FC = () => {
         closeModalDesacuerdo();
     }
 
+    const botonQl = () => {
+        console.log("Los topicos ya definodos son", topicsInMinute);
+    }
+
     // Entrada: ninguna
     // Salida: ninguna
     // Guarda la duda en la base de datos realizando la peticion al banckend
@@ -2132,9 +2169,9 @@ return (
                                                     </Inline>
                                                 </Button>
 
-                                                <Button appearance="primary" onClick={() => {openModalVote(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
+                                                <Button appearance="primary" onClick={() => {openModalVote(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1); botonQl()}} style={{ height: '60px'}}>
                                                     <Inline alignInline="center">
-                                                        <Image src={i__TextoLibreBlanco} alt="Simple example" testId="image" style={{ width: '48px', height: '48px', marginTop: '7px' }} />
+                                                        <Image src={i__VotacionBlanco} alt="Simple example" testId="image" style={{ width: '48px', height: '48px', marginTop: '7px' }} />
                                                         <div style={{ marginTop: '11.72px', marginLeft: '7px'}}>Votación</div>
                                                     </Inline>
                                                 </Button>

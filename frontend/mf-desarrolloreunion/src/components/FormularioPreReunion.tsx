@@ -270,6 +270,15 @@ const FormularioPreReunion: React.FC = () => {
         _id: string;
     }
 
+    interface Topic {
+        proposed: string;
+        accepted: string;
+        description: string;
+        inMeetingMinute: boolean;
+        elements: string[];
+        _id: string;
+    }
+
     // Interfaz para ver los datos de un acta dialogica (meetingminute)
     interface MeetingMinute {
         title: string;
@@ -588,7 +597,6 @@ const FormularioPreReunion: React.FC = () => {
 
         async function obtenerMeetingMinutePorIdReunion() {
             try {
-                console.log("Estoy chato ctm:", idReunion);
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/meeting/` + idReunion, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -874,6 +882,7 @@ const FormularioPreReunion: React.FC = () => {
                 setMeetingMinute(response.data)
                 // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
                 localStorage.setItem('idMeetingMinute', response.data._id);
+                let newTopics = [];
                 if (response.data.number !== 0) {
                     const decodedToken: any = tokenUser ? jwtDecode(tokenUser) : null;
                     const correoElectronico = decodedToken.email;
@@ -889,7 +898,29 @@ const FormularioPreReunion: React.FC = () => {
                         }
                     });
                     console.log("Nuevo topico creado:", newTopic.data);
+                    newTopics.push(data);
                 }
+
+                const notify = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/notify/state/change`, {
+                    title: response.data.title,
+                    place: response.data.place,
+                    startTime: response.data.startTime,
+                    endTime: response.data.endTime,
+                    startHour: response.data.startHour,
+                    endHour: response.data.endHour,
+                    topics: newTopics.map(topic => topic.description),
+                    participants: response.data.participants,
+                    secretaries: response.data.secretaries,
+                    leaders: response.data.leaders,
+                    number: response.data.number,
+                    fase: "pre-reunión",
+                    },
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenUser}`
+                    }
+                });
+                console.log("Notificacion enviada exitosamente", notify.data);
             } catch (error) {
                 console.error(error);
             }
@@ -1162,23 +1193,21 @@ const FormularioPreReunion: React.FC = () => {
                 listaParticipantesValueFinal = listaParticipantesValueFinal.filter((participante) => participante !== '');
                 listaAnfitrionesValueFinal = listaAnfitrionesValueFinal.filter((anfitrion) => anfitrion !== '');
                 const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/notify/state/change`, {
-                    meetingMinuteDTO: {
-                        title: objetivoValue,
-                        place: lugarValue,
-                        startTime: fechaInicio,
-                        endTime: fechaTermino,
-                        startHour: horaInicio,
-                        endHour: horaTermino,
-                        topics: listaTemas,
-                        participants: listaParticipantesValueFinal,
-                        secretaries: [secretarioValue],
-                        leaders: listaAnfitrionesValueFinal,
-                        links: listaEnlaces,
-                        meeting: idReunion,
-                        number: reunion?.number,
-                        fase: "pre-reunión",
-                        nombreCortoProyecto: nombreCortoProyectoAux,
-                    },
+                    title: objetivoValue,
+                    place: lugarValue,
+                    startTime: fechaInicio,
+                    endTime: fechaTermino,
+                    startHour: horaInicio,
+                    endHour: horaTermino,
+                    topics: listaTemas,
+                    participants: listaParticipantesValueFinal,
+                    secretaries: [secretarioValue],
+                    leaders: listaAnfitrionesValueFinal,
+                    links: listaEnlaces,
+                    meeting: idReunion,
+                    number: reunion?.number,
+                    fase: "pre-reunión",
+                    nombreCortoProyecto: nombreCortoProyectoAux,
                 }, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`

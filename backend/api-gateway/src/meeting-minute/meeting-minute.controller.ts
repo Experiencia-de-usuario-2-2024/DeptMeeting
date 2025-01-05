@@ -225,6 +225,12 @@ export class MeetingMinuteController {
       return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.UPDATE_TOPIC, params);
   }
 
+  @Post('/get/topics/byids')
+  @ApiOperation({ summary: 'Obtener temas por una lista de id' })
+    getTopicsById(@Body() ids: string[]) {
+        return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.GET_TOPICS_BY_ID, ids);
+    }
+
   @Post('/:id/topic')
   @ApiOperation({ summary: 'Agregar tema a acta dialogica' })
   createTopic(@Param('id') id: string, @Body() topicDTO: TopicDto) {

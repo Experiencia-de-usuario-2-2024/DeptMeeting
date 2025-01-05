@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxyMeetflow } from 'src/common/proxy/client-proxy';
 import { ElementDTO } from './dto/element.dto';
-import { ElementMSG } from 'src/common/constants';
+import {ElementMSG, MeetingMinuteMSG} from 'src/common/constants';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Microservicio de elementos dialógicos (microservice-elements)')
@@ -61,6 +61,12 @@ export class ElementController {
   @ApiOperation({ summary: 'Obtener todos los elementos dialógicos ' })
   findAll() {
     return this._clientProxyElement.send(ElementMSG.FIND_ALL, '');
+  }
+
+  @Post('/get/byids')
+  @ApiOperation({ summary: 'Obtener elementos dialogicos por una lista de id' })
+  getElementsById(@Body() ids: string[]) {
+    return this._clientProxyElement.send(ElementMSG.GET_BY_IDS, ids);
   }
 
   /*  

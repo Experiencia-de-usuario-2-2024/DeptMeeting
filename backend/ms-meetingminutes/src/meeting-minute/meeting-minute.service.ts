@@ -1,9 +1,9 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { AnyArray, Model } from 'mongoose';
-import { IMeetingMinute } from 'src/common/interfaces/meeting-minute.interface';
-import { MEETINGMINUTE, TOPIC } from 'src/common/models/models';
-import { MeetingMinuteDTO } from './dto/meeting-minute.dto';
+import {HttpStatus, Injectable} from '@nestjs/common';
+import {InjectModel} from '@nestjs/mongoose';
+import {Model} from 'mongoose';
+import {IMeetingMinute} from 'src/common/interfaces/meeting-minute.interface';
+import {MEETINGMINUTE, TOPIC} from 'src/common/models/models';
+import {MeetingMinuteDTO} from './dto/meeting-minute.dto';
 import {TopicDto} from "./dto/topic.dto";
 import {ITopic} from "../common/interfaces/topic.interface";
 
@@ -132,4 +132,8 @@ export class MeetingMinuteService {
         };
     }
 
+   async obtenerTemasPorId(ids: string[]) {
+    const topics = await this.modelTopic.find({ _id: { $in: ids } }).lean();
+     return ids.map(id => topics.find(topic => topic._id.toString() === id));
+  }
 }
