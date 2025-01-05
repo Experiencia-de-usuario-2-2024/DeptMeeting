@@ -1,3 +1,4 @@
+import {TopicDto} from "./topic.dto";
 
 export class MeetingMinuteDTO {
    title: string; // Objetivo del acta
@@ -8,7 +9,7 @@ export class MeetingMinuteDTO {
    endHour: string; // hora estimada de finalización
    realStartTime: string; // fecha y hora real de inicio de "en-reunión"
    realEndTime: string; // fecha y hora real de término de "en-reunión"
-   topics: string[]; // nombres de los temas añadidos al acta
+   topics: string[] | TopicDto[]; // nombres de los temas añadidos al acta
    participants: string[]; // emails de invitados
    assistants: string[]; // emails de invitados que si asistieron
    secretaries: string[]; // emails de secretarios

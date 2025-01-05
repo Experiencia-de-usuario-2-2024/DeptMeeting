@@ -121,7 +121,7 @@ const ActualizarProyecto: React.FC = () => {
     // Entrada: ninguna
     // Salida: ninguna, se muestra una alerta indicando que el proyecto fue actualizado con exito
     const finalizarOperacion = () => {
-        window.alert("Período actualizado con éxito");
+        window.alert("Proyecto actualizado con éxito");
         const newValue = !editarProyecto;
         // Guardar valor de la variable en local storage
         localStorage.setItem('editarProyecto', JSON.stringify(newValue));
@@ -220,7 +220,7 @@ const ActualizarProyecto: React.FC = () => {
                         Authorization: `Bearer ${tokenUser}`
                     }
                 });
-                console.log("Período actualizado correctamente: Se realizo copia de miembros originales del período");
+                console.log("Proyecto actualizado correctamente: Se realizo copia de miembros originales del proyecto");
                 console.log(response.data);
                 nuevosMiembros = [];
             } catch (error) {
@@ -268,7 +268,7 @@ const ActualizarProyecto: React.FC = () => {
             aria-required={true}
             name="shortName"
             defaultValue={proyectoUser?.shortName}
-            label="Nombre abreviado del período"
+            label="Nombre abreviado del proyecto"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -279,7 +279,7 @@ const ActualizarProyecto: React.FC = () => {
             aria-required={true}
             name="name"
             defaultValue={proyectoUser?.name}
-            label="Nombre del período"
+            label="Nombre del proyecto"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -291,7 +291,7 @@ const ActualizarProyecto: React.FC = () => {
             aria-required={true}
             name="descriptionVer2"
             defaultValue={proyectoUser?.description}
-            label="Descripción del período"
+            label="Descripción del proyecto"
             isRequired
         >
             {({ fieldProps }) => <TextArea {...fieldProps} onChange={(event) => fieldProps.onChange(event.target.value)} />}
@@ -303,7 +303,7 @@ const ActualizarProyecto: React.FC = () => {
             aria-required={true}
             name="description"
             defaultValue=""
-            label="Descripción del período"
+            label="Descripción del proyecto"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -314,7 +314,7 @@ const ActualizarProyecto: React.FC = () => {
             aria-required={true}
             name="userOwner"
             defaultValue={proyectoUser?.userOwner}
-            label="Dueño del período (correo electrónico registrado)"
+            label="Dueño del proyecto (correo electrónico registrado)"
             isRequired
         >
             {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
@@ -376,7 +376,7 @@ const ActualizarProyecto: React.FC = () => {
                             flexDirection: 'column',
                         }}
                     >
-                    <h1>Editar período</h1>
+                    <h1>Editar proyecto</h1>
                         <Form<{ username: string }>
                             onSubmit={(data) => {
                                 return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
@@ -393,7 +393,7 @@ const ActualizarProyecto: React.FC = () => {
                                     <DescripcionVer2 />
                                     <UserOwner />                                
                                     {/* seccion dedicada a mostrar los miembros actuales del proyecto*/}
-                                    <p style={{marginTop:'8px', marginBottom:'8px'}}>Miembros actuales del período</p>
+                                    <p style={{marginTop:'8px', marginBottom:'8px'}}>Miembros actuales del proyecto</p>
                                     <div style={{backgroundColor:'white', paddingLeft: '15px', paddingRight:'15px', paddingTop:'1px', paddingBottom:'1px', marginBottom:'8px'}}>
                                         
                                         {proyectoUser?.userMembers.map((miembro) => (
@@ -418,7 +418,7 @@ const ActualizarProyecto: React.FC = () => {
                                                 onClick={() => actualizarInformacion()}
                                                 style={{ marginLeft: '5px' }}
                                             >
-                                                Actualizar período
+                                                Actualizar proyecto
                                             </LoadingButton>
                                         </ButtonGroup>
                                     </FormFooter>

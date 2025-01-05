@@ -6,7 +6,7 @@ export class UserDTO {
   name: string; // nombre del usuario
   email: string; // email del usuario
   avatar: string; // avatar del usuario en formato url (imagen almacenada en la nube)
-  asignado: string; // correo del usuario profesor al que esta asignado el usuario estudiante (en caso de que el sea profesor, este campo queda vacio) (DeptMeeting)
+  asignado: string; // correo del usuario profesor al que esta asignado el usuario estudiante (en caso de que el sea profesor, este campo queda vacio) (Memfollow)
   institution: string; // institución del usuario -> NO SE UTILIZA
   type: string; // tipo de usuario (profesor, estudiante, invitado -> ESTE ULTIMO NO SE ESTA UTILIZANDO)
   password: string; // contraseña del usuario

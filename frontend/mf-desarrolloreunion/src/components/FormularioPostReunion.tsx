@@ -39,15 +39,17 @@ import Messages from "./Messages";
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
+const googleMeetLink = localStorage.getItem('googleMeetLink');
+const ultimateIdReunion = localStorage.getItem('idReunion');
 
 var numeroTemaSeleccionado: number;
 
 var stringTemaSeleccionado: string;
 
 const boxStyles = xcss({
-    borderColor: '#00A499',
+    borderColor: 'color.border.selected',
     // width: '500px',
-    backgroundColor: '#E5F6F5',
+    backgroundColor: 'color.background.selected',
     borderStyle: 'solid',
     borderRadius: 'border.radius',
     borderWidth: 'border.width',
@@ -57,7 +59,7 @@ const boxStyles2 = xcss({
     // borderColor: 'color.border.neutral',
     // width: '1000px',
     width: '100%',
-    backgroundColor: '#00A499',
+    backgroundColor: 'color.background.neutral',
     borderStyle: 'solid',
     borderRadius: 'border.radius',
     borderWidth: 'border.width',
@@ -124,6 +126,7 @@ var estadoReunion: string;
 
 const FormularioPostReunion: React.FC = () => {
 
+    const [googleMeet, setGoogleMeet] = useState(googleMeetLink);
     // para el popup de la informacion de la reunion
     const [isOpenInformacion, setIsOpenInformacion] = useState(false)
 
@@ -310,7 +313,7 @@ const FormularioPostReunion: React.FC = () => {
 
     useEffect(() => {
         // websocket
-        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`);
+        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}/chat`);
         setSocket(newSocket);
 
         // escuchar al evento de recarga de pagina
@@ -433,12 +436,11 @@ const FormularioPostReunion: React.FC = () => {
         }
 
 
-
         async function obtenerMeetingMinutePorId() {
             // window.alert("id de la minuta DENTRO DE LA FUNCION: " + idMeetingMinute);
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + localStorage.getItem('idMeetingMinute'), {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/meeting/${localStorage.getItem('idReunion')}`, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -449,11 +451,13 @@ const FormularioPostReunion: React.FC = () => {
                 nombreCortoProyectoAux = response.data[0].nombreCortoProyecto;
                 idReunionAux = response.data[0].meeting;
                 numeroReunion = response.data[0].number;
+                const idMeetingMinute = response.data[0]._id;
+                const idInLocalStorageMeetingMinute = localStorage.getItem('idMeetingMinute');
+                if (idMeetingMinute !== idInLocalStorageMeetingMinute) localStorage.setItem('idMeetingMinute', response.data[0]._id);
                 // se recorre la lista de participantes de la reunion para obtener los compromisos de cada uno utilizando la funcion "obtenerCompromisosUsuario"
                 response.data[0].participants.forEach((participante: string) => {
                     obtenerCompromisosUsuario(participante);
                 });
-
                 // localStorage.setItem('idReunion', response.data[0].meeting);
             } catch (error) {
                 console.log("ERROR AL OBTENER LA INFORMACION DEL ACTA DIALOGICA ******** post reunion *****");
@@ -810,12 +814,13 @@ const FormularioPostReunion: React.FC = () => {
                             <div style={{ textAlign: "left", height: '100px', width: '550px', backgroundColor: 'white' }}>
                                 <Inline space="space.200">
                                     {/* fotos de los integrantes conectados */}
-                                    <div style={{ marginTop: '28px' }}>
-                                        <AvatarGroup appearance="stack" data={data} borderColor="#388BFF" size="large" maxCount={4} />
+                                    <div style={{marginTop: '28px'}}>
+                                        <AvatarGroup appearance="stack" data={data} borderColor="#388BFF" size="large"
+                                                     maxCount={4}/>
                                     </div>
 
                                     {/* popup para colocar un chat en la reunion */}
-                                    <div style={{ marginTop: '28px' }}>
+                                    <div style={{marginTop: '28px'}}>
                                         <Popup
                                             isOpen={isOpen}
                                             onClose={() => setIsOpen(false)}
@@ -823,35 +828,46 @@ const FormularioPostReunion: React.FC = () => {
 
                                             // aqui colocar el componente del chat
                                             content={() => <Box xcss={contentStyles}>
-                                                <MessagesInput send={send} />
-                                                <Messages messages={messages} />
+                                                <MessagesInput send={send}/>
+                                                <Messages messages={messages}/>
                                             </Box>}
 
                                             trigger={(triggerProps) => (
                                                 <Button
-                                                    style={{ height: 44 }}
-                                                    iconBefore={<CommentIcon label="" size="medium" />}
+                                                    style={{height: 44}}
+                                                    iconBefore={<CommentIcon label="" size="medium"/>}
                                                     {...triggerProps}
                                                     appearance="primary"
                                                     isSelected={isOpen}
                                                     onClick={() => setIsOpen(!isOpen)}
                                                 >
                                                     {/* {isOpen ? 'Cerrar' : 'Abrir'} chat{' '} */}
-                                                    {isOpen ? '' : ''} <p style={{ marginTop: 3, marginBottom: 0 }}>chat</p>{' '}
+                                                    {isOpen ? '' : ''} <p
+                                                    style={{marginTop: 3, marginBottom: 0}}>chat</p>{' '}
                                                 </Button>
                                             )}
                                         />
                                         {/* IMPLEMENTACION DEL CHAT COMO UN DIALOGO MODAL, NO SE USARA */}
                                         {/* <Button appearance="primary" onClick={() => {openModalChat()}}>ABRIR CHAT</Button> */}
                                     </div>
+                                    <div style={{marginTop: '28px'}}>
+                                        <Button
+                                            style={{height: 44}}
+                                            appearance="primary"
+                                            isDisabled={!googleMeet}
+                                            onClick={() => window.open(googleMeet, '_blank')}
+                                        >
+                                            <p style={{marginTop: 3, marginBottom: 0}}>Google Meet</p>{' '}
+                                        </Button>
+                                    </div>
                                 </Inline>
                             </div>
 
                             {/* CONTENIDO DEL MEDIO: barra de progreso */}
-                            <div style={{ textAlign: "center", height: '100px', width: '60%', backgroundColor: 'white' }}>
+                            <div style={{textAlign: "center", height: '100px', width: '60%', backgroundColor: 'white'}}>
                                 {/* barra de progreso en la renuion fija en pantalla*/}
-                                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <ProgressTracker items={items} />
+                                <div style={{display: 'flex', justifyContent: 'center'}}>
+                                    <ProgressTracker items={items}/>
                                 </div>
                             </div>
 
@@ -923,7 +939,7 @@ const FormularioPostReunion: React.FC = () => {
                         {/* se muestran los compromisos previos */}
                         {compromisosProyecto?.length != 0 && (
                                             <>
-                                                <Box padding="space.400" backgroundColor="#E5F6F5" xcss={boxStyles2}>
+                                                <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles2}>
                                                     <h2 style={{ marginTop: '0px', textAlign: 'center' }}>Estado del proyecto</h2>
                                                     <br />
                                                     <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Compromisos previos:</h3>
@@ -982,7 +998,7 @@ const FormularioPostReunion: React.FC = () => {
 
 
 
-                        <Box padding="space.400" backgroundColor="#E5F6F5" xcss={boxStyles}>
+                        <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles}>
 
 
                             {/* temas */}
@@ -1131,7 +1147,7 @@ const FormularioPostReunion: React.FC = () => {
                                         </ModalTitle>
                                     </ModalHeader>
                                     <ModalBody>
-                                        <Box padding="space.400" backgroundColor="#E5F6F5" xcss={boxStyles}>
+                                        <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles}>
                                             <h2 style={{ marginTop: '0px', textAlign: 'center' }}>Descripción</h2>
                                             <br />
                                             <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Objetivo: {meetingminute?.title}</h3>
@@ -1181,8 +1197,81 @@ const FormularioPostReunion: React.FC = () => {
                                                     <br />
                                                 </>
                                             )}
+
+                                            {/* AQUI */}
+                                            {/* se muestran los compromisos atrasados que se encuentran en compromisosProyecto */}
+                                            {/* se añade una condicion de mostrar el campo solo si existen compromisos atrasados */}
+                                            {/* FORMATO ANTIGUO */}
+                                            {/* {compromisosProyecto?.length != 0 && (
+                                    <>
+                                    <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Compromisos atrasados:</h3>
+                                    {compromisosProyecto?.map((compromiso, index) => (
+                                        <>
+                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>Encargado/a: {compromiso.participants}</h4>
+                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>Descripción: {compromiso.description}</h4>
+                                            <br />
+                                        </>
+                                    ))}
+                                    </>
+                                )} */}
                                         </Box>
+
                                         <br />
+
+                                        {/* {compromisosProyecto?.length != 0 && (
+                                            <>
+                                                <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles2}>
+                                                    <h2 style={{ marginTop: '0px', textAlign: 'center' }}>Estado del proyecto</h2>
+                                                    <br />
+                                                    <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Compromisos previos:</h3>
+                                                    {compromisosProyecto?.map((compromiso, index) => (
+                                                        <>
+                                                            {compromiso.number < (meetingminute?.number ?? 0) && (
+                                                                <>
+                                                                    {index == 0 && (
+                                                                        <>
+                                                                            <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{compromiso.participants}</h4>
+                                                                        </>
+                                                                    )}
+
+                                                                    {index !== 0 && (
+                                                                        <>
+                                                                            {Array.from(compromisosProyecto[index - 1].participants).map((char: string, charIndex: number) => (
+                                                                                <>
+                                                                                    <h4 key={charIndex} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>
+                                                                                        {char === compromiso.participants[charIndex] ? '' : (compromiso.participants)}
+                                                                                    </h4>
+                                                                                </>
+                                                                            ))}
+                                                                        </>
+                                                                    )}
+                                                                    <Inline>
+                                                                        {new Date(compromiso.dateLimit) < new Date() && (
+                                                                            <>
+                                                                                <Stack>
+                                                                                    <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px", color: 'red' }}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
+                                                                                    <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'red' }}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
+                                                                                </Stack>
+                                                                            </>
+                                                                        )}
+                                                                        {new Date(compromiso.dateLimit) > new Date() && (
+                                                                            <>
+                                                                                <Stack>
+                                                                                    <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px", color: 'green' }}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
+                                                                                    <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'green' }}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
+                                                                                </Stack>
+                                                                            </>
+                                                                        )}
+                                                                    </Inline>
+
+                                                                </>
+                                                            )}
+                                                        </>
+                                                    ))}
+                                                </Box>
+                                            </>
+                                        )} */}
+
                                     </ModalBody>
                                     <ModalFooter>
                                         <Button appearance="subtle" onClick={closeModalInfoReu}>

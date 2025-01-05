@@ -75,6 +75,8 @@ module.exports = {
             filename: "remoteEntry.js",
             exposes: {
                 "./Proyectos": "./src/components/Proyectos", // Ejemplo, aqui se exponen los componentes -> listo
+                "./PeriodosConsejos": "./src/components/PeriodosConsejos",
+                "./ComisionesActivas": "./src/components/ComisionesActivas",
             },
             shared: {
                 ...dependencies,

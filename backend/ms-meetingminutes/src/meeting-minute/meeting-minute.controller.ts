@@ -77,9 +77,27 @@ export class MeetingMinuteController {
 
 
     // metodos nuevos
-    @MessagePattern("encontrarPorReunion")
+    @MessagePattern("FIND_BY_MEETING")
     encontrarPorReunion(@Payload() payload: any) {
         return this.meetingMinuteService.encontrarPorReunion(payload);
     }
+
+    @MessagePattern(MeetingMinuteMSG.UPDATE_TOPIC)
+    actualizarTema(@Payload() payload: any) {
+        console.log('params', payload);
+        return this.meetingMinuteService.actualizarTema(payload.id, payload.topicDTO);
+    }
+
+    @MessagePattern(MeetingMinuteMSG.CREATE_TOPIC)
+    crearTema(@Payload() payload: any) {
+        console.log('params', payload);
+        return this.meetingMinuteService.crearTema(payload.id, payload.topicDTO);
+    }
+
+    @MessagePattern(MeetingMinuteMSG.DELETE_TOPIC)
+    borrarTema(@Payload() id: string) {
+        return this.meetingMinuteService.borrarTema(id);
+    }
+
 
 }

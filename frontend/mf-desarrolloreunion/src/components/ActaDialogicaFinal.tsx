@@ -26,9 +26,9 @@ const tokenUser = localStorage.getItem('tokenUser');
 
 
 const boxStyles = xcss({
-    borderColor: '#00A499',
+    borderColor: 'color.border.selected',
     // width: '500px',
-    backgroundColor: '#E5F6F5',
+    backgroundColor: 'color.background.selected',
     borderStyle: 'solid',
     borderRadius: 'border.radius',
     borderWidth: 'border.width',
@@ -38,7 +38,7 @@ const boxStyles2= xcss({
     // borderColor: 'color.border.neutral',
     // width: '1000px',
     width: '100%',
-    backgroundColor: '#E5F6F5',
+    backgroundColor: 'color.background.neutral',
     borderStyle: 'solid',
     borderRadius: 'border.radius',
     borderWidth: 'border.width',
@@ -92,7 +92,7 @@ const ActaDialogicaFinal: React.FC = () => {
 
     useEffect(() => {
         // websocket
-        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`);
+        const newSocket = io(`${process.env.REACT_APP_BACKEND_IO}`, {cert: '/etc/letsen', path: '/socket.io',});
         setSocket(newSocket);
 
         // Obtener los datos del usuario logeado
@@ -270,7 +270,7 @@ const ActaDialogicaFinal: React.FC = () => {
         async function obtenerMeetingMinutePorId() {
             try {
                 // Solo se requiere del token del usuario para realizar la petición
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/`+ idMeetingMinute, {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/meeting/`+ localStorage.getItem('idReunion'), {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
                     }
@@ -361,7 +361,7 @@ const ActaDialogicaFinal: React.FC = () => {
         // window.alert("Por favor, procure cerrar los dos menus laterales, cuyos botones se encuentran en la parte superior izquierda y derecha de la página para que el PDF se genere correctamente.");
         const input = pdfRef.current;        
         if (input) {
-        html2canvas(input).then((canvas: { toDataURL: (arg0: string) => any; width: any; height: any; }) => {
+        html2canvas(input).then((canvas) => {
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF('p', 'mm', 'a4', true);
             const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -449,7 +449,7 @@ return (
                             ) : (
                                 <h2 style={{ color: 'black'}}>Acta dialógica de Proyecto "{nombreCortoProyectoAux}" - reunión {reunion?.number}</h2>
                             )}
-                            <Box padding="space.400" backgroundColor="#E5F6F5" xcss={boxStyles}>
+                            <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles}>
                                 <h2 style={{marginTop:'0px', textAlign:'center'}}>Descripción</h2>
                                 <br />
                                 {/* objetivo */}
@@ -512,7 +512,7 @@ return (
 
                             {compromisosProyecto?.length != 0 && (
                                 <>
-                                    <Box padding="space.400" backgroundColor="#E5F6F5" xcss={boxStyles2}>
+                                    <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles2}>
                                         <h2 style={{marginTop:'0px', textAlign:'center'}}>Estado del proyecto</h2>
                                         <br />
                                         
@@ -550,7 +550,7 @@ return (
                                                                                 <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'red'}}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
                                                                             </Stack>
                                                                             {/* OPCION EN FORMATO BOTON, DE TAL FORMA SE PUEDA PINCHAR Y ABRIR UN DIALOGO MODAL CON MAS INFORMACION */}
-                                                                            {/* <f style={{ marginLeft: '50px'}} appearance="subtle"><h4 key={index} style={{margin:0, color: 'red'}}>{compromiso.number}.{compromiso.position}</h4></Button> */}
+                                                                            {/* <Button style={{ marginLeft: '50px'}} appearance="subtle"><h4 key={index} style={{margin:0, color: 'red'}}>{compromiso.number}.{compromiso.position}</h4></Button> */}
                                                                         </>
                                                                     )}
                                                                     {/* caso "compromiso.dateLimit" es mayor a la fecha actual -> significa a tiempo, por lo que color verde */}
@@ -583,7 +583,7 @@ return (
 
                             <br />
 
-                            <Box padding="space.400" backgroundColor="#E5F6F5" xcss={boxStyles}>
+                            <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles}>
                                 <h2 style={{marginTop:'0px', textAlign:'center'}}>Desarrollo de la reunión</h2>
                                 <br />
                                 <br />

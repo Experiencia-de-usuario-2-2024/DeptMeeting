@@ -3,8 +3,8 @@ import * as mongoose from 'mongoose';
 export const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
-  googlePassword: { type: String, required: false },
+  password: { type: String, required: false }, // Regular password
+  googlePassword: { type: String, required: false }, // Google ID password
   avatar: { type: String, required: false }, // avatar del usuario en formato url (imagen almacenada en la nube)
   asignado: { type: String, required: false },
   institution: { type: String, required: false },

@@ -5,12 +5,14 @@ import { jwtDecode } from 'jwt-decode';
 
 // Microfrontend Views
 import HomeProfesorView from '../microfrontends/HomeProfesorView';
-import ProyectosView from '../microfrontends/ProyectosView';
 import PerfilView from '../microfrontends/PerfilView';
-import DesarrolloReunionView from '../microfrontends/DesarrolloReunionView';
-import InformacionView from '../microfrontends/InformacionView';
-import TareasView from '../microfrontends/TareasView';
-import KanbanPlusView from '../microfrontends/KanbanPlusView';
+import DesarrolloReunionView from "../microfrontends/DesarrolloReunionView";
+import InformacionView from "../microfrontends/InformacionView";
+import TareasView from "../microfrontends/TareasView";
+import KanbanPlusView from "../microfrontends/KanbanPlusView";
+import PeriodosConsejosView from "../microfrontends/PeriodosConsejosView";
+import ActasPendientesView from "../microfrontends/ActasPendientesView";
+import ComisionesActivasView from "../microfrontends/ComisionesActivasView";
 
 // Icons
 import { MenuIcon, HomeIcon, PersonIcon, InfoIcon, TableIcon, LogoutIcon } from './Icons';
@@ -54,6 +56,10 @@ const EstructuraPagina = () => {
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [isKanbanModalOpen, setIsKanbanModalOpen] = useState(false);
+
+
+    // Estado para controlar si la barra superior (con ActasPendientesView) está visible o no
+    const [isTopBarShown, setIsTopBarShown] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -181,9 +187,19 @@ const EstructuraPagina = () => {
                 </div>
             </header>
 
+            {/* TopBar solo visible cuando no está en DesarrolloReunion y es profesor */}
+            {usuarioPerfilLog?.type === 'profesor' && !verActaDialogica && (
+                <div className={`${styles.topBarContainer} 
+                    ${isLeftSidebarVisible ? styles.withLeftSidebar : ''} 
+                    ${isRightSidebarVisible ? styles.withRightSidebar : ''}`}
+                >
+                    <ActasPendientesView />
+                </div>
+            )}
+
             <div className={styles.mainContainer}>
                 <aside className={`${styles.leftSidebar} ${isLeftSidebarVisible ? styles.visible : ''}`}>
-                    <ProyectosView />
+                    <PeriodosConsejosView/>
                 </aside>
 
                 <main className={`${styles.mainContent} 
@@ -204,6 +220,7 @@ const EstructuraPagina = () => {
                 </aside>
             </div>
 
+            {/* Modales existentes */}
             {isInfoModalOpen && (
                 <>
                     <div className={styles.modalOverlay} onClick={() => setIsInfoModalOpen(false)} />
@@ -250,6 +267,18 @@ const EstructuraPagina = () => {
                         </button>
                     </div>
                 </>
+            )}
+
+            {/* Footer solo visible cuando no está en DesarrolloReunion */}
+            {!verActaDialogica && (
+                <footer className={`${styles.footer} 
+                    ${isLeftSidebarVisible ? styles.withLeftSidebar : ''} 
+                    ${isRightSidebarVisible ? styles.withRightSidebar : ''}`}
+                >
+                    <div className={styles.footerContent}>
+                        <ComisionesActivasView />
+                    </div>
+                </footer>
             )}
         </div>
     );

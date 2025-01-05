@@ -24,6 +24,9 @@ export class User {
   @Prop({ required: true, length: 100 })
   password: string;
 
+  @Prop({ default: '', length: 100 })
+  googlePassword: string;
+
   @Prop({ default: 'grey', length: 50 })
   color: string;
 

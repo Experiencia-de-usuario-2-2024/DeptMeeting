@@ -84,8 +84,8 @@ export class UserController {
   salida: objeto del usuario encontrado.  
   */
   @Get('get/allUser')
-  @ApiOperation({ summary: 'Obtener todos los usuarios' })
-  findAll(): Observable<IUser[]> {
+  @ApiOperation({ summary: 'Obtener todos los usariosusuario' })
+  findAll(): Observable<IUser> {
     return this._clientProxyUser.send(UserMSG.FIND_ALL, '');
   }
 
@@ -169,6 +169,17 @@ export class UserController {
   @ApiOperation({ summary: 'Borrar permanentemente un usuario por id' })
   delete(@Param('id') id: string): Observable<any> {
     return this._clientProxyUser.send(UserMSG.DELETE, id);
+  }
+
+  /*  
+  Metodo para borrar permanentemente un usuario a partir del id.
+  entrada: id del usuario.
+  salida: valor booleano de confirmación.
+  */
+  @Delete(':id')
+  @ApiOperation({ summary: 'Borrar permanentemente un usuario por id' })
+  getAll(@Param('id') id: string): Observable<any> {
+    return this._clientProxyUser.send('allusers', id);
   }
 
   /*  

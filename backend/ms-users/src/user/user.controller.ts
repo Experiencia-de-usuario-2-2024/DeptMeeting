@@ -1,4 +1,6 @@
-import { Controller } from '@nestjs/common';
+import {
+  Controller,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UserMSG } from 'src/common/constants';
@@ -7,11 +9,9 @@ import { UserService } from './user.service';
 
 @Controller()
 export class UserController {
+
   // Metodo de instanciacion de la clase UserController
-  constructor(
-    private userService: UserService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private userService: UserService, private readonly jwtService: JwtService) { }
 
   /* 
   Modelo estructural de datos:
@@ -29,13 +29,13 @@ export class UserController {
    entrada: datos del usuario. 
    salida: objeto del nuevo usuario.  
   */
-  @MessagePattern(UserMSG.CREATE)
-  async create(@Payload() userDTO: UserDTO) {
-    const user = await this.userService.create(userDTO);
-    if (user) {
-      return user;
-    } else {
-      return null;
+  @MessagePattern('createUser')
+  async create(@Payload() userDTO: any) {
+    try {
+      return await this.userService.create(userDTO);
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
     }
   }
 
@@ -44,7 +44,7 @@ export class UserController {
   salida: llista con todos los usuarios registrados.  
   */
   @MessagePattern(UserMSG.FIND_ALL)
-  async findAll() {
+  findAll() {
     return this.userService.findAll();
   }
 
@@ -123,27 +123,17 @@ export class UserController {
   entrada: email y contraseña de un usuario.
   salida: usuario validado o invalidado.
    */
-  @MessagePattern(UserMSG.VALID_USER)
-  async validateUseri(@Payload() payload): Promise<any> {
-    // buscar usuario por email
-    const user = await this.userService.findOneByEmail(payload.email);
-    if (user) {
-      // validar contraseña ingresada vs la encontrada en base de datos
-      const isValidPassword = await this.userService.checkPassword(
+  @MessagePattern('validateUser')
+  async validateUser(@Payload() payload: any) {
+    try {
+      return await this.userService.validateUser(
+        payload.email,
         payload.password,
-        user.password,
+        payload.isGoogleLogin
       );
-      const isValidGooglePassword = await this.userService.checkPassword(
-        payload.googlePaswword,
-        user.googlePassword,
-      );
-      if (isValidPassword || isValidGooglePassword) {
-        return user;
-      } else {
-        return null;
-      }
-    } else {
-      return null;
+    } catch (error) {
+      console.error('Error validating user:', error);
+      throw error;
     }
   }
 
@@ -157,7 +147,8 @@ export class UserController {
     const user = await this.userService.requestResetPassword(payload);
     if (user) {
       return user;
-    } else {
+    }
+    else {
       return null;
     }
   }
@@ -170,6 +161,9 @@ export class UserController {
   async countUsers(@Payload() payload): Promise<any> {
     return await this.userService.countUsers();
   }
+
+
+
 
   // ************************* NUEVOS METODOS ************************* //
   /*  
@@ -188,4 +182,8 @@ export class UserController {
     // console.log("CORREO QUE LLEGA en ms controller: ", payload.correo);
     return this.userService.updateByEmailVer2(payload.correo, payload.userDTO);
   }
+
+  
+
+
 }

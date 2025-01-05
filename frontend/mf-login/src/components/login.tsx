@@ -207,78 +207,43 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setModalMessage('Error al iniciar sesión con Google');
   };
 
-  const loginWithGoogle = (session)=> {
+  const loginWithGoogle = async (session) => {
     try {
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: `${process.env.REACT_APP_BACKEND_URL}/api/auth/signin`, //MODIFICAR (listo, falta probar)
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data : JSON.stringify({
-                email: session.profileObj.email,
-                googlePassword: session.profileObj.googleId,
-            })
-        };
-
-        axios.request(config)
-            .then((response) => {
-                console.log("Imprimiendo el token en el login");
-                console.log(JSON.stringify(response.data));
-                // Guardar el token en el local storage y se envia a todos los microfrontends (y front principal) que lo requieren
-                localStorage.setItem('tokenUser', response.data.token);
-                localStorage.setItem('primerInicio', 'true');
-                localStorage.setItem('accessToken', session.tokenObj.access_token);
-                window.location.href = "/home";
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/signin`, {
+        email: session.profileObj.email,
+        googlePassword: session.profileObj.googleId,
+      });
+  
+      if (response.data.token) {
+        localStorage.setItem('tokenUser', response.data.token);
+        localStorage.setItem('primerInicio', 'true');
+        localStorage.setItem('accessToken', session.tokenObj.access_token);
+        window.location.href = "/home";
+      }
     } catch (error) {
+      console.error('Google login error:', error);
+      setModalMessage(error.response?.data?.message || 'Error logging in with Google');
     }
-    localStorage.setItem('accessToken', session.tokenObj.accessToken);
-    console.log("Login correcto", session);
-}
-
-const registerWithGoogle = (response)=> {
+  };
+  
+  const registerWithGoogle = async (response) => {
     const tagName = response.profileObj.name.split(' ').map(word => word[0]).join('');
     try {
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: `${process.env.REACT_APP_BACKEND_URL}/api/auth/signup`, //MODIFICAR (listo, falta probar)
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data : JSON.stringify({
-                name: response.profileObj.name,
-                email: response.profileObj.email,
-                googlePassword: response.profileObj.googleId,
-                type: "profesor",
-                tagName: tagName,
-            })
-        };
-
-        axios.request(config)
-            .then((response) => {
-                console.log(JSON.stringify(response.data));
-                setModalMessage("Usuario creado con éxito");
-                setTimeout(() => {
-                    setIsRegisterMode(false); //Vuelve a la pantalla de inicio de sesión
-                }, 5000); //Delay de 5 segundos
-            })
-            .catch((error) => {
-                if (error.response?.data?.error?.message === "User already exists") {
-                    setModalMessage("El usuario ya existe, intenta con otro correo");
-                } else {
-                    console.log(error);
-                }
-            })
+      const data = {
+        name: response.profileObj.name,
+        email: response.profileObj.email,
+        googlePassword: response.profileObj.googleId,
+        type: "profesor",
+        tagName: tagName,
+      };
+  
+      const apiResponse = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/signup`, data);
+      setModalMessage("Usuario creado con éxito");
+      setTimeout(() => setIsRegisterMode(false), 5000);
     } catch (error) {
-        console.log(error);
+      setModalMessage(error.response?.data?.message || 'Error registering with Google');
     }
-}
+  };
 
   return (
     <Container>

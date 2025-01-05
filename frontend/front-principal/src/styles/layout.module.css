@@ -5,7 +5,8 @@
 .pageLayout {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   font-family: 'Bebas Neue', sans-serif; /* Apply Bebas Neue font */
 }
 
@@ -94,21 +95,26 @@
 /* Main Layout */
 .mainContainer {
   display: flex;
-  margin-top: 80px;
-  min-height: calc(100vh - 80px);
+  flex: 1;
+  height: calc(100vh - 80px - 120px - 80px); /* header + topbar + footer */
+  overflow: hidden;
+  position: relative;
+  padding: 0;
+  transition: padding 0.3s ease;
 }
 
 /* Sidebar Styles */
 .leftSidebar {
   background-color: #E5F6F5;
   width: 370px;
-  height: calc(100vh - 80px);
+  height: calc(100vh);
   position: fixed;
   top: 80px; 
-  left: -372px; 
+  left: -370px;
   transition: left 0.3s ease;
   border-right: 2px solid #00A499;
   overflow-y: auto;
+  z-index: 900;
 }
 
 .leftSidebar.visible {
@@ -118,15 +124,16 @@
 .rightSidebar {
   background-color: #E5F6F5;
   width: 830px;
-  height: calc(100vh - 80px);
+  height: calc(100vh);
   position: fixed;
-  top: 80px; /* Align with header */
-  right: -832px; /* width + border */
+  top: 80px; /* Header (80px) + topBar (120px) */
+  right: -830px; /* width + border */
   transition: right 0.3s ease;
   border-left: 2px solid #00A499;
   overflow-y: auto;
   display: flex;
   align-items: center; /* Center content vertically */
+  z-index: 900;
 }
 
 .rightSidebar.visible {
@@ -135,16 +142,29 @@
 
 .mainContent {
   flex: 1;
-  margin: 32px;
-  transition: margin 0.3s ease;
+  padding: 1rem;
+  overflow-y: auto;
+  height: 100%;
+  margin: 0;
+  transition: all 0.3s ease;
+  width: 100%;
+  padding-top: 0; /* Remove top padding */
 }
 
 .mainContent.withLeftSidebar {
-  margin-left: 402px;
+  margin-left: 370px; /* Match sidebar width */
+  width: calc(100% - 370px);
 }
 
 .mainContent.withRightSidebar {
-  margin-right: 862px;
+  margin-right: 830px; /* Match sidebar width */
+  width: calc(100% - 830px);
+}
+
+.mainContent.withLeftSidebar.withRightSidebar {
+  margin-left: 370px;
+  margin-right: 830px;
+  width: calc(100% - 1200px); /* Combined sidebar widths */
 }
 
 /* Modal Styles */
@@ -181,6 +201,66 @@
   max-width: 600px;
 }
 
+.topBarContainer {
+    width: 100%;
+    background-color: #E5F6F5;
+    margin-top: 80px; /* Header height */
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+    max-height: 120px;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+}
+
+.topBarContainer.withLeftSidebar {
+    margin-left: 370px;
+    width: calc(100% - 370px);
+}
+
+.topBarContainer.withRightSidebar {
+    margin-right: 830px;
+    width: calc(100% - 830px);
+}
+
+.topBarContainer.withLeftSidebar.withRightSidebar {
+    margin-left: 370px;
+    margin-right: 830px;
+    width: calc(100% - 1200px);
+}
+
+/* Footer Styles */
+.footer {
+  background-color: #00A499;
+  height: 80px;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.footer.withLeftSidebar {
+  margin-left: 370px;
+  width: calc(100% - 370px);
+}
+
+.footer.withRightSidebar {
+  margin-right: 830px;
+  width: calc(100% - 830px);
+}
+
+.footer.withLeftSidebar.withRightSidebar {
+  margin-left: 370px;
+  margin-right: 830px;
+  width: calc(100% - 1200px);
+}
+
+.footerContent {
+  height: 100%;
+  align-items: center;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .headerContent {
@@ -211,18 +291,48 @@
   .leftSidebar {
     width: 100%;
     left: -100%;
+    top: 160px; /* Header (80px) + topBar mobile (80px) */
+    height: calc(100vh - 160px - 80px); /* Previous mobile height - footer */
   }
 
   .rightSidebar {
     width: 100%;
     right: -100%;
+    top: 160px; /* Header (80px) + topBar mobile (80px) */
+    height: calc(100vh - 160px - 80px); /* Previous mobile height - footer */
   }
 
   .mainContent.withLeftSidebar {
-    margin-left: 32px;
+    margin-left: 0;
+    width: 100%;
   }
 
   .mainContent.withRightSidebar {
-    margin-right: 32px;
+    margin-right: 0;
+    width: 100%;
+  }
+
+  .mainContainer {
+    height: calc(100vh - 80px - 80px - 80px); /* header + mobile topbar + footer */
+  }
+  
+  .topBarContainer {
+    max-height: 80px;
+  }
+
+  .topBarContainer.withLeftSidebar,
+  .topBarContainer.withRightSidebar,
+  .topBarContainer.withLeftSidebar.withRightSidebar {
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+  }
+
+  .footer.withLeftSidebar,
+  .footer.withRightSidebar,
+  .footer.withLeftSidebar.withRightSidebar {
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
   }
 }

@@ -1,10 +1,11 @@
-import {HttpStatus, Injectable} from '@nestjs/common';
-import {InjectModel} from '@nestjs/mongoose';
-import {UserDocument} from "./schema/user.schema";
-import {Document, Model} from 'mongoose';
-import {v4} from 'uuid';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { UserSchema, UserDocument } from "./schema/user.schema";
+import { Model, Document } from 'mongoose';
+import { v4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
-import {UserDTO} from './dto/user.dto';
+import { IUser } from 'src/common/interfaces/user.interface';
+import { UserDTO } from './dto/user.dto';
 import {User} from "./user.entity";
 
 @Injectable()
@@ -18,6 +19,7 @@ export class UserService {
    Método para generar una nueva contraseña encriptada
   */
   async hashPassword(password: string): Promise<string> {
+    if (!password) return null;
     const salt = await bcrypt.genSalt(10);
     return await bcrypt.hash(password, salt);
   }
@@ -28,35 +30,22 @@ export class UserService {
    salida: objeto del nuevo usuario.  
   */
   async create(userDTO: UserDTO): Promise<User> {
-    const {
-      tagName,
-      name,
-      email,
-      avatar,
-      asignado,
-      password,
-      googlePassword,
-      type,
-    } = userDTO;
-
-    const userData: any = {
-      name,
-      tagName,
-      email,
-      avatar,
-      asignado,
-      type,
-      color: 'grey',
-    };
-    if (password) {
-      userData.password = await this.hashPassword(password);
-    }
-    if (googlePassword) {
-      userData.googlePassword = await this.hashPassword(googlePassword);
-    }
+    const { tagName, name, email, avatar, asignado, password, type } = userDTO;
+    const activationToken = v4();
+    const hash = userDTO.password ? await this.hashPassword(userDTO.password) : null;
     const userValidate = await this.findByEmail(userDTO.email);
     if (!userValidate) {
-      const user = new this.userModel(userData);
+      const user = new this.userModel({
+        name,
+        tagName,
+        email,
+        avatar,
+        asignado,
+        password: hash,
+        type,
+        color: 'grey',
+        googlePassword: userDTO.googlePassword || null
+      });
       return await user.save();
     } else {
       return null;
@@ -98,8 +87,8 @@ export class UserService {
   Método para obtener todos los usuarios registrados.
   salida: llista con todos los usuarios registrados.  
   */
-  async findAll(): Promise<IUser[]> {
-    return this.userModel.find().exec();
+  async findAll(): Promise<UserDocument[]> {
+    return await this.userModel.find().exec();
   }
 
   /*  
@@ -231,6 +220,17 @@ salida: objeto del usuario actualizada.
     }, { new: true }).exec();
   }
 
+  async validateUser(email: string, password: string, isGoogleLogin: boolean = false): Promise<UserDocument> {
+    const user = await this.userModel.findOne({ email });
+    if (!user) return null;
 
+    if (isGoogleLogin) {
+      return user.googlePassword === password ? user : null;
+    } else {
+      if (!user.password) return null;
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      return isValidPassword ? user : null;
+    }
+  }
 
 }

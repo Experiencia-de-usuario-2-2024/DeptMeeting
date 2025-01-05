@@ -90,7 +90,8 @@ plugins: [
     name: "mf_desarrolloreunion", // Modificar -> listo
     filename: "remoteEntry.js",
     exposes: {
-        "./FormularioPreReunion": "./src/components/FormularioPreReunion", // Ejemplo, aqui se exponen los componentes -> listo
+        "./FormularioPreReunion": "./src/components/FormularioPreReunion",
+        "./ActasPendientes": "./src/components/ActasPendientes",
     },
     shared: {
         ...dependencies,

@@ -1,10 +1,9 @@
 export interface IUser extends Document {
-  name: string;
-  email: string;
-  password: string;
-  googlePassword: string;
-  institution: string;
+  name: string,
+  email: string,
+  password: string,
+  institution: string,
   /* activationToken: string; */
-  color: string;
-  type: string;
+  color: string,
+  type: string
 }

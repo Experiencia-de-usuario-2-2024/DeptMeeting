@@ -11,4 +11,4 @@ export enum RabbitMQ {
     VALID_USER = 'VALID_USER',
     UPDATE_CURRENT = 'UPDATE_CURRENT_USER'
   }
-
+  
