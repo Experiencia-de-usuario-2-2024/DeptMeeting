@@ -132,4 +132,9 @@ export class MeetingMinuteService {
         };
     }
 
+  async obtenerTemasPorId(ids: string[]) {
+    const topics = await this.modelTopic.find({ _id: { $in: ids } }).lean();
+    return ids.map(id => topics.find(topic => topic._id.toString() === id));
+  }
+
 }

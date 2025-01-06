@@ -99,5 +99,10 @@ export class MeetingMinuteController {
         return this.meetingMinuteService.borrarTema(id);
     }
 
+    @MessagePattern(MeetingMinuteMSG.GET_TOPICS_BY_ID)
+    obtenerTemasPorId(@Payload() id: string[]) {
+        return this.meetingMinuteService.obtenerTemasPorId(id);
+    }
+
 
 }
