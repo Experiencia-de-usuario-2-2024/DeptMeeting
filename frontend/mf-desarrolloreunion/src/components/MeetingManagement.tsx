@@ -40,22 +40,6 @@ const MeetingManagement = () => {
         return <div>Error: {error}</div>;
     }
 
-    const contentStyles = xcss({
-        padding: 'space.200',
-        width: '600px',
-        // height: '200px',
-
-    });
-
-    const InlineDialog = styled(TooltipPrimitive)({
-        background: 'white',
-        width: '600px',
-        borderRadius: token('border.radius', '4px'),
-        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-        boxSizing: 'content-box',
-        padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
-    });
-
     return (
         <div>
             <MeetingLayout/>

@@ -37,6 +37,7 @@ import FormularioEnReunion from "./FormularioEnReunion";
 import MessagesInput from "./MessageInput";
 import Messages from "./Messages";
 import actaDialogicaFinal from "./ActaDialogicaFinal";
+import Topic from "./DeptMeeting/Topic";
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
@@ -1561,22 +1562,10 @@ const FormularioPreReunion: React.FC = () => {
                     {/* Se comenta debido a solicitud de profesor guia: No es necesario mostrar el titulo de la seccion considerando que se tiene "ProgressTracker"*/}
                     {/* <h1 style={{ textAlign: 'center', fontSize: '60px' }}>Pre-reunión</h1> */}
                     {/* <h3 style={{ textAlign: 'center', marginLeft: '20px', marginRight: '20px'}}>Importante: Si recarga la página o la abandona, se perderá la información previamente ingresada en el formulario, por lo que deberá comenzar nuevamente. Los datos serán guardados una vez se presione el botón "Finalizar Pre-reunión"</h3> */}
-                    <Tooltip
-                        component={InlineDialog}
-                        // informacion del proyecto
-                        content={() =>
-                            <>
-                                <p style={{ textAlign: 'center', marginLeft: '20px', marginRight: '20px' }}>Si recarga la página o la abandona, se perderá la información previamente ingresada en el formulario, por lo que deberá comenzar nuevamente. Los datos serán guardados una vez se presione el botón "Finalizar Pre-reunión"</p>
-                            </>
-                        }
-                    >
-                        {(tooltipProps) => (
-                            <>
-                                <br />
                                 {/* <Button iconBefore={<WarningIcon label="" size="large" />} appearance="warning" style={{ height: "100%", width: "170px" }} {...tooltipProps}> IMPORTANTE </Button> */}
                                 {/* <ProgressTracker items={items} /> */}
                                 {/* PARTE FIJA DEL MICROFRONTEND: AVATAR GROUP, CHAT y BARRA DE PROGRESO DE LA REUNION */}
-                                <div style={{position: "fixed", top: 96, width: "100%", zIndex:10}}>
+                                <div style={{position: "fixed", top: 80, width: "100%", zIndex:10}}>
                                     <Inline>
                                         {/* CONTENIDO DE LA IZQUIERDA: fotos de los participantes de la reunion y boton que da acceso al chat */}
                                         {/* <div style={{textAlign: "left", height: '100px', width: '450px', backgroundColor: 'white'}}> */}
@@ -1658,10 +1647,6 @@ const FormularioPreReunion: React.FC = () => {
                                     </Inline>
                                 </div>
 
-                            </>
-                        )}
-                    </Tooltip>
-
                     {/* <ProgressTracker items={items} /> */}
 
                     {/* ACTUALIZACION: ESTO YA NO ES ASI Y CUALQUIER USUARIO PUEDE COMPLETAR EL FORMULARIO DE PRE-REUNION */}
@@ -1685,6 +1670,11 @@ const FormularioPreReunion: React.FC = () => {
                                         <br/>
                                         <br/>
                                         <br/>
+                                        <br/>
+                                        <br/>
+                                        <br/>
+                                        <br/>
+
                                         <Inline space="space.500" alignInline="center" shouldWrap>
                                             <FechaInicio/>
                                             <FechaTermino/>
@@ -1720,7 +1710,7 @@ const FormularioPreReunion: React.FC = () => {
                             </Form>
 
                             {!iniciarFormulario && <>
-                                <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br /></>}
+                            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br /></>}
 
                             {/* me aseguro que el usuario presione el boton antes de continuar */}
                             {iniciarFormulario ? (
@@ -1740,7 +1730,7 @@ const FormularioPreReunion: React.FC = () => {
                                     {/* FORMULARIO SEGUNDA PARTE: añadir los temas que se abordaran en la reunion */}
                                     <div>
                                         {listaTemas.map((tema, index) => (
-                                            <h3 style={{marginLeft:'20px'}} key={index}> {index + 1}. {tema}</h3>
+                                            <Topic topic={} index={index+1}></Topic>
                                         ))}
                                     </div>
                                     <FormFooter>
@@ -1848,25 +1838,24 @@ const FormularioPreReunion: React.FC = () => {
             <ModalTransition>
                 {isOpenTemas && (
                     <Modal onClose={closeModalTemas} shouldScrollInViewport>
-
                         <Form<{ username: string }>
                             onSubmit={(data) => {
                                 // console.log('form data', data);
                                 return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
-                                    data.username === 'error' ? { username: 'IN_USE' } : undefined,
+                                    data.username === 'error' ? {username: 'IN_USE'} : undefined,
                                 );
                             }}
                         >
                             {/* <form> */}
-                            {({ formProps, submitting }) => (
-                                <form {...formProps}>
+                            {({formProps, submitting}) => (
 
+                                <form {...formProps} >
 
                                     <ModalHeader>
                                         <ModalTitle>Añadir Tema</ModalTitle>
                                     </ModalHeader>
                                     <ModalBody>
-                                        <Temas />
+                                        <Temas/>
                                     </ModalBody>
 
                                     <ModalFooter>

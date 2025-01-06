@@ -57,6 +57,28 @@ class MeetingMinuteServices {
     }
   }
 
+  async updateTopic(idTopic: string, topicDTO: any) {
+    try {
+      const response = await httpClient.put(`/meeting-minute/topic/${idTopic}`, topicDTO);
+      console.log("Tema actualizado: ", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error al actualizar el tema", error);
+      throw error;
+    }
+  }
+
+  async deleteTopic(idTopic: string){
+    try {
+      const response = await httpClient.delete(`/meeting-minute/topic/${idTopic}`)
+      console.log("Tema eliminado: ", response.data);
+      return response.data;
+    } catch (error){
+      console.log("Error al eliminar el tema:", error);
+      throw error;
+    }
+  }
+
   async getTopicsInMeetingMinuteByIds(idsTopics: string[]) {
     try {
       const response = await httpClient.post(`/meeting-minute/get/topics/byIds`, idsTopics);
