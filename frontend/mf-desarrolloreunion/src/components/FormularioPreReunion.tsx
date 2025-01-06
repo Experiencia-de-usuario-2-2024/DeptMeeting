@@ -38,6 +38,7 @@ import MessagesInput from "./MessageInput";
 import Messages from "./Messages";
 import actaDialogicaFinal from "./ActaDialogicaFinal";
 import Topic from "./DeptMeeting/Topic";
+import meetingMinuteServices from "../services/meeting-minute.services";
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
@@ -380,6 +381,7 @@ const FormularioPreReunion: React.FC = () => {
         });
     }
 
+    const [deptTopics, setDeptTopics] = useState<any[]>();
 
     useEffect(() => {
 
@@ -626,6 +628,9 @@ const FormularioPreReunion: React.FC = () => {
                     if (!localStorage.getItem('idMeetingMinute')) {
                         localStorage.setItem('idMeetingMinute', response.data._id);
                     }
+                    const newTopics = await meetingMinuteServices.getTopicsInMeetingMinuteByIds(response.data.topics);
+                    console.log("Nuevos topicos:", newTopics);
+                    setDeptTopics(newTopics);
                 }
             } catch (error) {
                 console.log("ERROR AL OBTENER LA INFORMACION DEL ACTA DIALOGICA");
@@ -1730,7 +1735,7 @@ const FormularioPreReunion: React.FC = () => {
                                     {/* FORMULARIO SEGUNDA PARTE: añadir los temas que se abordaran en la reunion */}
                                     <div>
                                         {listaTemas.map((tema, index) => (
-                                            <Topic topic={} index={index+1}></Topic>
+                                            <Topic topic={tema} index={index}/>
                                         ))}
                                     </div>
                                     <FormFooter>
