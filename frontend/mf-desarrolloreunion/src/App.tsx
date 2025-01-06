@@ -10,14 +10,12 @@ import MeetingManagement from "./components/MeetingManagement";
 function App() {
   return (
 
-      /*
-      <div className="App">
+
       <FormularioPreReunion />
-    </div>
-      */
-    <MeetingManagementProvider>
-        <MeetingManagement />
-    </MeetingManagementProvider>
+
+    //<MeetingManagementProvider>
+      //  <MeetingManagement />
+    //</MeetingManagementProvider>
 
 
   );

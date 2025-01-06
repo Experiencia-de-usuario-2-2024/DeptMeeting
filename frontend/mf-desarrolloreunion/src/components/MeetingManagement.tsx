@@ -58,7 +58,7 @@ const MeetingManagement = () => {
 
     return (
         <div>
-            <MeetingLayout />
+            <MeetingLayout/>
             <h1>Acta de la reunión {reunion?.name}</h1>
             <h2>Proyecto: {proyecto?.name}</h2>
             <h3>Fecha: {reunion?.date}</h3>
