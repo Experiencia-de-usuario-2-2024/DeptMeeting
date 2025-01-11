@@ -1,6 +1,6 @@
 @echo off
 REM Definir variables para las rutas comunes
-set BASE_PATH=D:\UX\DeptMeeting\frontend
+set BASE_PATH=C:\Users\Alexa\Desktop\Proyecto_ux\DeptMeeting\frontend
 
 REM Array de directorios de microfrontends
 set MF_DIRS=front-principal mf-desarrolloreunion mf-home mf-informacion mf-login mf-perfil mf-proyectos
