@@ -66,7 +66,7 @@ const ActasPendientes: React.FC = () => {
 
                 const actasNoAprobadas = response.data.map((acta: any) => ({
                     id: acta._id,
-                    name: `Acta ${acta.number}`,
+                    name: `Acta ${acta._id}`,
                     isApproved: acta.isApproved,
                 }));
 
