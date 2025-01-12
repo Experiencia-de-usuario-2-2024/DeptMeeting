@@ -45,7 +45,7 @@ const actaStyles = xcss({
 interface ActaPendiente {
     id: string;
     name: string;
-    status: string;
+    isApproved: boolean;
 }
 
 const ActasPendientes: React.FC = () => {
@@ -53,39 +53,41 @@ const ActasPendientes: React.FC = () => {
     const tokenUser = localStorage.getItem("tokenUser");
 
     useEffect(() => {
-        const fetchActasFinalizadas = async () => {
+        const fetchActasPendientes = async () => {
             try {
                 const response = await axios.get(
-                    `${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/finalized`,
+                    `${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/notapproved`,
                     {
                         headers: {
                             Authorization: `Bearer ${tokenUser}`,
                         },
                     }
                 );
-                const actasFinalizadas = response.data.map((acta: any) => ({
+
+                const actasNoAprobadas = response.data.map((acta: any) => ({
                     id: acta._id,
                     name: `Acta ${acta.number}`,
-                    status: "Finalizada",
+                    isApproved: acta.isApproved,
                 }));
-                setActas(actasFinalizadas);
+
+                setActas(actasNoAprobadas);
             } catch (error) {
-                console.error("Error al obtener las actas finalizadas:", error);
+                console.error("Error al obtener las actas pendientes:", error);
             }
         };
 
-        fetchActasFinalizadas();
+        fetchActasPendientes();
     }, [tokenUser]);
 
     const seleccionarActa = (actaId: string) => {
         console.log(`Acta seleccionada: ${actaId}`);
-        // Aquí puedes redirigir o mostrar detalles del acta seleccionada
+        // Aquí puedes redirigir o mostrar detalles del acta seleccionada (ej. un modal)
     };
 
     return (
         <Box xcss={containerStyles} as="div">
             <h3 style={{ fontWeight: "bold", color: "black", margin: 0 }}>
-                Actas Finalizadas
+                Actas No Aprobadas
             </h3>
             <Box xcss={actasContainerStyles} as="div">
                 {actas.map((acta) => (
@@ -96,6 +98,7 @@ const ActasPendientes: React.FC = () => {
                     >
                         {acta.name}
                         <Box>
+                            {/* Ajusta el label si deseas "Ver acta" o "Editar acta" */}
                             <EditIcon label="Ver acta" size="medium" />
                         </Box>
                     </Box>
