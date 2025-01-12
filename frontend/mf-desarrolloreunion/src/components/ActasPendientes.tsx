@@ -2,6 +2,8 @@ import React, {useEffect, useState} from "react";
 import { Box, xcss } from "@atlaskit/primitives";
 import EditIcon from "@atlaskit/icon/glyph/edit"; // Ícono de edición
 import axios from "axios";
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader } from "@atlaskit/modal-dialog";
+import Button from "@atlaskit/button";
 
 // Estilos para el contenedor principal de las actas
 const containerStyles = xcss({
@@ -50,6 +52,8 @@ interface ActaPendiente {
 
 const ActasPendientes: React.FC = () => {
     const [actas, setActas] = useState<ActaPendiente[]>([]);
+    const [actaSeleccionada, setActaSeleccionada] = useState<ActaPendiente | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const tokenUser = localStorage.getItem("tokenUser");
 
     useEffect(() => {
@@ -66,7 +70,7 @@ const ActasPendientes: React.FC = () => {
 
                 const actasNoAprobadas = response.data.map((acta: any) => ({
                     id: acta._id,
-                    name: `Acta ${acta._id}`,
+                    name: `Acta ${acta.title}`,
                     isApproved: acta.isApproved,
                 }));
 
@@ -79,10 +83,21 @@ const ActasPendientes: React.FC = () => {
         fetchActasPendientes();
     }, [tokenUser]);
 
-    const seleccionarActa = (actaId: string) => {
+    const seleccionarActa = (acta: ActaPendiente) => {
+        setActaSeleccionada(acta);
+        setIsModalOpen(true);
+    };
+
+    const cerrarModal = () => {
+        setIsModalOpen(false);
+        setActaSeleccionada(null);
+    };
+
+
+   /* const seleccionarActa = (actaId: string) => {
         console.log(`Acta seleccionada: ${actaId}`);
         // Aquí puedes redirigir o mostrar detalles del acta seleccionada (ej. un modal)
-    };
+    };*/
 
     return (
         <Box xcss={containerStyles} as="div">
@@ -95,7 +110,7 @@ const ActasPendientes: React.FC = () => {
                         <Box
                             xcss={actaStyles}
                             key={acta.id}
-                            onClick={() => seleccionarActa(acta.id)}
+                            onClick={() => seleccionarActa(acta)}
                         >
                             {acta.name}
                             <Box>
@@ -109,6 +124,24 @@ const ActasPendientes: React.FC = () => {
                     </Box>
                 )}
             </Box>
+            {/* Modal para visualizar el acta */}
+            {isModalOpen && actaSeleccionada && (
+                <ModalDialog onClose={cerrarModal}>
+                    <ModalHeader>
+                        <h4>{actaSeleccionada.name}</h4>
+                    </ModalHeader>
+                    <ModalBody>
+                        <p>
+                            <strong>Estado:</strong> {actaSeleccionada.isApproved ? "Aprobada" : "No Aprobada"}
+                        </p>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button appearance="primary" onClick={cerrarModal}>
+                            Cerrar
+                        </Button>
+                    </ModalFooter>
+                </ModalDialog>
+            )}
         </Box>
     );
 };
