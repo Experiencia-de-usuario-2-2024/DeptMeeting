@@ -56,7 +56,7 @@ const ActasPendientes: React.FC = () => {
         const fetchActasPendientes = async () => {
             try {
                 const response = await axios.get(
-                    `${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/notapproved`,
+                    `${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/all/notapproved`,
                     {
                         headers: {
                             Authorization: `Bearer ${tokenUser}`,

@@ -268,7 +268,7 @@ export class MeetingMinuteController {
         return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.VOTE, params);
     }
 
-    @Get('/notapproved')
+    @Get('/all/notapproved')
     @ApiOperation({ summary: 'Obtener actas dialogicas no aprobadas' })
     getMeetingMinutesNotApproved() {
         return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.GET_MEEETING_MINUTES_NOT_APPROVED, '');

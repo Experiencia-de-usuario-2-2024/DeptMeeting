@@ -154,6 +154,6 @@ export class MeetingMinuteService {
   }
 
   async obtenerActasNoAprobadas() {
-    return await this.model.find({ isApproved: false });
+    return await this.model.find({ isApproved: false }).exec();
   }
 }
