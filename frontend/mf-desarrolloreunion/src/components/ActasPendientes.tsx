@@ -1,6 +1,7 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Box, xcss } from "@atlaskit/primitives";
 import EditIcon from "@atlaskit/icon/glyph/edit"; // Ícono de edición
+import axios from "axios";
 
 // Estilos para el contenedor principal de las actas
 const containerStyles = xcss({
@@ -48,6 +49,65 @@ interface ActaPendiente {
 }
 
 const ActasPendientes: React.FC = () => {
+    const [actas, setActas] = useState<ActaPendiente[]>([]);
+    const tokenUser = localStorage.getItem("tokenUser");
+
+    useEffect(() => {
+        const fetchActasFinalizadas = async () => {
+            try {
+                const response = await axios.get(
+                    `${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/finalized`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${tokenUser}`,
+                        },
+                    }
+                );
+                const actasFinalizadas = response.data.map((acta: any) => ({
+                    id: acta._id,
+                    name: `Acta ${acta.number}`,
+                    status: "Finalizada",
+                }));
+                setActas(actasFinalizadas);
+            } catch (error) {
+                console.error("Error al obtener las actas finalizadas:", error);
+            }
+        };
+
+        fetchActasFinalizadas();
+    }, [tokenUser]);
+
+    const seleccionarActa = (actaId: string) => {
+        console.log(`Acta seleccionada: ${actaId}`);
+        // Aquí puedes redirigir o mostrar detalles del acta seleccionada
+    };
+
+    return (
+        <Box xcss={containerStyles} as="div">
+            <h3 style={{ fontWeight: "bold", color: "black", margin: 0 }}>
+                Actas Finalizadas
+            </h3>
+            <Box xcss={actasContainerStyles} as="div">
+                {actas.map((acta) => (
+                    <Box
+                        xcss={actaStyles}
+                        key={acta.id}
+                        onClick={() => seleccionarActa(acta.id)}
+                    >
+                        {acta.name}
+                        <Box>
+                            <EditIcon label="Ver acta" size="medium" />
+                        </Box>
+                    </Box>
+                ))}
+            </Box>
+        </Box>
+    );
+};
+
+export default ActasPendientes;
+
+/*const ActasPendientes: React.FC = () => {
     const actas: ActaPendiente[] = [
         { id: "8", name: "Acta 8", status: "Pendiente" },
         { id: "14", name: "Acta 14", status: "Pendiente" },
@@ -82,4 +142,4 @@ const ActasPendientes: React.FC = () => {
     );
 };
 
-export default ActasPendientes;
+export default ActasPendientes;*/

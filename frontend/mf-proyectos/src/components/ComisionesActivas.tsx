@@ -1,6 +1,7 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Box, xcss } from "@atlaskit/primitives";
-import WarningIcon from "@atlaskit/icon/glyph/warning"; // Ícono adicional para ejemplo
+import InfoIcon from "@atlaskit/icon/glyph/info";
+import axios from "axios";
 
 // Estilos para el contenedor principal de las comisiones
 const containerStyles = xcss({
@@ -43,10 +44,63 @@ const comisionStyles = xcss({
 interface ComisionActiva {
     id: string;
     name: string;
-    status: string;
+    description: string;
+    createdAt: string;
 }
-
 const ComisionesActivas: React.FC = () => {
+    const [comisiones, setComisiones] = useState<ComisionActiva[]>([]);
+    const tokenUser = localStorage.getItem("tokenUser");
+
+    useEffect(() => {
+        const fetchComisionesActivas = async () => {
+            try {
+                const response = await axios.get(
+                    `${process.env.REACT_APP_BACKEND_GATEWAY}/api/comisiones/activas`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${tokenUser}`,
+                        },
+                    }
+                );
+                setComisiones(response.data);
+            } catch (error) {
+                console.error("Error al obtener las comisiones activas:", error);
+            }
+        };
+
+        fetchComisionesActivas();
+    }, [tokenUser]);
+
+    const seleccionarComision = (comisionId: string) => {
+        console.log(`Comisión seleccionada: ${comisionId}`);
+        // Aquí puedes redirigir o mostrar detalles de la comisión seleccionada
+    };
+
+    return (
+        <Box xcss={containerStyles} as="div">
+            <h3 style={{ fontWeight: "bold", color: "black", margin: 0 }}>
+                Comisiones Activas
+            </h3>
+            <Box xcss={comisionesContainerStyles} as="div">
+                {comisiones.map((comision) => (
+                    <Box
+                        xcss={comisionStyles}
+                        key={comision.id}
+                        onClick={() => seleccionarComision(comision.id)}
+                    >
+                        {comision.name}
+                        <Box>
+                            <InfoIcon label="Información" size="medium" />
+                        </Box>
+                    </Box>
+                ))}
+            </Box>
+        </Box>
+    );
+};
+
+export default ComisionesActivas;
+/*const ComisionesActivas: React.FC = () => {
     const comisiones: ComisionActiva[] = [
         { id: "1", name: "Comisión 1", status: "Activa" },
         { id: "2", name: "Comisión 2", status: "Activa" },
@@ -60,11 +114,11 @@ const ComisionesActivas: React.FC = () => {
 
     return (
         <Box xcss={containerStyles} as="div">
-            {/* Título */}
+
             <h3 style={{ fontWeight: "bold", color: "black", margin: 0 }}>
                 Comisiones Activas
             </h3>
-            {/* Lista de Comisiones */}
+
             <Box xcss={comisionesContainerStyles} as="div">
                 {comisiones.map((comision) => (
                     <Box
@@ -74,7 +128,7 @@ const ComisionesActivas: React.FC = () => {
                     >
                         {comision.name}
                         <Box>
-                        {/* Opcional: Ícono de advertencia */}
+
                         <WarningIcon label="Advertencia" size="small"  />
                         </Box>
                     </Box>
@@ -84,4 +138,4 @@ const ComisionesActivas: React.FC = () => {
     );
 };
 
-export default ComisionesActivas;
+export default ComisionesActivas;*/
