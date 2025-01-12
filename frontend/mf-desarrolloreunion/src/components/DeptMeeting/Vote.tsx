@@ -24,8 +24,6 @@ interface VoteELementProps {
     };
 }
 
-
-
 const Vote: React.FC<{voteElement: VoteELementProps}> = ( {voteElement }) => {
     const [options, setOptions] = useState<string[]>([]);
     const [votes, setVotes] = useState<number[]>(Array(options.length).fill(0));

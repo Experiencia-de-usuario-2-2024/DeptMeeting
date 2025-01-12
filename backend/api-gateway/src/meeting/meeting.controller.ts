@@ -180,5 +180,5 @@ export class MeetingController {
   countUsers(@Req() req: any) {
     return this._clientProxyMeeting.send('countmeetings', '');
   }
-
+  validate={(value) => (!value || value.length === 0 ? 'Seleccione al menos un miembro' : undefined)}
 }

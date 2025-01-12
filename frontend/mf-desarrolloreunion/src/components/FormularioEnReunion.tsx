@@ -56,6 +56,7 @@ import i__DudaBlanco from "../assets/static/i__DudaBlanco.png";
 import i__TextoLibre from "../assets/static/i__TextoLibre.png";
 import i__TextoLibreBlanco from "../assets/static/i__TextoLibreBlanco.png";
 import i__VotacionBlanco from "../assets/static/i__VotacionBlanco.png";
+import i__ComisionBlanco from "../assets/static/i__ComisionBlanco.png";
 import TextField from "@atlaskit/textfield";
 import Vote from "./DeptMeeting/Vote";
 import FreeText from "./DeptMeeting/FreeText";
@@ -65,6 +66,7 @@ import Disagreement from "./DeptMeeting/Disagreement";
 import Doubt from "./DeptMeeting/Doubt";
 import meetingMinuteServices from "../services/meeting-minute.services";
 import elementServices from "../services/element.services";
+import ComissionForm from "./DeptMeeting/ComissionForm";
 
 
 var listaEstudiantes: string[] = [];
@@ -1014,6 +1016,10 @@ const FormularioEnReunion: React.FC = () => {
     const openModalVote = useCallback(() => setIsOpenVote(true), []);
     const closeModalVote = useCallback(() => setIsOpenVote(false), []);
 
+    const [isOpenComission, setIsOpenComission] = useState(false);
+    const openModalComission = useCallback(() => setIsOpenComission(true), []);
+    const closeModalComission = useCallback(() => setIsOpenComission(false), []);
+
     // **************************************************************************************************************************************************************************************** //
     // **************************************************************************************************************************************************************************************** //
     // **************************************************************************************************************************************************************************************** //
@@ -1884,10 +1890,6 @@ const FormularioEnReunion: React.FC = () => {
     }
 
 
-
-
-
-
 // Contenido que se muestra 
 return (
     <div>
@@ -2353,6 +2355,23 @@ return (
                                                         </div>
                                                     </Inline>
                                                 </Button>
+
+                                                <Button appearance="primary" onClick={() => {
+                                                    openModalComission();
+                                                    setIdTopic(topic._id);
+                                                }} style={{height: '60px'}}>
+                                                    <Inline alignInline="center">
+                                                        <Image src={i__ComisionBlanco} alt="Simple example"
+                                                               testId="image" style={{
+                                                            width: '48px',
+                                                            height: '48px',
+                                                            marginTop: '7px'
+                                                        }}/>
+                                                        <div
+                                                            style={{marginTop: '11.72px', marginLeft: '7px'}}>Comisión
+                                                        </div>
+                                                    </Inline>
+                                                </Button>
                                             </Inline>
                                         </div>
                                         <hr/>
@@ -2475,9 +2494,9 @@ return (
                                 label="Encargado/a del compromiso"
                                 isRequired
                             >
-                                {({ fieldProps, error, valid }) => 
+                                {({ fieldProps, error, valid }) =>
                                 (
-                                
+
                                     <Select
                                         {...fieldProps}
                                         // isMulti --> los compromisos solo tienen un responsable
@@ -2536,12 +2555,12 @@ return (
                                         timeFormat="HH:mm"
                                         timeIsEditable={true}
                                         datePickerProps={{ weekStartDay: 1 }}
-                                        datePickerSelectProps={{ 
+                                        datePickerSelectProps={{
                                             placeholder: new Date().toLocaleDateString("es-CL"),
                                             validationState,
                                             inputId: id
                                         }} //REVISAR ESTO
-                                        
+
                                         timePickerSelectProps={{
                                             placeholder: new Date().toLocaleTimeString("es-CL", { hour: '2-digit', minute: '2-digit' }),
                                             validationState,
@@ -3194,7 +3213,14 @@ return (
                 )}
             </ModalTransition>
 
-            
+        {/* ********************************************************************************************************************************************************** */}
+        {/* ******************************************************************** Modal dialog de Comission ************************************************************ */}
+        {/* ********************************************************************************************************************************************************** */}
+            {isOpenComission && (
+                <ComissionForm participants={meetingminute?.participants} closeModal={closeModalComission}/>
+            )}
+
+
             {/* ********************************************************************************************************************************************************** */}
             {/* ******************************************************************** Modal dialog para mostrar informacion de la reunion ********************************* */}
             {/* ********************************************************************************************************************************************************** */}
