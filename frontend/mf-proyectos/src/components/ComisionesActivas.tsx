@@ -82,22 +82,29 @@ const ComisionesActivas: React.FC = () => {
                 Comisiones Activas
             </h3>
             <Box xcss={comisionesContainerStyles} as="div">
-                {comisiones.map((comision) => (
-                    <Box
-                        xcss={comisionStyles}
-                        key={comision.id}
-                        onClick={() => seleccionarComision(comision.id)}
-                    >
-                        {comision.name}
-                        <Box>
-                            <InfoIcon label="Información" size="medium" />
+                {comisiones.length > 0 ? (
+                    comisiones.map((comision) => (
+                        <Box
+                            xcss={comisionStyles}
+                            key={comision.id}
+                            onClick={() => seleccionarComision(comision.id)}
+                        >
+                            {comision.name}
+                            <Box>
+                                <InfoIcon label="Información" size="medium" />
+                            </Box>
                         </Box>
+                    ))
+                ) : (
+                    <Box xcss={comisionStyles}>
+                        No hay comisiones activas
                     </Box>
-                ))}
+                )}
             </Box>
         </Box>
     );
 };
+
 
 export default ComisionesActivas;
 /*const ComisionesActivas: React.FC = () => {

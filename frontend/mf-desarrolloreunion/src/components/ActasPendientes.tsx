@@ -90,24 +90,28 @@ const ActasPendientes: React.FC = () => {
                 Actas No Aprobadas
             </h3>
             <Box xcss={actasContainerStyles} as="div">
-                {actas.map((acta) => (
-                    <Box
-                        xcss={actaStyles}
-                        key={acta.id}
-                        onClick={() => seleccionarActa(acta.id)}
-                    >
-                        {acta.name}
-                        <Box>
-                            {/* Ajusta el label si deseas "Ver acta" o "Editar acta" */}
-                            <EditIcon label="Ver acta" size="medium" />
+                {actas.length > 0 ? (
+                    actas.map((acta) => (
+                        <Box
+                            xcss={actaStyles}
+                            key={acta.id}
+                            onClick={() => seleccionarActa(acta.id)}
+                        >
+                            {acta.name}
+                            <Box>
+                                <EditIcon label="Ver acta" size="medium" />
+                            </Box>
                         </Box>
+                    ))
+                ) : (
+                    <Box xcss={actaStyles}>
+                        No hay actas pendientes
                     </Box>
-                ))}
+                )}
             </Box>
         </Box>
     );
 };
-
 export default ActasPendientes;
 
 /*const ActasPendientes: React.FC = () => {
