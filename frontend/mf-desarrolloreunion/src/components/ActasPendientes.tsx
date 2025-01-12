@@ -8,11 +8,11 @@ const containerStyles = xcss({
     display: "flex",
     justifyContent: "space-between", // El texto queda a la izquierda y las comisiones a la derecha
     alignItems: "center",
-    backgroundColor: "#CCE0FF", // Color personalizado
+    backgroundColor: "#E6F6F4", // Color personalizado
     paddingBlock: "space.200",
     paddingInline: "space.300",
     border: "1px solid",
-    borderColor: "color.border.accent.blue",
+    borderColor: "#00A499",
 });
 
 
@@ -25,7 +25,7 @@ const actasContainerStyles = xcss({
 
 // Estilos individuales de cada acta
 const actaStyles = xcss({
-    color: "color.text.accent.blue.bolder",
+    color: "#00A499",
     backgroundColor: "elevation.surface",
     borderRadius: "border.radius.200",
     boxShadow: "elevation.shadow.overlay",
