@@ -3,6 +3,8 @@ export interface IMeetingMinute extends Document {
     place: string;
     startTime: string;
     endTime: string;
+    vote: string;
+    isApproved: boolean;
     topics: any;
     links: any;
     meeting: any;

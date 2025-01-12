@@ -55,6 +55,7 @@ import i__DudaBlanco from "../assets/static/i__DudaBlanco.png";
 
 import i__TextoLibre from "../assets/static/i__TextoLibre.png";
 import i__TextoLibreBlanco from "../assets/static/i__TextoLibreBlanco.png";
+import i__VotacionBlanco from "../assets/static/i__VotacionBlanco.png";
 import TextField from "@atlaskit/textfield";
 import Vote from "./DeptMeeting/Vote";
 import FreeText from "./DeptMeeting/FreeText";
@@ -62,6 +63,8 @@ import Commitment from "./DeptMeeting/Commitment";
 import Agreement from "./DeptMeeting/Agreement";
 import Disagreement from "./DeptMeeting/Disagreement";
 import Doubt from "./DeptMeeting/Doubt";
+import meetingMinuteServices from "../services/meeting-minute.services";
+import elementServices from "../services/element.services";
 
 
 var listaEstudiantes: string[] = [];
@@ -514,6 +517,8 @@ const FormularioEnReunion: React.FC = () => {
     }));
 
 
+    const [deptTopics, setDeptTopics] = useState<any[]>([]);
+    const [counter, setCounter] = useState(1);
     useEffect(() => {
 
         // obtener valor de local storage para saber si se debe mostrar el acta dialogica o no
@@ -581,12 +586,20 @@ const FormularioEnReunion: React.FC = () => {
                 // window.alert("id de la reunion en recuperar acta EN REUNION: " + response.data[0].meeting);
                 idReunionAux = response.data[0].meeting;
                 const idMeetingMinute = response.data[0]._id;
+                setCounter(response.data[0].cantElementos + 1);
                 const idInLocalStorageMeetingMinute = localStorage.getItem('idMeetingMinute');
                 if (idMeetingMinute !== idInLocalStorageMeetingMinute) localStorage.setItem('idMeetingMinute', response.data[0]._id);
                 // se recorre la lista de participantes de la reunion para obtener los compromisos de cada uno utilizando la funcion "obtenerCompromisosUsuario"
                 response.data[0].participants.forEach((participante: string) => {
                     obtenerCompromisosUsuario(participante);
                 });
+                const responseTopics = await meetingMinuteServices.getTopicsInMeetingMinuteByIds(response.data[0].topics);
+                const updatedTopics = await Promise.all(responseTopics.map(async (topic: any) => {
+                    topic.elements = await elementServices.getElementsInTopicsByIds(topic.elements);
+                    return topic;
+                }));
+                setDeptTopics(updatedTopics);
+                console.log("TOPICS DE LA REUNION *** EN REUNION ***:", updatedTopics);
 
             } catch (error) {
                 console.log("ERROR AL OBTENER LA INFORMACION DEL ACTA DIALOGICA");
@@ -793,25 +806,23 @@ const FormularioEnReunion: React.FC = () => {
         async function EnviarCorreo() {
             try {            
                 const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/notify/state/change`, {
-                    meetingMinuteDTO: {
-                        title: meetingminute?.title,
-                        place: meetingminute?.place,
-                        startTime: meetingminute?.startTime,
-                        endTime: meetingminute?.endTime,
-                        startHour: meetingminute?.startHour,
-                        endHour: meetingminute?.endHour,
-                        topics: meetingminute?.topics,
-                        participants: meetingminute?.participants,
-                        secretaries: meetingminute?.secretaries,
-                        leaders: meetingminute?.leaders,
-                        links: meetingminute?.links,
-                        meeting: meetingminute?.meeting,
-                        number: meetingminute?.number,
-                        fase: "post-reunión",
-                        cantElementos: meetingminute?.cantElementos,
-                        nombreCortoProyectoAux: meetingminute?.nombreCortoProyecto,
-                        comenzoReunion: meetingminute?.comenzoReunion
-                    },
+                    title: meetingminute?.title,
+                    place: meetingminute?.place,
+                    startTime: meetingminute?.startTime,
+                    endTime: meetingminute?.endTime,
+                    startHour: meetingminute?.startHour,
+                    endHour: meetingminute?.endHour,
+                    topics: deptTopics.map((topic) => topic.description),
+                    participants: meetingminute?.participants,
+                    secretaries: meetingminute?.secretaries,
+                    leaders: meetingminute?.leaders,
+                    links: meetingminute?.links,
+                    meeting: meetingminute?.meeting,
+                    number: meetingminute?.number,
+                    fase: "post-reunión",
+                    cantElementos: meetingminute?.cantElementos,
+                    nombreCortoProyectoAux: meetingminute?.nombreCortoProyecto,
+                    comenzoReunion: meetingminute?.comenzoReunion
                 },{
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -886,24 +897,22 @@ const FormularioEnReunion: React.FC = () => {
         async function EnviarCorreo() {
             try {            
                 const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/notify/state/change`, {
-                    meetingMinuteDTO: {
-                        title: meetingminute?.title,
-                        place: meetingminute?.place,
-                        startTime: meetingminute?.startTime,
-                        endTime: meetingminute?.endTime,
-                        startHour: meetingminute?.startHour,
-                        endHour: meetingminute?.endHour,
-                        topics: meetingminute?.topics,
-                        participants: meetingminute?.participants,
-                        secretaries: meetingminute?.secretaries,
-                        leaders: meetingminute?.leaders,
-                        links: meetingminute?.links,
-                        meeting: meetingminute?.meeting,
-                        number: meetingminute?.number,
-                        fase: "en-reunión",
-                        cantElementos: meetingminute?.cantElementos,
-                        nombreCortoProyecto: meetingminute?.nombreCortoProyecto
-                    },
+                    title: meetingminute?.title,
+                    place: meetingminute?.place,
+                    startTime: meetingminute?.startTime,
+                    endTime: meetingminute?.endTime,
+                    startHour: meetingminute?.startHour,
+                    endHour: meetingminute?.endHour,
+                    topics: meetingminute?.topics,
+                    participants: meetingminute?.participants,
+                    secretaries: meetingminute?.secretaries,
+                    leaders: meetingminute?.leaders,
+                    links: meetingminute?.links,
+                    meeting: meetingminute?.meeting,
+                    number: meetingminute?.number,
+                    fase: "en-reunión",
+                    cantElementos: meetingminute?.cantElementos,
+                    nombreCortoProyecto: meetingminute?.nombreCortoProyecto
                 },{
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -1085,7 +1094,7 @@ const FormularioEnReunion: React.FC = () => {
                     state: "nueva",
                     number: reunion?.number,
                     // position: contadorElementosDialogicos,
-                    position: ((meetingminute?.cantElementos ?? 0) + 1).toString(),
+                    position: `${counter}`,
                     dateLimit: fechaCumplimientoCompromiso,
                     timeLimit: horaCumplimientoCompromiso,
                     // position: SOLO SI ES NECESARIO, AÑADIR LA POSICION
@@ -1099,7 +1108,17 @@ const FormularioEnReunion: React.FC = () => {
                 });
                 console.log("Compromiso creado exitosamente");
                 setElementoDialogico(response.data);
+                setCounter(counter + 1);
                 console.log(response.data);
+                const responseTopic = await meetingMinuteServices.addElementToTopic(idTopic, response.data);
+                console.log("Topic actualizado exitosamente:", responseTopic);
+                setDeptTopics(prevTopics =>
+                    prevTopics.map(topic =>
+                        topic._id === idTopic
+                            ? { ...topic, elements: [...topic.elements, response.data] }
+                            : topic
+                    )
+                );
             } catch (error) {
                 console.error(error);
             }
@@ -1121,8 +1140,7 @@ const FormularioEnReunion: React.FC = () => {
         async function actualizarActa() {
             try {            
                 const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
-                    topics: listaTemas,
-                    cantElementos: (meetingminute?.cantElementos ?? 0) + 1,
+                    cantElementos: counter,
                 },{
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -1196,7 +1214,7 @@ const FormularioEnReunion: React.FC = () => {
                     meetingMinute: idMeetingMinute,
                     state: "nueva",
                     number: reunion?.number,
-                    position: ((meetingminute?.cantElementos ?? 0) + 1).toString(),
+                    position: `${counter}`,
                     dateLimit: "",
                     timeLimit: "",
                     // position: SOLO SI ES NECESARIO, AÑADIR LA POSICION
@@ -1210,6 +1228,17 @@ const FormularioEnReunion: React.FC = () => {
                 });
                 console.log("Acuerdo creado exitosamente");
                 setElementoDialogico(response.data);
+                setCounter(counter + 1);
+                console.log(response.data);
+                const responseTopic = await meetingMinuteServices.addElementToTopic(idTopic, response.data);
+                console.log("Topic actualizado exitosamente:", responseTopic);
+                setDeptTopics(prevTopics =>
+                    prevTopics.map(topic =>
+                        topic._id === idTopic
+                            ? { ...topic, elements: [...topic.elements, response.data] }
+                            : topic
+                    )
+                );
                 console.log(response.data);
             } catch (error) {
                 console.error(error);
@@ -1231,8 +1260,7 @@ const FormularioEnReunion: React.FC = () => {
         async function actualizarActa() {
             try {            
                 const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
-                    topics: listaTemas,
-                    cantElementos: (meetingminute?.cantElementos ?? 0) + 1,
+                    cantElementos: counter,
                 },{
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -1321,7 +1349,7 @@ const FormularioEnReunion: React.FC = () => {
                     meetingMinute: idMeetingMinute,
                     state: "nueva",
                     number: reunion?.number,
-                    position: ((meetingminute?.cantElementos ?? 0) + 1).toString(),
+                    position: `${counter}`,
                     dateLimit: "",
                     timeLimit: "",
                     createdAt: new Date(), //.toLocaleString('es-CL'),
@@ -1343,6 +1371,17 @@ const FormularioEnReunion: React.FC = () => {
                 console.log("Desacuerdo creado exitosamente");
                 setElementoDialogico(response.data);
                 console.log(response.data);
+                setCounter(counter + 1);
+                console.log(response.data);
+                const responseTopic = await meetingMinuteServices.addElementToTopic(idTopic, response.data);
+                console.log("Topic actualizado exitosamente:", responseTopic);
+                setDeptTopics(prevTopics =>
+                    prevTopics.map(topic =>
+                        topic._id === idTopic
+                            ? { ...topic, elements: [...topic.elements, response.data] }
+                            : topic
+                    )
+                );
             } catch (error) {
                 console.error(error);
             }
@@ -1364,8 +1403,7 @@ const FormularioEnReunion: React.FC = () => {
         async function actualizarActa() {
             try {            
                 const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
-                    topics: listaTemas,
-                    cantElementos: (meetingminute?.cantElementos ?? 0) + 1,
+                    cantElementos: counter,
                 },{
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -1429,7 +1467,9 @@ const FormularioEnReunion: React.FC = () => {
         const idProyecto = localStorage.getItem('idProyecto') ?? '';
         const idMeetingMinute = localStorage.getItem('idMeetingMinute') ?? '';
         async function crearDuda() {
-            try {            
+            try {
+                console.log("COunter:", counter);
+                console.log("COunte to strinr:", counter.toString());
                 const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/element`, {
                     description: dudaValue,
                     type: "Duda",
@@ -1440,7 +1480,7 @@ const FormularioEnReunion: React.FC = () => {
                     meetingMinute: idMeetingMinute,
                     state: "nueva",
                     number: reunion?.number,
-                    position: ((meetingminute?.cantElementos ?? 0) + 1).toString(),
+                    position: `${counter}`,
                     dateLimit: "",
                     timeLimit: "",
                     createdAt: new Date(), //.toLocaleString('es-CL'),
@@ -1452,6 +1492,17 @@ const FormularioEnReunion: React.FC = () => {
                 console.log("Duda creada exitosamente");
                 setElementoDialogico(response.data);
                 console.log(response.data);
+                setCounter(counter + 1);
+                console.log(response.data);
+                const responseTopic = await meetingMinuteServices.addElementToTopic(idTopic, response.data);
+                console.log("Topic actualizado exitosamente:", responseTopic);
+                setDeptTopics(prevTopics =>
+                    prevTopics.map(topic =>
+                        topic._id === idTopic
+                            ? { ...topic, elements: [...topic.elements, response.data] }
+                            : topic
+                    )
+                );
             } catch (error) {
                 console.error(error);
             }
@@ -1471,8 +1522,7 @@ const FormularioEnReunion: React.FC = () => {
         async function actualizarActa() {
             try {            
                 const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
-                    topics: listaTemas,
-                    cantElementos: (meetingminute?.cantElementos ?? 0) + 1,
+                    cantElementos: counter,
                 },{
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -1533,23 +1583,15 @@ const FormularioEnReunion: React.FC = () => {
         }
 
         // paso 2: agregar el nuevo tema a una nueva lista que tenga los temas existentes
-        var listaTemas: string[] = [];
-        listaTemas = meetingminute?.topics ?? [];
-        listaTemas.push(nuevoTemaValue);
 
         // paso 3: realizar peticion al backend para actualizar el acta dialogica, entregando una nueva lista de topics
         const idMeetingMinute = localStorage.getItem('idMeetingMinute') ?? '';
         async function actualizarActa() {
             try {            
-                const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
-                    topics: listaTemas,
-                },{
-                    headers: {
-                        Authorization: `Bearer ${tokenUser}`
-                    }
-                });
+                const response = await meetingMinuteServices.createTopic(idMeetingMinute, {description: nuevoTemaValue, elements: []});
                 console.log("Acta actualizada exitosamente (nuevo tema añadido)");
-                console.log(response.data);
+                console.log(response);
+                setDeptTopics(response.topics);
                 // se guarda en local storage el id del acta dialogica creada, para que en la siguiente etapa, se pueda rescatar dicho id y se pueda realizar la peticion al backend
             } catch (error) {
                 console.error(error);
@@ -1619,7 +1661,7 @@ const FormularioEnReunion: React.FC = () => {
                     meetingMinute: idMeetingMinute,
                     state: "nueva",
                     number: reunion?.number,
-                    position: ((meetingminute?.cantElementos ?? 0) + 1).toString(),
+                    position: counter.toString(),
                     dateLimit: "",
                     timeLimit: "",
                     // position: SOLO SI ES NECESARIO, AÑADIR LA POSICION
@@ -1634,6 +1676,17 @@ const FormularioEnReunion: React.FC = () => {
                 console.log("Texto libre creado exitosamente");
                 setElementoDialogico(response.data);
                 console.log(response.data);
+                setCounter(counter + 1);
+                console.log(response.data);
+                const responseTopic = await meetingMinuteServices.addElementToTopic(idTopic, response.data);
+                console.log("Topic actualizado exitosamente:", responseTopic);
+                setDeptTopics(prevTopics =>
+                    prevTopics.map(topic =>
+                        topic._id === idTopic
+                            ? { ...topic, elements: [...topic.elements, response.data] }
+                            : topic
+                    )
+                );
             } catch (error) {
                 console.error(error);
             }
@@ -1654,8 +1707,7 @@ const FormularioEnReunion: React.FC = () => {
         async function actualizarActa() {
             try {            
                 const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
-                    topics: listaTemas,
-                    cantElementos: (meetingminute?.cantElementos ?? 0) + 1,
+                    cantElementos: counter,
                 },{
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -1690,6 +1742,8 @@ const FormularioEnReunion: React.FC = () => {
         closeModalTextoLibre();
     }
 
+    const [idTopic, setIdTopic] = useState<string>('');
+
     const guardarVote = (data: any) => {
 
 
@@ -1710,7 +1764,7 @@ const FormularioEnReunion: React.FC = () => {
                     meetingMinute: idMeetingMinute,
                     state: "nueva",
                     number: reunion?.number,
-                    position: ((meetingminute?.cantElementos ?? 0) + 1).toString(),
+                    position: `${counter}`,
                     dateLimit: data.deadline,
                     timeLimit: "",
                     createdAt: new Date(), //.toLocaleString('es-CL'),
@@ -1730,6 +1784,17 @@ const FormularioEnReunion: React.FC = () => {
                 });
                 console.log("Votacion creada exitosamente");
                 setElementoDialogico(response.data);
+                setCounter(counter + 1);
+                console.log(response.data);
+                const responseTopic = await meetingMinuteServices.addElementToTopic(idTopic, response.data);
+                console.log("Topic actualizado exitosamente:", responseTopic);
+                setDeptTopics(prevTopics =>
+                    prevTopics.map(topic =>
+                        topic._id === idTopic
+                            ? { ...topic, elements: [...topic.elements, response.data] }
+                            : topic
+                    )
+                );
                 console.log(response.data);
             } catch (error) {
                 console.error(error);
@@ -1753,8 +1818,7 @@ const FormularioEnReunion: React.FC = () => {
         async function actualizarActa() {
             try {
                 const response = await axios.put(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/` + idMeetingMinute, {
-                    topics: listaTemas,
-                    cantElementos: (meetingminute?.cantElementos ?? 0) + 1,
+                    cantElementos: counter,
                 },{
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -1829,8 +1893,9 @@ return (
     <div>
             {estadoReunion === "En-reunión" || estadoReunion === "en-reunión" ? (
                 <>
+
                     {/* PARTE FIJA DEL MICROFRONTEND: AVATAR GROUP, CHAT y BARRA DE PROGRESO DE LA REUNION */}
-                    <div style={{position: "fixed", top: 96, width: "100%", zIndex:10}}>
+                    <div style={{position: "fixed", top: 96, width: "100%", zIndex: 10}}>
                         <Inline>
                             {/* CONTENIDO DE LA IZQUIERDA: fotos de los participantes de la reunion y boton que da acceso al chat */}
                             {/* <div style={{textAlign: "left", height: '100px', width: '450px', backgroundColor: 'white'}}> */}
@@ -1903,42 +1968,50 @@ return (
                                     {/* DE ESTA FORMA, SE RESTABA UN DIA A LO QUE ESTABA GUARDADO EN LA BASE DE DATOS */}
                                     {/* <h4 style={{ marginTop: "37px", marginBottom: "5px" }}>Llamado: &#60;{new Date(meetingminute?.startTime ?? "").toLocaleDateString("es-CL")} {meetingminute?.startHour[0]}{meetingminute?.startHour[1]}{meetingminute?.startHour[2]}{meetingminute?.startHour[3]}{meetingminute?.startHour[4]}&#62; &#60;{new Date(meetingminute?.endTime ?? "").toLocaleDateString("es-CL")} {meetingminute?.endHour[0]}{meetingminute?.endHour[1]}{meetingminute?.endHour[2]}{meetingminute?.endHour[3]}{meetingminute?.endHour[4]}&#62;</h4> */}
 
-                                    <h4 style={{ marginTop: "37px", marginBottom: "5px" }}>Llamado: &#60;{meetingminute?.startTime[8]}{meetingminute?.startTime[9]}{meetingminute?.startTime[7]}{meetingminute?.startTime[5]}{meetingminute?.startTime[6]}{meetingminute?.startTime[4]}{meetingminute?.startTime[0]}{meetingminute?.startTime[1]}{meetingminute?.startTime[2]}{meetingminute?.startTime[3]} {meetingminute?.startHour[0]}{meetingminute?.startHour[1]}{meetingminute?.startHour[2]}{meetingminute?.startHour[3]}{meetingminute?.startHour[4]}&#62; &#60;{meetingminute?.endTime[8]}{meetingminute?.endTime[9]}{meetingminute?.endTime[7]}{meetingminute?.endTime[5]}{meetingminute?.endTime[6]}{meetingminute?.endTime[4]}{meetingminute?.endTime[0]}{meetingminute?.endTime[1]}{meetingminute?.endTime[2]}{meetingminute?.endTime[3]} {meetingminute?.endHour[0]}{meetingminute?.endHour[1]}{meetingminute?.endHour[2]}{meetingminute?.endHour[3]}{meetingminute?.endHour[4]}&#62;</h4> 
+                                    <h4 style={{
+                                        marginTop: "37px",
+                                        marginBottom: "5px"
+                                    }}>Llamado: &#60;{meetingminute?.startTime[8]}{meetingminute?.startTime[9]}{meetingminute?.startTime[7]}{meetingminute?.startTime[5]}{meetingminute?.startTime[6]}{meetingminute?.startTime[4]}{meetingminute?.startTime[0]}{meetingminute?.startTime[1]}{meetingminute?.startTime[2]}{meetingminute?.startTime[3]} {meetingminute?.startHour[0]}{meetingminute?.startHour[1]}{meetingminute?.startHour[2]}{meetingminute?.startHour[3]}{meetingminute?.startHour[4]}&#62; &#60;{meetingminute?.endTime[8]}{meetingminute?.endTime[9]}{meetingminute?.endTime[7]}{meetingminute?.endTime[5]}{meetingminute?.endTime[6]}{meetingminute?.endTime[4]}{meetingminute?.endTime[0]}{meetingminute?.endTime[1]}{meetingminute?.endTime[2]}{meetingminute?.endTime[3]} {meetingminute?.endHour[0]}{meetingminute?.endHour[1]}{meetingminute?.endHour[2]}{meetingminute?.endHour[3]}{meetingminute?.endHour[4]}&#62;</h4>
                                 </Inline>
                                 {/* añadir la hora y fecha real para las siguientes fases*/}
                             </div>
                         </Inline>
-                    </div> 
+                    </div>
 
 
-                    <br />
-                    <br />
-                    <br />
-                    
+                    <br/>
+                    <br/>
+                    <br/>
+
+                    <br/>
+                    <br/>
+                    <br/><br/>
+                    <br/>
+                    <br/>
                     {/* CONTENIDO DEL MICROFRONTEND */}
                     <div
-                    style={{
-                        zIndex: 1,
-                        display: 'flex',
-                        margin: '0 auto',
-                        marginLeft: '15px',
-                        marginRight: '15px',
-                        marginBottom: '30px',
-                        flexDirection: 'column',
-                    }}
-                    
+                        style={{
+                            zIndex: 1,
+                            display: 'flex',
+                            margin: '0 auto',
+                            marginLeft: '15px',
+                            marginRight: '15px',
+                            marginBottom: '30px',
+                            flexDirection: 'column',
+                        }}
+
                     >
 
                         {/* Se comenta debido a solicitud de profesor guia: No es necesario mostrar el titulo de la seccion considerando que se tiene "ProgressTracker"*/}
                         {/* <h1 style={{ textAlign: 'center', fontSize: '60px' }}>En-reunión</h1> */}
                         {/* <h3 style={{ textAlign: 'center', marginLeft: '20px', marginRight: '20px'}}>Importante: Si recarga la página o la abandona, se perderá la información previamente ingresada en el formulario, por lo que deberá comenzar nuevamente. Los datos serán guardados una vez se presione el botón "Finalizar En-reunión"</h3> */}
-                        
+
                         {/* <ProgressTracker items={items} /> */}
-                        <br />
+                        <br/>
 
                         {/* ESPACIO PARA MOSTRAR LA INFORMACION DEL ACTA DIALOGICA -> mostrar de una forma mas elegante*/}
                         {/* <h2>Acta dialógica de Proyecto "{proyectoUser?.shortName}" - reunión {reunion?.number}</h2> */}
-                        
+
                         {/* <div style={{ textAlign: 'left', margin: '15px' }}> */}
                         {/* popup para mostrar la informacion de la reunion */}
                         {/* SE DEBERA ELIMINAR EL POPUP, PUESTO A QUE SI SE TIENE MUCHA INFORMACION, NO SE PUEDE SCROLEAR HASTA QUE LA PANTALLA LO PERMITA */}
@@ -1946,21 +2019,23 @@ return (
 
                         <Button
                             style={{height: '100%', textAlign: 'left', width: '100%', marginTop: '5px'}}
-                            iconBefore={<InfoIcon label="" size="medium" />}
+                            iconBefore={<InfoIcon label="" size="medium"/>}
                             appearance="link"
                             // isSelected={isOpenInformacion}
                             onClick={() => openModalInfoReu()}
-                            >
+                        >
                             {/* {isOpenInformacion ? 'Cerrar' : 'Abrir'} chat{' '} */}
-                            {isOpenInformacion ? '' : ''} 
-                                {/* se realiza la separacion debido a que se agrega un nuevo atributo al acta dialogia que indica el nombre corto del proyecto */}
-                                {/* por lo tanto, puesto que algunas actas ya existentes no tiene dicho atributo, se deja la condicion de utilizar el formato anterior, cuando no estaba el atributo */}
-                                {nombreCortoProyectoAux === "" || nombreCortoProyectoAux === undefined ? (
-                                    <h2 style={{ color: 'black'}}>Acta dialógica de Proyecto "{proyectoUser?.shortName}" - reunión {reunion?.number}</h2>
-                                ) : (
-                                    <h2 style={{ color: 'black'}}>Acta dialógica de Proyecto "{nombreCortoProyectoAux}" - reunión {reunion?.number}</h2>
-                                )}
-                                {/* <h2 style={{ color: 'black'}}>Acta dialógica de Proyecto "{proyectoUser?.shortName}" - reunión {reunion?.number}</h2> */}
+                            {isOpenInformacion ? '' : ''}
+                            {/* se realiza la separacion debido a que se agrega un nuevo atributo al acta dialogia que indica el nombre corto del proyecto */}
+                            {/* por lo tanto, puesto que algunas actas ya existentes no tiene dicho atributo, se deja la condicion de utilizar el formato anterior, cuando no estaba el atributo */}
+                            {nombreCortoProyectoAux === "" || nombreCortoProyectoAux === undefined ? (
+                                <h2 style={{color: 'black'}}>Acta dialógica de Proyecto "{proyectoUser?.shortName}" -
+                                    reunión {reunion?.number}</h2>
+                            ) : (
+                                <h2 style={{color: 'black'}}>Acta dialógica de Proyecto "{nombreCortoProyectoAux}" -
+                                    reunión {reunion?.number}</h2>
+                            )}
+                            {/* <h2 style={{ color: 'black'}}>Acta dialógica de Proyecto "{proyectoUser?.shortName}" - reunión {reunion?.number}</h2> */}
                             {' '}
                         </Button>
                         {/* seccion para mostrar compromisos previos a la reunion */}
@@ -1968,98 +2043,131 @@ return (
                             <>
                                 <Box padding="space.400" backgroundColor="color.background.neutral" xcss={boxStyles2}>
                                     {/* FORMATO NUEVO */}
-                                    <h2 style={{marginTop:'0px', textAlign:'center'}}>Estado del proyecto</h2>
-                                    <br />
-                                        <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Compromisos previos:</h3>
-                                        {compromisosProyecto?.map((compromiso, index) => (
-                                            <>
-                                                {/* con esto me aseguro que no se muestren compromisos de reuniones futuras */}
-                                                {compromiso.number < (meetingminute?.number ?? 0) && (
-                                                    <>
-                                                        {index == 0 && (
+                                    <h2 style={{marginTop: '0px', textAlign: 'center'}}>Estado del proyecto</h2>
+                                    <br/>
+                                    <h3 style={{marginTop: "5px", marginBottom: "5px"}}>Compromisos previos:</h3>
+                                    {compromisosProyecto?.map((compromiso, index) => (
+                                        <>
+                                            {/* con esto me aseguro que no se muestren compromisos de reuniones futuras */}
+                                            {compromiso.number < (meetingminute?.number ?? 0) && (
+                                                <>
+                                                    {index == 0 && (
+                                                        <>
+                                                            <h4 key={index} style={{
+                                                                marginLeft: '30px',
+                                                                marginTop: "5px",
+                                                                marginBottom: "5px"
+                                                            }}>{compromiso.participants}</h4>
+                                                        </>
+                                                    )}
+
+                                                    {index !== 0 && (
+                                                        <>
+                                                            {/* // recorrer cada caracter de compromisosProyecto[index - 1].participants, de tal forma comparar caracter por caracter con compromiso.participants*/}
+                                                            {Array.from(compromisosProyecto[index - 1].participants).map((char: string, charIndex: number) => (
+                                                                <>
+                                                                    <h4 key={charIndex} style={{
+                                                                        marginLeft: '30px',
+                                                                        marginTop: "5px",
+                                                                        marginBottom: "5px"
+                                                                    }}>
+                                                                        {char === compromiso.participants[charIndex] ? '' : (compromiso.participants)}
+                                                                    </h4>
+                                                                </>
+                                                            ))}
+                                                        </>
+                                                    )}
+
+                                                    {/* caso "compromiso.dateLimit" es menor a la fecha actual -> significa atrasado, por lo que es color rojo */}
+                                                    <Inline>
+                                                        {new Date(compromiso.dateLimit) < new Date() && (
                                                             <>
-                                                                <h4 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}>{compromiso.participants}</h4>
+                                                                <Stack>
+                                                                    <h4 key={index} style={{
+                                                                        marginLeft: '50px',
+                                                                        marginTop: "5px",
+                                                                        marginBottom: "5px",
+                                                                        color: 'red'
+                                                                    }}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
+                                                                    <h4 key={index} style={{
+                                                                        marginLeft: '50px',
+                                                                        marginTop: "0px",
+                                                                        marginBottom: "20px",
+                                                                        color: 'red'
+                                                                    }}>Fecha
+                                                                        límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
+                                                                </Stack>
+                                                                {/* OPCION EN FORMATO BOTON, DE TAL FORMA SE PUEDA PINCHAR Y ABRIR UN DIALOGO MODAL CON MAS INFORMACION */}
+                                                                {/* <Button style={{ marginLeft: '50px'}} appearance="subtle"><h4 key={index} style={{margin:0, color: 'red'}}>{compromiso.number}.{compromiso.position}</h4></Button> */}
                                                             </>
                                                         )}
-
-                                                        {index !== 0 && (
+                                                        {/* caso "compromiso.dateLimit" es mayor a la fecha actual -> significa a tiempo, por lo que color verde */}
+                                                        {new Date(compromiso.dateLimit) > new Date() && (
                                                             <>
-                                                                {/* // recorrer cada caracter de compromisosProyecto[index - 1].participants, de tal forma comparar caracter por caracter con compromiso.participants*/}    
-                                                                {Array.from(compromisosProyecto[index - 1].participants).map((char: string, charIndex: number) => (
-                                                                    <>
-                                                                        <h4 key={charIndex} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px"}}>
-                                                                            {char === compromiso.participants[charIndex] ? '' : (compromiso.participants)}
-                                                                        </h4>
-                                                                    </>
-                                                                ))}
+                                                                <Stack>
+                                                                    <h4 key={index} style={{
+                                                                        marginLeft: '50px',
+                                                                        marginTop: "5px",
+                                                                        marginBottom: "5px",
+                                                                        color: 'green'
+                                                                    }}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
+                                                                    <h4 key={index} style={{
+                                                                        marginLeft: '50px',
+                                                                        marginTop: "0px",
+                                                                        marginBottom: "20px",
+                                                                        color: 'green'
+                                                                    }}>Fecha
+                                                                        límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
+                                                                </Stack>
+                                                                {/* OPCION EN FORMATO BOTON, DE TAL FORMA SE PUEDA PINCHAR Y ABRIR UN DIALOGO MODAL CON MAS INFORMACION */}
+                                                                {/* <Button style={{ marginLeft: '50px'}} appearance="subtle"><h4 key={index} style={{margin:0, color: 'green'}}>{compromiso.number}.{compromiso.position}</h4></Button> */}
                                                             </>
                                                         )}
-                                                        
-                                                        {/* caso "compromiso.dateLimit" es menor a la fecha actual -> significa atrasado, por lo que es color rojo */}
-                                                        <Inline>
-                                                            {new Date(compromiso.dateLimit) < new Date() && (
-                                                                <>
-                                                                    <Stack>
-                                                                        <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px", color: 'red'}}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
-                                                                        <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'red'}}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
-                                                                    </Stack>
-                                                                    {/* OPCION EN FORMATO BOTON, DE TAL FORMA SE PUEDA PINCHAR Y ABRIR UN DIALOGO MODAL CON MAS INFORMACION */}
-                                                                    {/* <Button style={{ marginLeft: '50px'}} appearance="subtle"><h4 key={index} style={{margin:0, color: 'red'}}>{compromiso.number}.{compromiso.position}</h4></Button> */}
-                                                                </>
-                                                            )}
-                                                            {/* caso "compromiso.dateLimit" es mayor a la fecha actual -> significa a tiempo, por lo que color verde */}
-                                                            {new Date(compromiso.dateLimit) > new Date() && (
-                                                                <>
-                                                                    <Stack>
-                                                                        <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px", color: 'green'}}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4>
-                                                                        <h4 key={index} style={{ marginLeft: '50px', marginTop: "0px", marginBottom: "20px", color: 'green'}}>Fecha límite: {new Date(compromiso.dateLimit).toLocaleDateString("es-CL")}</h4>
-                                                                    </Stack>
-                                                                    {/* OPCION EN FORMATO BOTON, DE TAL FORMA SE PUEDA PINCHAR Y ABRIR UN DIALOGO MODAL CON MAS INFORMACION */}
-                                                                    {/* <Button style={{ marginLeft: '50px'}} appearance="subtle"><h4 key={index} style={{margin:0, color: 'green'}}>{compromiso.number}.{compromiso.position}</h4></Button> */}
-                                                                </>
-                                                            )}
-                                                            {/* caso "compromiso.dateLimit" es igual a la fecha actual */}
+                                                        {/* caso "compromiso.dateLimit" es igual a la fecha actual */}
 
 
-                                                            {/* Mostrar la informacion sin los colores */}
-                                                            {/* <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px" }}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4> */}
-                                                            {/* <br /> */}
-                                                        </Inline>
-                                                        
-                                                    </>
-                                                )}
-                                            </>
-                                        ))}
+                                                        {/* Mostrar la informacion sin los colores */}
+                                                        {/* <h4 key={index} style={{ marginLeft: '50px', marginTop: "5px", marginBottom: "5px" }}>{compromiso.number}.{compromiso.position} Descripción: {compromiso.description}</h4> */}
+                                                        {/* <br /> */}
+                                                    </Inline>
+
+                                                </>
+                                            )}
+                                        </>
+                                    ))}
                                 </Box>
                             </>
                         )}
 
 
-
-                        <br />
-                        <br />
+                        <br/>
+                        <br/>
 
                         {/* solamente los usuarios con rol de anfitrion o secretario pueden comenzar la reunion */}
                         {meetingminute?.leaders.includes(usuarioPerfilLog?.email ?? '') || meetingminute?.secretaries.includes(usuarioPerfilLog?.email ?? '') ? (
                             <>
                                 {!iniciarReunion ? (
-                                    <Button appearance="primary" onClick={() => botonIniciarReunion()}>Comenzar reunión</Button>
-                                ):(
-                                    <Button isDisabled appearance="primary" onClick={() => botonIniciarReunion()}>Comenzar reunión</Button>
+                                    <Button appearance="primary" onClick={() => botonIniciarReunion()}>Comenzar
+                                        reunión</Button>
+                                ) : (
+                                    <Button isDisabled appearance="primary" onClick={() => botonIniciarReunion()}>Comenzar
+                                        reunión</Button>
                                 )}
                             </>
                         ) : (
                             <>
                                 {!iniciarReunion ? (
-                                    <Button isDisabled appearance="primary" onClick={() => botonIniciarReunion()}>Comenzar reunión</Button>
-                                ):(
-                                    <Button isDisabled appearance="primary" onClick={() => botonIniciarReunion()}>Comenzar reunión</Button>
+                                    <Button isDisabled appearance="primary" onClick={() => botonIniciarReunion()}>Comenzar
+                                        reunión</Button>
+                                ) : (
+                                    <Button isDisabled appearance="primary" onClick={() => botonIniciarReunion()}>Comenzar
+                                        reunión</Button>
                                 )}
                             </>
-                        )}                        
+                        )}
 
-                        <br />
-                        <br />
+                        <br/>
+                        <br/>
 
 
                         {/* Cambio de seccion: se muestran los temas y se pueden añadir elementos dialogicos */}
@@ -2067,88 +2175,198 @@ return (
 
                         {meetingminute?.comenzoReunion && (
                             <>
-                                // checkpoint1
                                 {/* <h3>INFORMACION OCULTA (temas con la opcion de añadir elementos dialogicos)</h3>  */}
-                                <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Temas:</h3>
-                                {meetingminute?.topics.map((topic, index) => (
+                                <h2 style={{marginTop: "5px", marginBottom: "5px"}}>Temas:</h2>
+                                {deptTopics.map((topic, index) => (
                                     <div key={index}>
-                                        <div style={{ marginTop: '20px', marginBottom: '20px' }}>
+                                        <div style={{marginTop: '20px', marginBottom: '20px'}}>
                                             {/* propiedad "whiteSpace" hace que <h3> reconozca los saltos de linea */}
-                                            <h4 id="texto" style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px", whiteSpace: 'pre-line'}}>{index + 1}. {topic}</h4>
+                                            <h2 id="texto" style={{
+                                                marginLeft: '30px',
+                                                marginTop: "5px",
+                                                marginBottom: "5px",
+                                                whiteSpace: 'pre-line'
+                                            }}>{index + 1}. {topic.description}</h2>
                                             {/* Permitir seleccionar el elemento dialogico que se desea añadir y añadir el respectivo "texto" que corresponda */}
                                             {/* para escoger el elemento dialogico, el usuario debera de presionar uno de los 4 botones que se le presentan. */}
                                             {/* una vez presionado uno de estos botones, se abrira un cuadro modal (https://atlassian.design/components/modal-dialog/examples) el cual le solicitara al usuario ingresar el texto correspondiente */}
-                                            <br />
-                                            <Vote voteElement={{_id: '6775811c08cee04622a35d63', description: 'Votacion Testing', number: 6, position: '8', dateLimit: '', vote: {type: 'Publica', options: [{option: 'wan', votes: 0, _id: '6775811c08cee04622a35d64'}, {option: 'tu', votes: 1, _id: '6775811c08cee04622a35d65'}, {option: 'dee', votes: 0, _id:'6775811c08cee04622a35d66'}], voters: []}}} />
-                                            <br />
-                                            <FreeText _id={'6774af6ba023440b23e68282'} description={'Que tal, hijos de Odin'} participants={['jairo.santi@usach.cl']}/>
-                                            <br />
-                                            <Commitment _id={'677470ef3168a534f714dc92'} description={'no me quiero comprometer'} number={4} position={'6'} dateLimit={'2025-01-02'} timeLimit={'12:00'} participants={['jairo.santi@usach.cl']}/>
-                                            <br />
-                                            <Agreement _id={'6774af82a023440b23e68286'} description={'estoy de acuerdo xdddd'} number={6} position={'1'} />
-                                            <br/>
-                                            <Disagreement disagreementElement={{_id: '677470d23168a534f714dc8e', description: 'No saber si seguir o no seguir con esto', number: 4, position: '6', disagreement: { firtPosition: { responsible: 'jairo.santi@usach.cl', description: 'no seguit' }, secondPosition: { responsible: 'jairo.santi@usach.cl', description: 'seguir' }}}}/>
-                                            <br/>
-                                            <Doubt doubtElement={{_id: '67746d343168a534f714dc8c', description: 'xddddddd', participants: [ 'jairo.santi@usach.cl' ], number: 4, position: '6'}} />
-                                            <br/>
+                                            {topic.elements.map((element, elemIndex) => (
+                                                <div key={elemIndex}>
+                                                    {element.type === "Compromiso" && (
+                                                        <>
+                                                            <Commitment _id={element._id} description={element.description}
+                                                                        number={element.number} position={element.position}
+                                                                        dateLimit={element.dateLimit}
+                                                                        timeLimit={element.timeLimit}
+                                                                        participants={element.participants}/>
+                                                        </>
+                                                    )}
+                                                    {element.type === "Acuerdo" && (
+                                                        <>
+                                                            <Agreement _id={element._id} description={element.description}
+                                                                       number={element.number} position={element.position}/>
+                                                        </>
+                                                    )}
+                                                    {element.type === "Desacuerdo" && (
+                                                        <>
+                                                            <Disagreement disagreementElement={element}/>
+                                                        </>
+                                                    )}
+                                                    {element.type === "Duda" && (
+                                                        <>
+                                                            <Doubt doubtElement={element}/>
+                                                        </>
+                                                    )}
+                                                    {element.type === "Texto libre" && (
+                                                        <>
+                                                            <FreeText _id={element._id} description={element.description}
+                                                                      participants={element.participants}/>
+                                                        </>
+                                                    )}
+                                                    {element.type === "Votacion" && (
+                                                        <>
+                                                            <Vote voteElement={element}/>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            ))}
                                             <Inline space="space.200" alignInline="center" shouldWrap>
 
                                                 {/* <Button appearance="primary" onClick={() => {openModalCompromiso(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1;}}>Compromiso</Button> */}
-                                                <Button appearance="primary" onClick={() => {openModalCompromiso(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
+                                                <Button appearance="primary" onClick={() => {
+                                                    openModalCompromiso();
+                                                    setIdTopic(topic._id);
+                                                    numeroTemaSeleccionado = 0;
+                                                    numeroTemaSeleccionado = index + 1;
+                                                    notificarParticipantes(index + 1);
+                                                }} style={{height: '60px'}}>
                                                     <Inline alignInline="center">
-                                                        <Image src={i__CompromisoBlanco} alt="Simple example" testId="image" style={{ width: '50px', height: '50px', marginTop: '5px'  }} />
-                                                        <div style={{ marginTop: '11.72px', marginLeft: '5px' }}>Compromiso</div>
+                                                        <Image src={i__CompromisoBlanco} alt="Simple example"
+                                                               testId="image" style={{
+                                                            width: '50px',
+                                                            height: '50px',
+                                                            marginTop: '5px'
+                                                        }}/>
+                                                        <div
+                                                            style={{marginTop: '11.72px', marginLeft: '5px'}}>Compromiso
+                                                        </div>
                                                     </Inline>
                                                 </Button>
 
                                                 {/* <Button appearance="primary" onClick={() => {openModalAcuerdo(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1;}}>Acuerdo</Button> */}
-                                                <Button appearance="primary" onClick={() => {openModalAcuerdo(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
+                                                <Button appearance="primary" onClick={() => {
+                                                    openModalAcuerdo();
+                                                    setIdTopic(topic._id);
+                                                    numeroTemaSeleccionado = 0;
+                                                    numeroTemaSeleccionado = index + 1;
+                                                    notificarParticipantes(index + 1);
+                                                }} style={{height: '60px'}}>
                                                     <Inline alignInline="center">
-                                                        <Image src={i__AcuerdoBlanco} alt="Simple example" testId="image" style={{ width: '50px', height: '50px', marginTop: '5px' }} />
-                                                        <div style={{ marginTop: '11.72px', marginLeft: '5px' }}>Acuerdo</div>
+                                                        <Image src={i__AcuerdoBlanco} alt="Simple example"
+                                                               testId="image" style={{
+                                                            width: '50px',
+                                                            height: '50px',
+                                                            marginTop: '5px'
+                                                        }}/>
+                                                        <div style={{marginTop: '11.72px', marginLeft: '5px'}}>Acuerdo
+                                                        </div>
                                                     </Inline>
                                                 </Button>
 
                                                 {/* <Button appearance="primary" onClick={() => {openModalDesacuerdo(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1;}}>Desacuerdo</Button> */}
-                                                <Button appearance="primary" onClick={() => {openModalDesacuerdo(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
+                                                <Button appearance="primary" onClick={() => {
+                                                    openModalDesacuerdo();
+                                                    setIdTopic(topic._id);
+                                                    numeroTemaSeleccionado = 0;
+                                                    numeroTemaSeleccionado = index + 1;
+                                                    notificarParticipantes(index + 1);
+                                                }} style={{height: '60px'}}>
                                                     <Inline alignInline="center">
-                                                        <Image src={i__DesacuerdoBlanco} alt="Simple example" testId="image" style={{ width: '50px', height: '50px', marginTop: '5px' }} />
-                                                        <div style={{ marginTop: '11.72px', marginLeft: '5px' }}>Desacuerdo</div>
+                                                        <Image src={i__DesacuerdoBlanco} alt="Simple example"
+                                                               testId="image" style={{
+                                                            width: '50px',
+                                                            height: '50px',
+                                                            marginTop: '5px'
+                                                        }}/>
+                                                        <div
+                                                            style={{marginTop: '11.72px', marginLeft: '5px'}}>Desacuerdo
+                                                        </div>
                                                     </Inline>
                                                 </Button>
 
                                                 {/* <Button appearance="primary" onClick={() => {openModalDuda(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1;}}>Duda</Button> */}
-                                                <Button appearance="primary" onClick={() => {openModalDuda(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
+                                                <Button appearance="primary" onClick={() => {
+                                                    openModalDuda();
+                                                    setIdTopic(topic._id);
+                                                    numeroTemaSeleccionado = 0;
+                                                    numeroTemaSeleccionado = index + 1;
+                                                    notificarParticipantes(index + 1);
+                                                }} style={{height: '60px'}}>
                                                     <Inline alignInline="center">
-                                                        <Image src={i__DudaBlanco} alt="Simple example" testId="image" style={{ width: '50px', height: '50px', marginTop: '5px' }} />
-                                                        <div style={{ marginTop: '11.72px', marginLeft: '5px' }}>Duda</div>
+                                                        <Image src={i__DudaBlanco} alt="Simple example" testId="image"
+                                                               style={{
+                                                                   width: '50px',
+                                                                   height: '50px',
+                                                                   marginTop: '5px'
+                                                               }}/>
+                                                        <div style={{marginTop: '11.72px', marginLeft: '5px'}}>Duda
+                                                        </div>
                                                     </Inline>
                                                 </Button>
 
-                                                <Button appearance="primary" onClick={() => {openModalTextoLibre(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
+                                                <Button appearance="primary" onClick={() => {
+                                                    openModalTextoLibre();
+                                                    setIdTopic(topic._id);
+                                                    numeroTemaSeleccionado = 0;
+                                                    numeroTemaSeleccionado = index + 1;
+                                                    notificarParticipantes(index + 1);
+                                                }} style={{height: '60px'}}>
                                                     <Inline alignInline="center">
-                                                        <Image src={i__TextoLibreBlanco} alt="Simple example" testId="image" style={{ width: '48px', height: '48px', marginTop: '7px' }} />
-                                                        <div style={{ marginTop: '11.72px', marginLeft: '7px' }}>Texto libre</div>
+                                                        <Image src={i__TextoLibreBlanco} alt="Simple example"
+                                                               testId="image" style={{
+                                                            width: '48px',
+                                                            height: '48px',
+                                                            marginTop: '7px'
+                                                        }}/>
+                                                        <div style={{marginTop: '11.72px', marginLeft: '7px'}}>Texto
+                                                            libre
+                                                        </div>
                                                     </Inline>
                                                 </Button>
 
-                                                <Button appearance="primary" onClick={() => {openModalVote(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1; notificarParticipantes(index + 1);}} style={{ height: '60px'}}>
+                                                <Button appearance="primary" onClick={() => {
+                                                    openModalVote();
+                                                    setIdTopic(topic._id);
+                                                    numeroTemaSeleccionado = 0;
+                                                    numeroTemaSeleccionado = index + 1;
+                                                    notificarParticipantes(index + 1);
+                                                }} style={{height: '60px'}}>
                                                     <Inline alignInline="center">
-                                                        <Image src={i__TextoLibreBlanco} alt="Simple example" testId="image" style={{ width: '48px', height: '48px', marginTop: '7px' }} />
-                                                        <div style={{ marginTop: '11.72px', marginLeft: '7px'}}>Votación</div>
+                                                        <Image src={i__VotacionBlanco} alt="Simple example"
+                                                               testId="image" style={{
+                                                            width: '48px',
+                                                            height: '48px',
+                                                            marginTop: '7px'
+                                                        }}/>
+                                                        <div
+                                                            style={{marginTop: '11.72px', marginLeft: '7px'}}>Votación
+                                                        </div>
                                                     </Inline>
                                                 </Button>
                                             </Inline>
                                         </div>
-                                        <hr />
+                                        <hr/>
                                     </div>
                                 ))}
-                            {/* Cambio de seccion: se permiten añadir NUEVOS temas y se permite añadir elementos dialogicos  */}
-                            <br />
-                            {/* <Button appearance="primary">Añadir nuevo tema</Button> */}
-                            <Button appearance="primary" onClick={() => {openModalNuevoTema(); notificarParticipantesVer2()}}>Añadir nuevo tema</Button>
-                            <br />
-                            <br /> 
+                                {/* Cambio de seccion: se permiten añadir NUEVOS temas y se permite añadir elementos dialogicos  */}
+                                <br/>
+                                {/* <Button appearance="primary">Añadir nuevo tema</Button> */}
+                                <Button appearance="primary" onClick={() => {
+                                    openModalNuevoTema();
+                                    notificarParticipantesVer2()
+                                }}>Añadir nuevo tema</Button>
+                                <br/>
+                                <br/>
                             </>
                         )}
 
@@ -2174,21 +2392,32 @@ return (
                             <>
                                 {!iniciarReunion ? (
                                     <>
-                                    <ButtonGroup>
-                                        <Inline space="space.200" alignInline="center">
-                                        <Button isDisabled onClick={() => cancelarOperacion()} style={{ marginTop: '20px', marginBottom: '20px'}}>Cancelar</Button>
-                                        <Button isDisabled appearance="primary" onClick={() => guardarFormularioFinal()} style={{ marginTop: '20px', marginBottom: '20px'}}>Finalizar En-reunión</Button>
-                                        </Inline>
-                                    </ButtonGroup>
+                                        <ButtonGroup>
+                                            <Inline space="space.200" alignInline="center">
+                                                <Button isDisabled onClick={() => cancelarOperacion()} style={{
+                                                    marginTop: '20px',
+                                                    marginBottom: '20px'
+                                                }}>Cancelar</Button>
+                                                <Button isDisabled appearance="primary"
+                                                        onClick={() => guardarFormularioFinal()}
+                                                        style={{marginTop: '20px', marginBottom: '20px'}}>Finalizar
+                                                    En-reunión</Button>
+                                            </Inline>
+                                        </ButtonGroup>
                                     </>
-                                ):(
+                                ) : (
                                     <>
-                                    <ButtonGroup>
-                                        <Inline space="space.200" alignInline="center">
-                                        <Button onClick={() => cancelarOperacion()} style={{ marginTop: '20px', marginBottom: '20px'}}>Cancelar</Button>
-                                        <Button appearance="primary" onClick={() => guardarFormularioFinal()} style={{ marginTop: '20px', marginBottom: '20px'}}>Finalizar En-reunión</Button>
-                                        </Inline>
-                                    </ButtonGroup>
+                                        <ButtonGroup>
+                                            <Inline space="space.200" alignInline="center">
+                                                <Button onClick={() => cancelarOperacion()} style={{
+                                                    marginTop: '20px',
+                                                    marginBottom: '20px'
+                                                }}>Cancelar</Button>
+                                                <Button appearance="primary" onClick={() => guardarFormularioFinal()}
+                                                        style={{marginTop: '20px', marginBottom: '20px'}}>Finalizar
+                                                    En-reunión</Button>
+                                            </Inline>
+                                        </ButtonGroup>
                                     </>
                                 )}
                             </>
@@ -2196,8 +2425,11 @@ return (
                             <>
                                 <ButtonGroup>
                                     <Inline space="space.200" alignInline="center">
-                                        <Button isDisabled onClick={() => cancelarOperacion()} style={{ marginTop: '20px', marginBottom: '20px'}}>Cancelar</Button>
-                                        <Button isDisabled appearance="primary" onClick={() => guardarFormularioFinal()} style={{ marginTop: '20px', marginBottom: '20px'}}>Finalizar En-reunión</Button>
+                                        <Button isDisabled onClick={() => cancelarOperacion()}
+                                                style={{marginTop: '20px', marginBottom: '20px'}}>Cancelar</Button>
+                                        <Button isDisabled appearance="primary" onClick={() => guardarFormularioFinal()}
+                                                style={{marginTop: '20px', marginBottom: '20px'}}>Finalizar
+                                            En-reunión</Button>
                                     </Inline>
                                 </ButtonGroup>
                             </>
@@ -2205,11 +2437,10 @@ return (
 
                     </div>
                 </>
-            
-            // para ir a la siguiente etapa (post-reunion)
+
+                // para ir a la siguiente etapa (post-reunion)
             ) : (
-                //<FormularioPostReunion />
-                <></>
+                <FormularioPostReunion />
             )}
 
             {/* ********************************************************************************************************************************************************** */}
@@ -2987,7 +3218,7 @@ return (
                             <Button appearance="subtle">Informacion de la reunión</Button>
                         </ModalHeader>
                         <ModalBody>
-                            
+
                             <Box padding="space.400" backgroundColor="color.background.discovery" xcss={boxStyles}>
                                 <h2 style={{marginTop:'0px', textAlign:'center'}}>Descripción</h2>
                                 <br />
@@ -3044,7 +3275,7 @@ return (
                                 {/* <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Asistentes:</h3>
                                 {meetingminute?.assistants.map((assistant, index) => (
                                     <h3 key={index} style={{ marginLeft: '30px', marginTop: "5px", marginBottom: "5px" }}> {assistant}</h3>
-                                ))} */}                    
+                                ))} */}
 
                                 {/* <h3 style={{ marginTop: "5px", marginBottom: "5px" }}>Links: {meetingminute?.links}</h3> */}
                                 {meetingminute?.links.length != 0 && (
@@ -3058,7 +3289,7 @@ return (
                                 )}
                             </Box>
                             <br />
-                            
+
 
                             {/* {compromisosProyecto?.length != 0 && (
                                 <>

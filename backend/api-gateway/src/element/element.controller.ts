@@ -63,6 +63,13 @@ export class ElementController {
     return this._clientProxyElement.send(ElementMSG.FIND_ALL, '');
   }
 
+
+  @Post('/get/byids')
+  @ApiOperation({ summary: 'Obtener elementos dialogicos por una lista de id' })
+  getElementsById(@Body() ids: string[]) {
+    return this._clientProxyElement.send(ElementMSG.GET_BY_IDS, ids);
+  }
+
   /*  
      Metodo para  obtener elementos a partir del email de usuarios encargados.
      entrada: id del usuario encargado. 

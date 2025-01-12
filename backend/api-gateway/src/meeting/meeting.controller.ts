@@ -180,4 +180,5 @@ export class MeetingController {
   countUsers(@Req() req: any) {
     return this._clientProxyMeeting.send('countmeetings', '');
   }
+
 }

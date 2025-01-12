@@ -15,6 +15,7 @@ export class MeetingMinuteDTO{
    realStartTime: string; // fecha y hora real de inicio de "en-reunión"
    realEndTime: string; // fecha y hora real de término de "en-reunión"
    topics: string[] | TopicDto[]; // nombres de los temas añadidos al acta
+   vote: string; // id de la votación asociada
    participants: string[]; // emails de invitados
    assistants: string[]; // emails de invitados que si asistieron
    secretaries: string[]; // emails de secretarios

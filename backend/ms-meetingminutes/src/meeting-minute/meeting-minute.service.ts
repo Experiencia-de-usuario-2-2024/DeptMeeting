@@ -137,4 +137,23 @@ export class MeetingMinuteService {
     return ids.map(id => topics.find(topic => topic._id.toString() === id));
   }
 
+  agregarElementoATema(idTopic: string, elementId: string) {
+    return this.modelTopic.findByIdAndUpdate(
+        idTopic,
+        { $push: { elements: elementId } },
+        { new: true }
+    ).exec();
+  }
+
+  votar(idMeetingMinute: string, voteId: string) {
+    return this.model.findByIdAndUpdate(
+        idMeetingMinute,
+        { $set: { vote: voteId } },
+        { new: true }
+    ).exec();
+  }
+
+  async obtenerActasNoAprobadas() {
+    return await this.model.find({ isApproved: false });
+  }
 }

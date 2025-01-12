@@ -242,10 +242,36 @@ export class MeetingMinuteController {
     return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.CREATE_TOPIC, params);
   }
 
+  @Put('/topic/:id/element')
+  @ApiOperation({ summary: 'Agregar elemento a tema de acta dialogica' })
+    addElementToTopic(@Param('id') id: string, @Body() elementId: string) {
+    const params = {
+      id: id,
+      elementId: elementId,
+    }
+    return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.ADD_ELEMENT_TO_TOPIC, params);
+  }
+
   @Delete('/topic/:id')
     @ApiOperation({ summary: 'Eliminar tema de acta dialogica' })
     deleteTopic(@Param('id') id: string) {
         return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.DELETE_TOPIC, id);
+    }
+
+    @Put('/:id/vote/:voteId')
+    @ApiOperation({ summary: 'Votar aprobación acta dialogica' })
+    addVote(@Param('id') id: string, @Param('voteId') voteId: string) {
+        const params = {
+            id: id,
+            voteId: voteId,
+        }
+        return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.VOTE, params);
+    }
+
+    @Get('/notapproved')
+    @ApiOperation({ summary: 'Obtener actas dialogicas no aprobadas' })
+    getMeetingMinutesNotApproved() {
+        return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.GET_MEEETING_MINUTES_NOT_APPROVED, '');
     }
 
 }

@@ -178,4 +178,9 @@ salida: valor booleano de confirmación.
     console.log("Respuesta de la actualización de votos: ", response);
     return response;
   }
+
+  async getByIds(ids: string[]) {
+    const elements = await this.model.find({ _id: { $in: ids } }).lean();
+    return ids.map(id => elements.find(element => element._id.toString() === id));
+  }
 }

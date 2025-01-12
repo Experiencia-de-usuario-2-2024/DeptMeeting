@@ -89,6 +89,28 @@ class MeetingMinuteServices {
         throw error;
     }
   }
+
+  async addElementToTopic(idTopic: string, elementId: string) {
+    try {
+      const response = await httpClient.put(`/meeting-minute/topic/${idTopic}/element`, elementId);
+      console.log("Elemento agregado al tema: ", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error al agregar el elemento al tema", error);
+      throw error;
+    }
+  }
+
+  async addVoteToMeetingMinute(idMeetingMinute: string, voteId: string) {
+    try {
+      const response = await httpClient.put(`/meeting-minute/${idMeetingMinute}/vote/${voteId}`);
+      console.log("Voto agregado a la minuta: ", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error al agregar el voto a la minuta", error);
+      throw error;
+    }
+  }
 }
 
 export default new MeetingMinuteServices();
