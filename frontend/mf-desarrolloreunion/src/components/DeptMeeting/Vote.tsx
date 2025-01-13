@@ -4,6 +4,7 @@ import ProgressBar from "@atlaskit/progress-bar";
 import SectionMessage from "@atlaskit/section-message";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
+import meetingMinuteServices from "../../services/meeting-minute.services";
 
 
 const tokenUser = localStorage.getItem('tokenUser');
@@ -14,6 +15,7 @@ interface VoteELementProps {
     _id: string;
     description: string;
     number?: number;
+    participants?: string[];
     position?: string;
     dateLimit?: string;
     vote:   {
@@ -22,6 +24,7 @@ interface VoteELementProps {
         voters: {voter: string, option: string}[],
         result: string,
     };
+    idMeetingMinute?: string;
 }
 
 const Vote: React.FC<{voteElement: VoteELementProps}> = ( {voteElement }) => {
@@ -56,6 +59,18 @@ const Vote: React.FC<{voteElement: VoteELementProps}> = ( {voteElement }) => {
                     },
                },
             );
+
+            console.log("La respuesta es: ", response.data);
+            if(voteElement.idMeetingMinute){
+                const votacion = response.data;
+                let opcion;
+                votacion.vote.options[0]['option'] === 'Aprobar'? opcion = votacion.vote.options[0] : opcion = votacion.vote.options[1];
+                if (opcion.votes >= Math.floor(voteElement.participants.length / 2) + 1) {
+                    const response = await meetingMinuteServices.update(voteElement.idMeetingMinute, {isApproved: true});
+                    console.log("La respuesta es: ", response);
+                }
+            }
+
         } catch (error) {
             console.error(error);
         }

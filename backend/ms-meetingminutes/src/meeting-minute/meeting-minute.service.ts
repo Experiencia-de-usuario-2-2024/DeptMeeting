@@ -146,6 +146,7 @@ export class MeetingMinuteService {
   }
 
   agregarComisionATema(idTopic: string, comissionId: string) {
+    console.log('payload', comissionId);
     return this.modelTopic.findByIdAndUpdate(
         idTopic,
         {$push: {comissions: comissionId}},

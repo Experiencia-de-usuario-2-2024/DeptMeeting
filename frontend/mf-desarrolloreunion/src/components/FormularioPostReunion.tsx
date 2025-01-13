@@ -539,7 +539,7 @@ const FormularioPostReunion: React.FC = () => {
                 const response = await elementServices.create({
                     description: "Votación para Aprobar el Acta",
                     type: "Votacion",
-                    participants: [],
+                    participants: meetingminuteTemp.participants,
                     topic: numeroTemaSeleccionado,
                     meeting: localStorage.getItem('idReunion'),
                     project: idProyecto,
@@ -550,12 +550,14 @@ const FormularioPostReunion: React.FC = () => {
                     vote: {
                         type: "Publica",
                         options: [{ option: "Aprobar", votes: 0}, { option: "Rechazar", votes: 0}],
-                    }
+                    },
                 });
                 setVotacionFinal(response);
-                console.log("LO QUE TE IMPÓRTA VER:", response)
+                console.log("LO QUE TE IMPÓRTA VER:", response);
                 const raas = await meetingMinuteServices.addVoteToMeetingMinute(idMeetingMinute, response._id);
+                const responseActaApproved = await meetingMinuteServices.update(idMeetingMinute, {isApproved: false});
                 console.log("votacion finalxd raas:", raas);
+                console.log("acta sin aprobar:", responseActaApproved);
             }
         };
 
@@ -1173,7 +1175,7 @@ const FormularioPostReunion: React.FC = () => {
                                     <hr/>
                                 </div>
                             ))}
-                            {!!votacionFinal && <Vote voteElement={votacionFinal} />}
+                            {!!votacionFinal && <Vote voteElement={{...votacionFinal, idMeetingMinute: meetingminute._id}} />}
                         </Box>
 
 

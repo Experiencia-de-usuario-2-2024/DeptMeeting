@@ -32,6 +32,7 @@ export class ProjectController {
   */
   @MessagePattern(ProjectMSG.CREATE)
   async create(@Payload() payload: any) {
+    console.log('Creando proyecto', payload);
     return await this.projectService.createProject(payload);
   }
 

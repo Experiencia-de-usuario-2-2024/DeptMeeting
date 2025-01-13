@@ -62,6 +62,7 @@ export class ProjectController {
     const userEmail = req.user.email;
     if (projectDTO.userOwner === undefined) projectDTO.userOwner = userEmail;
     if (projectDTO.userMembers === undefined) projectDTO.userMembers = userEmail;
+    console.log('Creando proyecto', projectDTO);
     return await this._clientProxyProject.send(ProjectMSG.CREATE, projectDTO);
   }
 

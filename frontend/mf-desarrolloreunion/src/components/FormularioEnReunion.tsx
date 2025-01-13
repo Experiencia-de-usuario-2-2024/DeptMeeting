@@ -1757,6 +1757,7 @@ const FormularioEnReunion: React.FC = () => {
 
     const agregarComision = (comission: any) => {
 
+        console.log("comission", comission);
         meetingMinuteServices.addComissionToTopic(idTopic, comission._id);
 
         setDeptTopics(prevTopics =>

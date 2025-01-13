@@ -37,7 +37,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ closeModal, idMeetingMinute, topi
     const saveForm = (data) => {
         if (topic) {
             console.log('data', data);
-            meetingMinuteServices.updateTopic(formState._id, data)
+            meetingMinuteServices.updateTopic(formState._id, {description: data.description, inMeetingMinute: isChecked})
                 .then((response) => {
                     setFormState(response);
                     setTopic(response);
@@ -47,7 +47,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ closeModal, idMeetingMinute, topi
                     console.error("Error al actualizar el tema", error);
                 });
         }else {
-            meetingMinuteServices.createTopic(idMeetingMinute, data)
+            meetingMinuteServices.createTopic(idMeetingMinute, {description: data.description, inMeetingMinute: isChecked})
                 .then((response) => {
                     setFormState(response);
                     setTopic(response);

@@ -106,6 +106,7 @@ export class MeetingMinuteController {
 
     @MessagePattern(MeetingMinuteMSG.ADD_COMISSION_TO_TOPIC)
     agregarComisionATema(@Payload() payload: any) {
+        console.log('payload', payload);
         return this.meetingMinuteService.agregarComisionATema(payload.id, payload.comissionId);
     }
 

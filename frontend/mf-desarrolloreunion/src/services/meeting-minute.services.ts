@@ -103,7 +103,7 @@ class MeetingMinuteServices {
 
   async addComissionToTopic(idTopic: string, comissionId: string) {
     try {
-      const response = await httpClient.put(`/meeting-minute/topic/${idTopic}/comission`, comissionId);
+      const response = await httpClient.put(`/meeting-minute/topic/${idTopic}/comission`, {comissionId});
       console.log("Comisión agregada al tema: ", response.data);
       return response.data;
     } catch (error) {

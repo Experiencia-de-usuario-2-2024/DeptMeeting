@@ -254,11 +254,12 @@ export class MeetingMinuteController {
 
   @Put('/topic/:id/comission')
   @ApiOperation({ summary: 'Agregar comision a tema de acta dialogica' })
-    addComissionToTopic(@Param('id') id: string, @Body() comissionId: string) {
+    addComissionToTopic(@Param('id') id: string, @Body() comissionId: any) {
         const params = {
-        id: id,
-        comissionId: comissionId,
+          ...comissionId,
+          id: id,
         }
+        console.log('params', params);
         return this._clientProxyMeetingMinute.send(MeetingMinuteMSG.ADD_COMISSION_TO_TOPIC, params);
     }
 

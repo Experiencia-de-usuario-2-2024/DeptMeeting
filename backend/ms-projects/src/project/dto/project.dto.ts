@@ -5,6 +5,7 @@ export class ProjectDTO {
   description: string; // descripción del proyecto
   projectDateI: string; // fecha de inicio del proyecto --> NO SE UTILIZA
   projectDateT: string; // fecha de termino del proyecto --> NO SE UTILIZA
+  period: string;
   userOwner: string[]; // emails de usuarios jefes de proyecto
   userMembers: string[]; // emails de usuarios miembros
   userMembersOriginal: string[]; // emails de usuarios miembros VERSION ORIGINAL -> atributo nuevo. Su funcion es restaurar los usuarios originales una vez finalice la reunion en la que se invito gente externa al proyecto

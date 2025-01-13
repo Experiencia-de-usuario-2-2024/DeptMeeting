@@ -21,14 +21,17 @@ export class ProjectService {
   */
   async createProject(projectDTO: any) {
     console.log('projectDTO:', projectDTO);
-    const { idPeriod, ...restProject } = projectDTO;
-    const newProject = new this.model({...restProject, period: idPeriod});
+    const { period, ...restProject } = projectDTO;
+    const newProject = new this.model(projectDTO);
     const project = await newProject.save();
-    const period = await this.periodService.findById(idPeriod);
-    if (!period) {
+    console.log('project:', project);
+    console.log('idPeriod:', period);
+    const responsePeriod = await this.periodService.findById(period);
+    if (!responsePeriod) {
       throw new Error('Period not found');
     }
-    await this.periodService.addCommission(idPeriod, project._id.toString());
+    const response = await this.periodService.addCommission(period, project._id.toString());
+    console.log('response:', response);
     return project;
   }
 

@@ -88,7 +88,7 @@ const Proyectos: React.FC<{ periodo?: any }> = ({ periodo }) => {
                 responsePeriodo = periodo;
                 localStorage.setItem("periodoSeleccionado", periodo._id);
             }
-            if (!!responsePeriodo){
+            if (!!responsePeriodo.meetings){
                 const responseMeeting = await meetingServices.getByIds(responsePeriodo.meetings);
                 setReuniones(responseMeeting);
             }
