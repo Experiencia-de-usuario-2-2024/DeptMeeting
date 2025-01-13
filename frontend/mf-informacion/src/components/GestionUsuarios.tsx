@@ -153,7 +153,9 @@ const GestionUsuarios: React.FC<GestionUsuariosProps> = ({ onBack }) => {
   const roles = [
     { label: 'Director', value: 'director' },
     { label: 'Secretario', value: 'secretario' },
-    { label: 'Profesor', value: 'profesor' }
+    { label: 'Profesor', value: 'profesor' },
+    { label: 'Funcionario', value: 'funcionario' },
+    { label: 'Estudiante', value: 'estudiante' }
   ];
 
   const handleUpdateUser = (userId: string, updatedData: Partial<Usuario>) => {
@@ -209,17 +211,29 @@ const GestionUsuarios: React.FC<GestionUsuariosProps> = ({ onBack }) => {
           <td>
             <EditableCell>
               <Select
-                defaultValue={roles.find(role => role.value === user.type)}
+                value={roles.find(role => role.value === localEdits.type)}
                 options={roles}
-                onChange={(option: any) => setLocalEdits({
-                  ...localEdits,
-                  type: option.value
-                })}
+                onChange={(selectedOption: any) => {
+                  setLocalEdits({
+                    ...localEdits,
+                    type: selectedOption.value
+                  });
+                }}
                 menuPortalTarget={document.body}
                 styles={{
-                  container: (base) => ({
+                  control: (base) => ({
                     ...base,
-                    width: '150px'
+                    width: '200px',
+                    minHeight: '40px'
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    zIndex: 9999,
+                    width: '200px'
+                  }),
+                  menuPortal: (base) => ({
+                    ...base,
+                    zIndex: 9999
                   })
                 }}
               />
