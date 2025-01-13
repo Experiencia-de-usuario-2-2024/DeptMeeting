@@ -8,11 +8,11 @@ const containerStyles = xcss({
     display: "flex",
     justifyContent: "space-between", // El texto queda a la izquierda y las comisiones a la derecha
     alignItems: "center",
-    backgroundColor: "#CCE0FF", // Color personalizado
+    backgroundColor: "#E6F6F4", // Color personalizado
     paddingBlock: "space.200",
     paddingInline: "space.300",
     border: "1px solid",
-    borderColor: "color.border.accent.blue",
+    borderColor: "#00A499",
 });
 
 // Estilos para el contenedor de las comisiones
@@ -24,7 +24,7 @@ const comisionesContainerStyles = xcss({
 
 // Estilos individuales de cada comisión
 const comisionStyles = xcss({
-    color: "color.text.accent.blue.bolder",
+    color: "#00A499",
     backgroundColor: "elevation.surface",
     borderRadius: "border.radius.200",
     boxShadow: "elevation.shadow.overlay",
@@ -82,22 +82,29 @@ const ComisionesActivas: React.FC = () => {
                 Comisiones Activas
             </h3>
             <Box xcss={comisionesContainerStyles} as="div">
-                {comisiones.map((comision) => (
-                    <Box
-                        xcss={comisionStyles}
-                        key={comision.id}
-                        onClick={() => seleccionarComision(comision.id)}
-                    >
-                        {comision.name}
-                        <Box>
-                            <InfoIcon label="Información" size="medium" />
+                {comisiones.length > 0 ? (
+                    comisiones.map((comision) => (
+                        <Box
+                            xcss={comisionStyles}
+                            key={comision.id}
+                            onClick={() => seleccionarComision(comision.id)}
+                        >
+                            {comision.name}
+                            <Box>
+                                <InfoIcon label="Información" size="medium" />
+                            </Box>
                         </Box>
+                    ))
+                ) : (
+                    <Box xcss={comisionStyles}>
+                        No hay comisiones activas
                     </Box>
-                ))}
+                )}
             </Box>
         </Box>
     );
 };
+
 
 export default ComisionesActivas;
 /*const ComisionesActivas: React.FC = () => {
