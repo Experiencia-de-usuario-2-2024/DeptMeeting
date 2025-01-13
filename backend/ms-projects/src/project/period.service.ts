@@ -23,11 +23,11 @@ export class PeriodService {
   /*
     Método para  obtener todos los periodos
     */
-  async findAll(): Promise<IPeriod[]> {
+  async findAll(): Promise<any> {
     return await this.model.find().populate('commissions');
   }
 
-  async findById(id: string): Promise<IPeriod> {
+  async findById(id: string): Promise<any> {
     return await this.model.findById(id);
   }
 
@@ -79,9 +79,13 @@ export class PeriodService {
     return await this.model.findByIdAndUpdate(
       periodId,
       {
-        $addToSet: { userMembers: meetingId },
+        $addToSet: { meetings: meetingId },
       },
       { new: true },
     );
   }
+
+    async findOne(id: string) {
+        return await this.model.findById(id);
+    }
 }

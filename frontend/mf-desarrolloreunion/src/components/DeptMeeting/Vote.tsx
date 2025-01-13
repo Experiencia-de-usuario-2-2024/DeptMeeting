@@ -13,9 +13,9 @@ const correoElectronico = decodedToken.email;
 interface VoteELementProps {
     _id: string;
     description: string;
-    number: number;
-    position: string;
-    dateLimit: string;
+    number?: number;
+    position?: string;
+    dateLimit?: string;
     vote:   {
         type: string,
         options: {option: string, votes: number, _id: string}[],
@@ -23,8 +23,6 @@ interface VoteELementProps {
         result: string,
     };
 }
-
-
 
 const Vote: React.FC<{voteElement: VoteELementProps}> = ( {voteElement }) => {
     const [options, setOptions] = useState<string[]>([]);
@@ -82,7 +80,7 @@ const Vote: React.FC<{voteElement: VoteELementProps}> = ( {voteElement }) => {
 
     return (
         <div style={{ padding: "20px", maxWidth: "500px", margin: "auto" }}>
-            <h2 style={{ textAlign: "center" }}>{voteElement.number}.{voteElement.position}  {voteElement.description}</h2>
+            <h2 style={{ textAlign: "center" }}>{voteElement.number? voteElement.number : ""}{voteElement.position? "." +voteElement.position + " " : ""}{voteElement.description}</h2>
 
             {voted && (
                 <SectionMessage title="¡Gracias por votar!" appearance="confirmation">

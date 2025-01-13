@@ -37,6 +37,9 @@ import FormularioEnReunion from "./FormularioEnReunion";
 import MessagesInput from "./MessageInput";
 import Messages from "./Messages";
 import actaDialogicaFinal from "./ActaDialogicaFinal";
+import Topic from "./DeptMeeting/Topic";
+import meetingMinuteServices from "../services/meeting-minute.services";
+import TopicForm from "./DeptMeeting/TopicForm";
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem('tokenUser');
@@ -379,6 +382,12 @@ const FormularioPreReunion: React.FC = () => {
         });
     }
 
+    const [deptTopics, setDeptTopics] = useState<any[]>([]);
+    const setDeptTopicsInForms = (data: any) => {
+        console.log("DATAAAAAA", data);
+        console.log("DEPTOPICS", deptTopics);
+        setDeptTopics(data.topics);
+    }
 
     useEffect(() => {
 
@@ -536,6 +545,7 @@ const FormularioPreReunion: React.FC = () => {
             // window.alert("id del proyecto: " + idProyectoDeReunion)
             try {
                 // Solo se requiere del token del usuario para realizar la petición
+                console.log("La ultima wea antes de caerse:", idProyectoDeReunion);
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/project/getProjectbyID/` + idProyectoDeReunion, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -625,6 +635,11 @@ const FormularioPreReunion: React.FC = () => {
                     if (!localStorage.getItem('idMeetingMinute')) {
                         localStorage.setItem('idMeetingMinute', response.data._id);
                     }
+                    console.log("Antes:", response.data.topics);
+                    const newTopics = await meetingMinuteServices.getTopicsInMeetingMinuteByIds(response.data[0].topics);
+                    console.log("Nuevos topicos:", newTopics);
+                    setDeptTopics(newTopics);
+
                 }
             } catch (error) {
                 console.log("ERROR AL OBTENER LA INFORMACION DEL ACTA DIALOGICA");
@@ -989,10 +1004,7 @@ const FormularioPreReunion: React.FC = () => {
     }
 
     // Funcion que se encarga de eleminar el ultimo tema añadido
-    const borrarUltimoTema = () => {
-        listaTemas.pop();
-        closeModalTemasBorrar();
-    }
+
 
     // FUNCION NO UTILIZADA
     const verEnlacesActuales = () => {
@@ -1012,7 +1024,7 @@ const FormularioPreReunion: React.FC = () => {
     const guardarFormularioFinal = () => {
 
         // paso 1: revisar que los campos esten completos
-        if (objetivoValue === "" || objetivoValue === " " || lugarValue === "" || lugarValue === " " || fechaInicioValue === "" || fechaInicioValue === " " || fechaTerminoValue === "" || fechaTerminoValue === " " || listaParticipantesValueFinal.length === 0 || listaAnfitrionesValueFinal.length === 0 || secretarioValue === "" || secretarioValue === " " || listaTemas.length === 0) {
+        if (objetivoValue === "" || objetivoValue === " " || lugarValue === "" || lugarValue === " " || fechaInicioValue === "" || fechaInicioValue === " " || fechaTerminoValue === "" || fechaTerminoValue === " " || listaParticipantesValueFinal.length === 0 || listaAnfitrionesValueFinal.length === 0 || secretarioValue === "" || secretarioValue === " " || deptTopics.filter(topic => topic.inMeetingMinute === true).length === 0) {
             window.alert("Debe completar todos los campos obligatorios (*) antes de continuar");
             return;
         }
@@ -1052,7 +1064,7 @@ const FormularioPreReunion: React.FC = () => {
                     startHour: horaInicio,
                     endHour: horaTermino,
                     // La hora de inicio se indicara en el componente "FormularioEnReunion", esto cuando el anfitrion presione "Comenzar Reunion"
-                    topics: listaTemas,
+                    topics: deptTopics.filter(topic => topic.inMeetingMinute === true).map(topic => topic._id),
                     participants: listaParticipantesValueFinal,
                     secretaries: [secretarioValue],
                     leaders: listaAnfitrionesValueFinal,
@@ -1162,23 +1174,21 @@ const FormularioPreReunion: React.FC = () => {
                 listaParticipantesValueFinal = listaParticipantesValueFinal.filter((participante) => participante !== '');
                 listaAnfitrionesValueFinal = listaAnfitrionesValueFinal.filter((anfitrion) => anfitrion !== '');
                 const response = await axios.post(`${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/notify/state/change`, {
-                    meetingMinuteDTO: {
-                        title: objetivoValue,
-                        place: lugarValue,
-                        startTime: fechaInicio,
-                        endTime: fechaTermino,
-                        startHour: horaInicio,
-                        endHour: horaTermino,
-                        topics: listaTemas,
-                        participants: listaParticipantesValueFinal,
-                        secretaries: [secretarioValue],
-                        leaders: listaAnfitrionesValueFinal,
-                        links: listaEnlaces,
-                        meeting: idReunion,
-                        number: reunion?.number,
-                        fase: "pre-reunión",
-                        nombreCortoProyecto: nombreCortoProyectoAux,
-                    },
+                    title: objetivoValue,
+                    place: lugarValue,
+                    startTime: fechaInicio,
+                    endTime: fechaTermino,
+                    startHour: horaInicio,
+                    endHour: horaTermino,
+                    topics: listaTemas,
+                    participants: listaParticipantesValueFinal,
+                    secretaries: [secretarioValue],
+                    leaders: listaAnfitrionesValueFinal,
+                    links: listaEnlaces,
+                    meeting: idReunion,
+                    number: reunion?.number,
+                    fase: "pre-reunión",
+                    nombreCortoProyecto: nombreCortoProyectoAux,
                 }, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`
@@ -1540,6 +1550,28 @@ const FormularioPreReunion: React.FC = () => {
     //**********************************************************************
     //**********************************************************************
 
+    const [deptIsOpenTopics, setDeptIsOpenTopics] = useState(false);
+    const deptOpenModalTopics = useCallback(() => setDeptIsOpenTopics(true), []);
+    const deptCloseModalTopics = useCallback(() => setDeptIsOpenTopics(false), []);
+
+    const removeTopic = (id: string) => {
+        // Eliminar el tema con el id dado
+        const updatedTopics = deptTopics.filter(topic => topic._id !== id);
+
+        // Actualizar el estado con la lista modificada
+        setDeptTopics(updatedTopics);
+    };
+
+    const updateTopicSugerencia = (id: string, inMeetingMinute: boolean) => {
+        setDeptTopics((prevTopics) =>
+            prevTopics.map((tema) =>
+                tema._id === id ? { ...tema, inMeetingMinute: inMeetingMinute } : tema
+            )
+        );
+    }
+
+    const [isTopic, setIsTopic] = useState(false);
+
     // Contenido que se muestra 
     return (
         <div>
@@ -1561,22 +1593,10 @@ const FormularioPreReunion: React.FC = () => {
                     {/* Se comenta debido a solicitud de profesor guia: No es necesario mostrar el titulo de la seccion considerando que se tiene "ProgressTracker"*/}
                     {/* <h1 style={{ textAlign: 'center', fontSize: '60px' }}>Pre-reunión</h1> */}
                     {/* <h3 style={{ textAlign: 'center', marginLeft: '20px', marginRight: '20px'}}>Importante: Si recarga la página o la abandona, se perderá la información previamente ingresada en el formulario, por lo que deberá comenzar nuevamente. Los datos serán guardados una vez se presione el botón "Finalizar Pre-reunión"</h3> */}
-                    <Tooltip
-                        component={InlineDialog}
-                        // informacion del proyecto
-                        content={() =>
-                            <>
-                                <p style={{ textAlign: 'center', marginLeft: '20px', marginRight: '20px' }}>Si recarga la página o la abandona, se perderá la información previamente ingresada en el formulario, por lo que deberá comenzar nuevamente. Los datos serán guardados una vez se presione el botón "Finalizar Pre-reunión"</p>
-                            </>
-                        }
-                    >
-                        {(tooltipProps) => (
-                            <>
-                                <br />
                                 {/* <Button iconBefore={<WarningIcon label="" size="large" />} appearance="warning" style={{ height: "100%", width: "170px" }} {...tooltipProps}> IMPORTANTE </Button> */}
                                 {/* <ProgressTracker items={items} /> */}
                                 {/* PARTE FIJA DEL MICROFRONTEND: AVATAR GROUP, CHAT y BARRA DE PROGRESO DE LA REUNION */}
-                                <div style={{position: "fixed", top: 96, width: "100%", zIndex:10}}>
+                                <div style={{position: "fixed", top: 80, width: "100%", zIndex:10}}>
                                     <Inline>
                                         {/* CONTENIDO DE LA IZQUIERDA: fotos de los participantes de la reunion y boton que da acceso al chat */}
                                         {/* <div style={{textAlign: "left", height: '100px', width: '450px', backgroundColor: 'white'}}> */}
@@ -1658,10 +1678,6 @@ const FormularioPreReunion: React.FC = () => {
                                     </Inline>
                                 </div>
 
-                            </>
-                        )}
-                    </Tooltip>
-
                     {/* <ProgressTracker items={items} /> */}
 
                     {/* ACTUALIZACION: ESTO YA NO ES ASI Y CUALQUIER USUARIO PUEDE COMPLETAR EL FORMULARIO DE PRE-REUNION */}
@@ -1685,6 +1701,11 @@ const FormularioPreReunion: React.FC = () => {
                                         <br/>
                                         <br/>
                                         <br/>
+                                        <br/>
+                                        <br/>
+                                        <br/>
+                                        <br/>
+
                                         <Inline space="space.500" alignInline="center" shouldWrap>
                                             <FechaInicio/>
                                             <FechaTermino/>
@@ -1720,7 +1741,7 @@ const FormularioPreReunion: React.FC = () => {
                             </Form>
 
                             {!iniciarFormulario && <>
-                                <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br /></>}
+                            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br /></>}
 
                             {/* me aseguro que el usuario presione el boton antes de continuar */}
                             {iniciarFormulario ? (
@@ -1734,23 +1755,31 @@ const FormularioPreReunion: React.FC = () => {
                                         <h2>Temas: </h2> 
                                         {/* 19.920px */}
                                         <div style={{ marginTop: '17px' }}>
-                                            <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="subtle" onClick={() => openModalTemas()}></Button>
+                                            <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="subtle" onClick={() => deptOpenModalTopics()}></Button>
                                         </div>
                                     </Inline>
                                     {/* FORMULARIO SEGUNDA PARTE: añadir los temas que se abordaran en la reunion */}
                                     <div>
-                                        {listaTemas.map((tema, index) => (
-                                            <h3 style={{marginLeft:'20px'}} key={index}> {index + 1}. {tema}</h3>
-                                        ))}
+                                        {deptTopics
+                                            .filter(tema => tema.inMeetingMinute)
+                                            .map((tema, index) => (
+                                                <Topic
+                                                    key={tema._id || index}
+                                                    topic={tema}
+                                                    index={index}
+                                                    removeTopic={removeTopic}
+                                                    updateTopicSugerencia={updateTopicSugerencia}
+                                                />
+                                            ))}
                                     </div>
                                     <FormFooter>
                                         <Inline space="space.200" shouldWrap>
                                             {/* <Button appearance="danger" onClick={() => borrarUltimoTema()}>Borrar último tema</Button> */}
-                                            <Button iconBefore={<TrashIcon label="" size="medium" />} appearance="danger" onClick={() => openModalTemasBorrar()}>Borrar último tema</Button>
                                             {/* <Button onClick={() => verTemasActuales()}>Ver temas añadidos</Button> */}
-                                            <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="primary" onClick={() => openModalTemas()}> Añadir tema </Button>
+                                            <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="primary" onClick={() => {setIsTopic(true); deptOpenModalTopics()}}> Añadir tema </Button>
                                         </Inline>
                                     </FormFooter>
+
                                     <div>
                                         <br />
                                         <hr></hr>
@@ -1760,21 +1789,27 @@ const FormularioPreReunion: React.FC = () => {
                                         <h2>Sugerencias: </h2> 
                                         {/* 19.920px */}
                                         <div style={{ marginTop: '17px' }}>
-                                            <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="subtle" onClick={() => openModalTemas()}></Button>
+                                            <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="subtle" onClick={() => deptOpenModalTopics()}></Button>
                                         </div>
                                     </Inline>
                                     {/* FORMULARIO SEGUNDA PARTE: añadir los temas que se abordaran en la reunion */}
                                     <div>
-                                        {listaTemas.map((tema, index) => (
-                                            <h3 style={{marginLeft:'20px'}} key={index}> {index + 1}. {tema}</h3>
-                                        ))}
+                                        {deptTopics
+                                            .filter(tema => !tema.inMeetingMinute)
+                                            .map((tema, index) => (
+                                                <Topic
+                                                    key={tema._id || index}
+                                                    topic={tema}
+                                                    index={index}
+                                                    removeTopic={removeTopic}
+                                                    updateTopicSugerencia={updateTopicSugerencia}
+                                                />
+                                            ))}
                                     </div>
                                     <FormFooter>
                                         <Inline space="space.200" shouldWrap>
-                                            {/* <Button appearance="danger" onClick={() => borrarUltimoTema()}>Borrar último tema</Button> */}
-                                            <Button iconBefore={<TrashIcon label="" size="medium" />} appearance="danger" onClick={() => openModalTemasBorrar()}>Borrar última sugerencia</Button>
                                             {/* <Button onClick={() => verTemasActuales()}>Ver temas añadidos</Button> */}
-                                            <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="primary" onClick={() => openModalTemas()}> Añadir sugerencia </Button>
+                                            <Button iconBefore={<AddIcon label="" size="medium" />} type="submit" appearance="primary" onClick={() => {setIsTopic(false); deptOpenModalTopics()}}> Añadir sugerencia </Button>
                                         </Inline>
                                     </FormFooter>
                                     <div>
@@ -1848,25 +1883,24 @@ const FormularioPreReunion: React.FC = () => {
             <ModalTransition>
                 {isOpenTemas && (
                     <Modal onClose={closeModalTemas} shouldScrollInViewport>
-
                         <Form<{ username: string }>
                             onSubmit={(data) => {
                                 // console.log('form data', data);
                                 return new Promise((resolve) => setTimeout(resolve, 2000)).then(() =>
-                                    data.username === 'error' ? { username: 'IN_USE' } : undefined,
+                                    data.username === 'error' ? {username: 'IN_USE'} : undefined,
                                 );
                             }}
                         >
                             {/* <form> */}
-                            {({ formProps, submitting }) => (
-                                <form {...formProps}>
+                            {({formProps, submitting}) => (
 
+                                <form {...formProps} >
 
                                     <ModalHeader>
                                         <ModalTitle>Añadir Tema</ModalTitle>
                                     </ModalHeader>
                                     <ModalBody>
-                                        <Temas />
+                                        <Temas/>
                                     </ModalBody>
 
                                     <ModalFooter>
@@ -1885,6 +1919,9 @@ const FormularioPreReunion: React.FC = () => {
             </ModalTransition>
 
 
+            {deptIsOpenTopics && (
+                <TopicForm closeModal={deptCloseModalTopics} idMeetingMinute={meetingminute._id} setTopic={setDeptTopicsInForms} isTopic={isTopic} type={"Guardar"}/>)
+            }
             {/* ********************************************************************************************************************************************************** */}
             {/* ********************************************************************************************************************************************************** */}
             {/* ********************************************************************************************************************************************************** */}

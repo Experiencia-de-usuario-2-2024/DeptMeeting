@@ -134,4 +134,9 @@ export class MeetingController {
   async countMeetings(@Payload() payload: any) {
     return await this.meetingService.countMeetings();
   }
+
+  @MessagePattern(MeetingMSG.FIND_BY_IDS)
+  async findMeetingByIds(@Payload() ids: string[]){
+    return await this.meetingService.findMeetingByIds(ids);
+  }
 }

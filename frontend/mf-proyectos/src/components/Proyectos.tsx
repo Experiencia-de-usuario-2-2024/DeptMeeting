@@ -1,11 +1,17 @@
 import React, { useEffect } from "react";
 import { Box, Stack, xcss } from "@atlaskit/primitives";
 import axios from "axios";
-import Button from "@atlaskit/button";
+import Button, {ButtonGroup} from "@atlaskit/button";
 import FormularioNuevaComision from "./FormularioNuevaComision";
 import Reuniones from "./Reuniones";
 import PeriodosConsejos from "./PeriodosConsejos";
 import ArrowLeftIcon from "@atlaskit/icon/glyph/arrow-left";
+import projectServices from "../services/project.services";
+import meetingServices from "../services/meeting.services";
+import CheckIcon from "@atlaskit/icon/glyph/check";
+import MoreIcon from "@atlaskit/icon/glyph/more";
+import NewFormularioReunion from "./Deptmeeting/NewFormularioReunion";
+import InfoReunion from "./InfoReunion";
 
 // Se obtiene el token del usuario logeado
 const tokenUser = localStorage.getItem("tokenUser");
@@ -42,7 +48,7 @@ const boxStyles = xcss({
     },
 });
 
-const Proyectos: React.FC<{ periodo?: string }> = ({ periodo }) => {
+const Proyectos: React.FC<{ periodo?: any }> = ({ periodo }) => {
     // Interfaz para los proyectos del usuario
     interface ProyectosUser {
         shortName: string; //false *
@@ -61,24 +67,32 @@ const Proyectos: React.FC<{ periodo?: string }> = ({ periodo }) => {
     const [mostrarFormulario, setMostrarFormulario] = React.useState(false);
     // Estado para mostrar el proyecto con su información y reuniones
     const [verProyecto, setVerProyecto] = React.useState(false);
+    const [reuniones, setReuniones] = React.useState<any[]>([]);
+    const [creandoReunion, setCreandoReunion] = React.useState(false);
+    const [verReunion, setVerReunion] = React.useState(false);
 
     // Estado para guardar el período elegido
-    const [periodoElegido, setPeriodoElegido] = React.useState("");
+    const [periodoElegido, setPeriodoElegido] = React.useState<any>(null);
 
     // Obtener todos los proyectos del usuario al inicio
     const [proyectosUser, setProyectosUser] = React.useState<ProyectosUser[]>([]);
 
     useEffect(() => {
         // prioriza el prop si viene, o de localStorage si no.
-        if (periodo) {
-            setPeriodoElegido(periodo);
-            localStorage.setItem("periodoSeleccionado", periodo);
-        } else {
-            const periodoGuardado = localStorage.getItem("periodoSeleccionado");
-            if (periodoGuardado) {
-                setPeriodoElegido(periodoGuardado);
+        console.log("prop:", periodo);
+        const fetchData = async () => {
+            let responsePeriodo;
+            if (!periodo){
+                responsePeriodo = await projectServices.getPeriod(localStorage.getItem("periodoSeleccionado"));
+            } else {
+                responsePeriodo = periodo;
+                localStorage.setItem("periodoSeleccionado", periodo._id);
             }
+            const responseMeeting = await meetingServices.getByIds(responsePeriodo.meetings);
+            setPeriodoElegido(responsePeriodo);
+            setReuniones(responseMeeting);
         }
+        fetchData();
         // Obtener valor de variable almacenada en el localStorage (para saber si se tiene que mostrar o no el formulario apenas carga la pagina)
         const storedValue = localStorage.getItem("mostrarFormulario");
         if (storedValue) {
@@ -92,13 +106,6 @@ const Proyectos: React.FC<{ periodo?: string }> = ({ periodo }) => {
             const parsedValue2 = JSON.parse(storedValue2);
             setVerProyecto(parsedValue2);
         }
-
-        // Obtener el período guardado en localStorage (para mostrarlo como título)
-        const periodoGuardado = localStorage.getItem("periodoSeleccionado");
-        if (periodoGuardado) {
-            setPeriodoElegido(periodoGuardado);
-        }
-
         // Función para obtener los proyectos del usuario
         async function obtenerProyectosUser() {
             try {
@@ -164,27 +171,88 @@ const Proyectos: React.FC<{ periodo?: string }> = ({ periodo }) => {
         }
     };
 
+    const seleccionReunion = (id: string, name: string, state: string) => {
+        console.log("Que quieres crack?");
+        console.log("Viendo la reunion: ", name, "con el id: ", id);
+        const newValue = !verReunion;
+        localStorage.setItem('verReunion', JSON.stringify(newValue));
+        // Guardar el id de la reunion seleccionada en local storage, para posteriormente cargar la informacion de la reunion en la respectiva ventana
+        localStorage.setItem('idReunion', id);
+        // Guardar el estado de la reunion seleccionada
+        localStorage.setItem('estadoReunion', state);
+        setVerReunion(!verReunion);
+    }
+
+    const nuevaReunion = () => {
+        setCreandoReunion(true)
+    }
+
+    const closeForm = () => {
+        setCreandoReunion(false)
+    }
+
     // 1. Si el usuario decidió “volver a períodos”, mostramos <PeriodosConsejos />
     if (verPeriodos) {
         return <PeriodosConsejos />;
     }
 
+
     // 2. Caso contrario, mostramos la vista de Proyectos normal
     return (
+        creandoReunion? (<NewFormularioReunion period={periodo} closeForm={closeForm} nMeeting={reuniones.length}/>) : (
+            verReunion? <InfoReunion/> :(
         <Stack space="space.100">
-            {!verProyecto && (
-                <h1 style={{ textAlign: "center" }}>Periodo {periodoElegido}</h1>
+            {!verProyecto && !!periodoElegido && (
+                <>
+                    <h1 style={{textAlign: "center"}}>Periodo {periodoElegido.name}</h1>
+                    {reuniones.map((reunion) => (
+                        <>
+                            <Stack space="space.100">
+                                {reuniones.map((reunion) => (
+                                    <>
+                                        {reunion.state.toLowerCase() === "finalizada" ? (
+                                            // CASO DE UNA REUNION FINALIZADA
+                                            <Box xcss={boxStyles} as="li" key={reunion._id}
+                                                 onClick={() => seleccionReunion(reunion._id, reunion.name, reunion.state)}>
+                                                {/* <h4 style={{ marginTop: "13.5px", marginBottom:"13.5px" }}>{reunion.name}</h4> */}
+                                                <h4 style={{marginTop: "13.5px", marginBottom: "13.5px"}}>{reunion.name}
+                                                    <CheckIcon label="Check" size="small"/></h4>
+                                            </Box>
+                                        ) : (
+                                            // CASO DE UNA REUNION NO FINALIZADA
+                                            <Box xcss={boxStyles} as="li" key={reunion._id}
+                                                 onClick={() => seleccionReunion(reunion._id, reunion.name, reunion.state)}>
+                                                <h4 style={{marginTop: "13.5px", marginBottom: "13.5px"}}>{reunion.name}
+                                                    <MoreIcon label="Check" size="small"/></h4>
+                                            </Box>
+                                        )}
+
+                                        {/* <Box xcss={boxStyles} as="li" key={reunion._id} onClick={() => seleccionReunion(reunion._id, reunion.name, reunion.state)}>
+                                                            <h4 style={{ marginTop: "13.5px", marginBottom:"13.5px" }}>{reunion.name}</h4>
+                                                        </Box> */}
+
+                                    </>
+                                ))}
+                            </Stack>
+
+                            {/* opcion de regresar y crear nueva reunion al final de la ventana */}
+
+                        </>
+                    ))}
+                    <Button className="botonNuevoProyecto" appearance="primary" onClick={() => nuevaReunion()}
+                            style={{ marginLeft: "15px", marginRight: "15px" }}>+ Añadir nueva reunión</Button>
+                </>
             )}
 
             {mostrarFormulario ? (
-                <FormularioNuevaComision />
+                <FormularioNuevaComision/>
             ) : (
                 <>
                     {verProyecto ? (
-                        <Reuniones />
+                        <Reuniones/>
                     ) : (
                         <>
-                            <h2 style={{ textAlign: "center" }}>Comisiones</h2>
+                            <h2 style={{textAlign: "center"}}>Comisiones</h2>
                             {tipoDeUsuario === "profesor" && proyectosUser.length > 12 && (
                                 <Button
                                     appearance="primary"
@@ -237,6 +305,7 @@ const Proyectos: React.FC<{ periodo?: string }> = ({ periodo }) => {
                 </>
             )}
         </Stack>
+            ))
     );
 };
 

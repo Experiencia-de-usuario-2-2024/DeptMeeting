@@ -22,7 +22,7 @@ export class ProjectService {
   async createProject(projectDTO: any) {
     console.log('projectDTO:', projectDTO);
     const { idPeriod, ...restProject } = projectDTO;
-    const newProject = new this.model(restProject);
+    const newProject = new this.model({...restProject, period: idPeriod});
     const project = await newProject.save();
     const period = await this.periodService.findById(idPeriod);
     if (!period) {
@@ -111,5 +111,9 @@ export class ProjectService {
       },
       { new: true },
     );
+  }
+
+  async getProjectsById(ids: string[]) {
+    return await this.model.find({ _id: { $in: ids } }).lean();
   }
 }

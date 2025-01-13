@@ -60,8 +60,8 @@ export class ProjectController {
   @ApiOperation({ summary: 'Crear un proyecto' })
   async addProject(@Body() projectDTO: ProjectDTO, @Req() req: any) {
     const userEmail = req.user.email;
-    projectDTO.userOwner = userEmail;
-    projectDTO.userMembers = userEmail;
+    if (projectDTO.userOwner === undefined) projectDTO.userOwner = userEmail;
+    if (projectDTO.userMembers === undefined) projectDTO.userMembers = userEmail;
     return await this._clientProxyProject.send(ProjectMSG.CREATE, projectDTO);
   }
 
@@ -204,9 +204,16 @@ export class ProjectController {
   @Get('/period')
   @ApiOperation({ summary: 'Obtener todos los periodos' })
   async findAllPeriod() {
-    return await this._clientProxyProject
-      .send(PeriodMSG.FIND_ALL, '')
-      .toPromise();
+    console.log("Recibido King");
+    const response = this._clientProxyProject.send(PeriodMSG.FIND_ALL, '');
+    console.log("Tome rey", response);
+    return response
+  }
+
+  @Get('/period/:id')
+  @ApiOperation({summary: 'Obtener un periodo por id'})
+  async findOnePeriod(@Param('id') id: string) {
+    return this._clientProxyProject.send(PeriodMSG.FIND_ONE, id);
   }
 
   @Put('/period/:id')
@@ -227,7 +234,7 @@ export class ProjectController {
 
   @Put('/period/:id/commission/:idCommission')
   @ApiOperation({ summary: 'Añadir una comisión a un periodo' })
-  async addCommission(@Param('id') id: string, @Param() idCommission: string) {
+  async addCommission(@Param('id') id: string, @Param('idComission') idCommission: string) {
     return await this._clientProxyProject
       .send(PeriodMSG.ADD_COMMISSION, { id, idCommission })
       .toPromise();
@@ -235,9 +242,19 @@ export class ProjectController {
 
   @Put('/period/:id/meeting/:idMeeting')
   @ApiOperation({ summary: 'Añadir una reunión a un periodo' })
-  async addMeeting(@Param('id') id: string, @Param() idMeeting: string) {
-    return await this._clientProxyProject
-      .send(PeriodMSG.ADD_MEETING, { id, idMeeting })
-      .toPromise();
+  async addMeeting(@Param('id') id: string, @Param('idMeeting') idMeeting: string) {
+    const params = {
+      idPeriod: id,
+      idMeeting: idMeeting,
+    }
+    console.log('addMeeting', params);
+    return this._clientProxyProject
+      .send(PeriodMSG.ADD_MEETING, params);
   }
+
+  @Post('/get/byids')
+  @ApiOperation({ summary: 'Obtener proyectos por una lista de id' })
+    getProjectsById(@Body() ids: string[]) {
+        return this._clientProxyProject.send(ProjectMSG.GET_PROJECTS_BY_ID, ids);
+    }
 }

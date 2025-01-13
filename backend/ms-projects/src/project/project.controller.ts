@@ -117,6 +117,7 @@ export class ProjectController {
 
   @MessagePattern(PeriodMSG.FIND_ALL)
   async findAllPeriods() {
+    console.log("Llego al controlador de periodos");
     return await this.periodService.findAll();
   }
 
@@ -141,8 +142,18 @@ export class ProjectController {
   @MessagePattern(PeriodMSG.ADD_MEETING)
   async addMeeting(@Payload() payload: any) {
     return await this.periodService.addMeeting(
-      payload.periodId,
-      payload.meetingId,
+      payload.idPeriod,
+      payload.idMeeting,
     );
   }
+
+  @MessagePattern(ProjectMSG.GET_PROJECTS_BY_ID)
+  async getProjectsById(@Payload() ids: string[]) {
+    return await this.projectService.getProjectsById(ids);
+  }
+
+  @MessagePattern(PeriodMSG.FIND_ONE)
+    async findOnePeriod(@Payload() id: string) {
+        return await this.periodService.findOne(id);
+    }
 }

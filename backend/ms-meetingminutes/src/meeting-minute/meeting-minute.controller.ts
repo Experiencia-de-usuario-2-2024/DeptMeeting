@@ -99,5 +99,29 @@ export class MeetingMinuteController {
         return this.meetingMinuteService.borrarTema(id);
     }
 
+    @MessagePattern(MeetingMinuteMSG.ADD_ELEMENT_TO_TOPIC)
+    agregarElementoATema(@Payload() payload: any) {
+        return this.meetingMinuteService.agregarElementoATema(payload.id, payload.elementId);
+    }
+
+    @MessagePattern(MeetingMinuteMSG.ADD_COMISSION_TO_TOPIC)
+    agregarComisionATema(@Payload() payload: any) {
+        return this.meetingMinuteService.agregarComisionATema(payload.id, payload.comissionId);
+    }
+
+    @MessagePattern(MeetingMinuteMSG.GET_TOPICS_BY_ID)
+    obtenerTemasPorId(@Payload() id: string[]) {
+        return this.meetingMinuteService.obtenerTemasPorId(id);
+    }
+
+    @MessagePattern(MeetingMinuteMSG.VOTE)
+    votar(@Payload() payload: any) {
+        return this.meetingMinuteService.votar(payload.id, payload.voteId);
+    }
+
+    @MessagePattern(MeetingMinuteMSG.GET_MEEETING_MINUTES_NOT_APPROVED)
+    obtenerActasNoAprobadas() {
+        return this.meetingMinuteService.obtenerActasNoAprobadas();
+    }
 
 }

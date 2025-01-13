@@ -21,5 +21,7 @@ export const MeetingMinuteSchema = new mongoose.Schema({
   cantElementos: { type: Number, required: false }, // cantidad de elementos añadidos 
   nombreCortoProyecto: { type: String, required: false }, // nombre corto del proyecto asociado
   comenzoReunion: { type: Boolean, required: false }, // indica si la reunión ya comenzó
+  vote: {type: mongoose.Schema.Types.ObjectId, ref: 'elements'}, // id de la votación asociada
+  isApproved: { type: Boolean, required: false }, // indica si el acta fue aprobada
 });
 MeetingMinuteSchema.index({ id: 1 }, { unique: false });

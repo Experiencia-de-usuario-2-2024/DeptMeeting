@@ -8,6 +8,7 @@ export const MeetingSchema = new mongoose.Schema(
     state: { type: String, required: true }, // estado de la reunión (new, pre-meeting, in-meeting, post-meeting, finish)
     googleMeetLink: { type: String, required: false }, // link de la reunión en google meet
     googleCalendarEvent: { type: String, required: false }, // evento en google calendar
+    period: { type: mongoose.Schema.Types.ObjectId, ref: 'period' }, // periodo de la reunión
     project: [{ type: mongoose.Schema.Types.ObjectId, ref: 'projects' }], // id del proyecto asociado
   },
   {

@@ -1,31 +1,35 @@
 import React, { useEffect, useState } from "react";
 import Button from "@atlaskit/button";
 import { Stack } from "@atlaskit/primitives";
-import Proyectos from "./Proyectos"; // <-- Este es el nuevo componente que manejará las comisiones de un período
-
-const fakePeriods = ["2023", "2024", "2025"];
+import Proyectos from "./Proyectos";
+import projectServices from "../services/project.services";
 
 const PeriodosConsejos: React.FC = () => {
-    const [periodos, setPeriodos] = useState<string[]>([]);
-    const [periodoSeleccionado, setPeriodoSeleccionado] = useState<string | null>(null);
+    const [periodos, setPeriodos] = useState<any[]>([]);
+    const [periodoSeleccionado, setPeriodoSeleccionado] = useState<any>(null);
 
     useEffect(() => {
-        // Simulamos carga de periodos (o podrías traerlos de un backend)
-        setTimeout(() => {
-            setPeriodos(fakePeriods);
-        }, 500);
+        const fetchPeriodos = async () => {
+            const periodos = await projectServices.getPeriods();
+            console.log("Periodos: ", periodos);
+            setPeriodos(periodos);
+        }
+
+        fetchPeriodos()
     }, []);
 
-    const seleccionarPeriodo = (periodo: string) => {
+    const seleccionarPeriodo = (periodo: any) => {
         // Guardamos el periodo en localStorage
-        localStorage.setItem("periodoSeleccionado", periodo);
+        console.log(periodo);
+        localStorage.setItem("periodoSeleccionado", periodo._id);
         // Y lo guardamos también en el estado local
+        console.log("Periodo seleccionado: ", periodo);
         setPeriodoSeleccionado(periodo);
     };
 
 
     // Si el usuario ya hizo clic en un período, mostramos la vista de comisiones
-    if (periodoSeleccionado) {
+    if (!!periodoSeleccionado) {
         // @ts-ignore
         return <Proyectos periodo={periodoSeleccionado} />;
     }
@@ -36,8 +40,8 @@ const PeriodosConsejos: React.FC = () => {
             <h1>Periodos del Consejo</h1>
             <Stack space="space.100">
                 {periodos.map((periodo) => (
-                    <Button key={periodo} appearance="primary" onClick={() => seleccionarPeriodo(periodo)}>
-                        {periodo}
+                    <Button key={periodo.name} appearance="primary" onClick={() => seleccionarPeriodo(periodo)}>
+                        {periodo.name}
                     </Button>
                 ))}
             </Stack>

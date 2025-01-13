@@ -1,17 +1,20 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Box, xcss } from "@atlaskit/primitives";
 import EditIcon from "@atlaskit/icon/glyph/edit"; // Ícono de edición
+import axios from "axios";
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader } from "@atlaskit/modal-dialog";
+import Button from "@atlaskit/button";
 
 // Estilos para el contenedor principal de las actas
 const containerStyles = xcss({
     display: "flex",
     justifyContent: "space-between", // El texto queda a la izquierda y las comisiones a la derecha
     alignItems: "center",
-    backgroundColor: "#CCE0FF", // Color personalizado
+    backgroundColor: "#E6F6F4", // Color personalizado
     paddingBlock: "space.200",
     paddingInline: "space.300",
     border: "1px solid",
-    borderColor: "color.border.accent.blue",
+    borderColor: "#00A499",
 });
 
 
@@ -24,7 +27,7 @@ const actasContainerStyles = xcss({
 
 // Estilos individuales de cada acta
 const actaStyles = xcss({
-    color: "color.text.accent.blue.bolder",
+    color: "#00A499",
     backgroundColor: "elevation.surface",
     borderRadius: "border.radius.200",
     boxShadow: "elevation.shadow.overlay",
@@ -44,10 +47,107 @@ const actaStyles = xcss({
 interface ActaPendiente {
     id: string;
     name: string;
-    status: string;
+    isApproved: boolean;
 }
 
 const ActasPendientes: React.FC = () => {
+    const [actas, setActas] = useState<ActaPendiente[]>([]);
+    const [actaSeleccionada, setActaSeleccionada] = useState<ActaPendiente | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const tokenUser = localStorage.getItem("tokenUser");
+
+    useEffect(() => {
+        const fetchActasPendientes = async () => {
+            try {
+                const response = await axios.get(
+                    `${process.env.REACT_APP_BACKEND_GATEWAY}/api/meeting-minute/all/notapproved`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${tokenUser}`,
+                        },
+                    }
+                );
+
+                const actasNoAprobadas = response.data.map((acta: any) => ({
+                    id: acta._id,
+                    name: `Acta ${acta.title}`,
+                    isApproved: acta.isApproved,
+                }));
+
+                setActas(actasNoAprobadas);
+            } catch (error) {
+                console.error("Error al obtener las actas pendientes:", error);
+            }
+        };
+
+        fetchActasPendientes();
+    }, [tokenUser]);
+
+    const seleccionarActa = (acta: ActaPendiente) => {
+        setActaSeleccionada(acta);
+        setIsModalOpen(true);
+    };
+
+    const cerrarModal = () => {
+        setIsModalOpen(false);
+        setActaSeleccionada(null);
+    };
+
+
+   /* const seleccionarActa = (actaId: string) => {
+        console.log(`Acta seleccionada: ${actaId}`);
+        // Aquí puedes redirigir o mostrar detalles del acta seleccionada (ej. un modal)
+    };*/
+
+    return (
+        <Box xcss={containerStyles} as="div">
+            <h3 style={{ fontWeight: "bold", color: "black", margin: 0 }}>
+                Actas No Aprobadas
+            </h3>
+            <Box xcss={actasContainerStyles} as="div">
+                {actas.length > 0 ? (
+                    actas.map((acta) => (
+                        <Box
+                            xcss={actaStyles}
+                            key={acta.id}
+                            onClick={() => seleccionarActa(acta)}
+                        >
+                            {acta.name}
+                            <Box>
+                                <EditIcon label="Ver acta" size="medium" />
+                            </Box>
+                        </Box>
+                    ))
+                ) : (
+                    <Box xcss={actaStyles}>
+                        No hay actas pendientes
+                    </Box>
+                )}
+            </Box>
+            {/* Modal para visualizar el acta */}
+            {isModalOpen && actaSeleccionada && (
+                <ModalDialog onClose={cerrarModal}>
+                    <ModalHeader>
+                        <h4>{actaSeleccionada.name}</h4>
+                    </ModalHeader>
+                    <ModalBody>
+                        <p>
+                            <strong>Estado:</strong> {actaSeleccionada.isApproved ? "Aprobada" : "No Aprobada"}
+                        </p>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button appearance="primary" onClick={cerrarModal}>
+                            Cerrar
+                        </Button>
+                    </ModalFooter>
+                </ModalDialog>
+            )}
+        </Box>
+    );
+};
+export default ActasPendientes;
+
+/*const ActasPendientes: React.FC = () => {
     const actas: ActaPendiente[] = [
         { id: "8", name: "Acta 8", status: "Pendiente" },
         { id: "14", name: "Acta 14", status: "Pendiente" },
@@ -82,4 +182,4 @@ const ActasPendientes: React.FC = () => {
     );
 };
 
-export default ActasPendientes;
+export default ActasPendientes;*/

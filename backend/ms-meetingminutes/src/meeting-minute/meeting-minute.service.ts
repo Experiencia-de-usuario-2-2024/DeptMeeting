@@ -132,4 +132,36 @@ export class MeetingMinuteService {
         };
     }
 
+  async obtenerTemasPorId(ids: string[]) {
+    const topics = await this.modelTopic.find({ _id: { $in: ids } }).lean();
+    return ids.map(id => topics.find(topic => topic._id.toString() === id));
+  }
+
+  agregarElementoATema(idTopic: string, elementId: string) {
+    return this.modelTopic.findByIdAndUpdate(
+        idTopic,
+        { $push: { elements: elementId } },
+        { new: true }
+    ).exec();
+  }
+
+  agregarComisionATema(idTopic: string, comissionId: string) {
+    return this.modelTopic.findByIdAndUpdate(
+        idTopic,
+        {$push: {comissions: comissionId}},
+        {new: true}
+    ).exec();
+  }
+
+  votar(idMeetingMinute: string, voteId: string) {
+    return this.model.findByIdAndUpdate(
+        idMeetingMinute,
+        { $set: { vote: voteId } },
+        { new: true }
+    ).exec();
+  }
+
+  async obtenerActasNoAprobadas() {
+    return await this.model.find({ isApproved: false }).exec();
+  }
 }

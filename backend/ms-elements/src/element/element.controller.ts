@@ -161,5 +161,9 @@ salida: objeto del elemento encontrado.
     return this.elementService.updateVote(payload.id, payload.vote);
   }
 
+  @MessagePattern(ElementMSG.GET_BY_IDS)
+  async getByIds(@Payload() ids: string[]) {
+    return this.elementService.getByIds(ids);
+  }
 
 }
