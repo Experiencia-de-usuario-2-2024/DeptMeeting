@@ -88,9 +88,13 @@ const Proyectos: React.FC<{ periodo?: any }> = ({ periodo }) => {
                 responsePeriodo = periodo;
                 localStorage.setItem("periodoSeleccionado", periodo._id);
             }
-            const responseMeeting = await meetingServices.getByIds(responsePeriodo.meetings);
+            if (!!responsePeriodo){
+                const responseMeeting = await meetingServices.getByIds(responsePeriodo.meetings);
+                setReuniones(responseMeeting);
+            }
+
             setPeriodoElegido(responsePeriodo);
-            setReuniones(responseMeeting);
+
         }
         fetchData();
         // Obtener valor de variable almacenada en el localStorage (para saber si se tiene que mostrar o no el formulario apenas carga la pagina)
@@ -202,10 +206,9 @@ const Proyectos: React.FC<{ periodo?: any }> = ({ periodo }) => {
         creandoReunion? (<NewFormularioReunion period={periodo} closeForm={closeForm} nMeeting={reuniones.length}/>) : (
             verReunion? <InfoReunion/> :(
         <Stack space="space.100">
-            {!verProyecto && !!periodoElegido && (
+            {!verProyecto && !!periodoElegido && !!reuniones &&(
                 <>
                     <h1 style={{textAlign: "center"}}>Periodo {periodoElegido.name}</h1>
-                    {reuniones.map((reunion) => (
                         <>
                             <Stack space="space.100">
                                 {reuniones.map((reunion) => (
@@ -238,7 +241,6 @@ const Proyectos: React.FC<{ periodo?: any }> = ({ periodo }) => {
                             {/* opcion de regresar y crear nueva reunion al final de la ventana */}
 
                         </>
-                    ))}
                     <Button className="botonNuevoProyecto" appearance="primary" onClick={() => nuevaReunion()}
                             style={{ marginLeft: "15px", marginRight: "15px" }}>+ Añadir nueva reunión</Button>
                 </>
