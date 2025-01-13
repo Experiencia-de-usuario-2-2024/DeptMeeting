@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Button from '@atlaskit/button';
 import TextField from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
 import Modal, { ModalTransition } from '@atlaskit/modal-dialog';
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left';
+import axios from 'axios';
 
 const Container = styled.div`
   padding: 20px;
@@ -128,27 +129,48 @@ interface Usuario {
   type: string;
 }
 
-// Datos de prueba
-const mockUsers: Usuario[] = [
-  { _id: '1', name: 'Juan Pérez', email: 'juan.perez@usach.cl', type: 'profesor' },
-  { _id: '2', name: 'María González', email: 'maria.gonzalez@usach.cl', type: 'director' },
-  { _id: '3', name: 'Carlos Rodríguez', email: 'carlos.rodriguez@usach.cl', type: 'secretario' },
-  { _id: '4', name: 'Ana Martínez', email: 'ana.martinez@usach.cl', type: 'profesor' },
-  { _id: '5', name: 'Roberto Silva', email: 'roberto.silva@usach.cl', type: 'profesor' },
-];
-
 interface GestionUsuariosProps {
   onBack?: () => void;
 }
 
 const GestionUsuarios: React.FC<GestionUsuariosProps> = ({ onBack }) => {
-  const [usuarios, setUsuarios] = useState<Usuario[]>(mockUsers);
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedUser, setSelectedUser] = useState<Usuario | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingInTable, setEditingInTable] = useState<string | null>(null);
   const [tempRole, setTempRole] = useState<string>('');
   const [editingData, setEditingData] = useState<Partial<Usuario>>({});
+
+  // Obtener usuarios al cargar el componente
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/api/user/get/allUser`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('tokenUser')}`
+            }
+          }
+        );
+        
+        // Mapear los datos recibidos al formato que necesitamos
+        const formattedUsers = response.data.map((user: any) => ({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          type: user.type
+        }));
+        
+        setUsuarios(formattedUsers);
+      } catch (error) {
+        console.error('Error al obtener usuarios:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const roles = [
     { label: 'Director', value: 'director' },
@@ -158,21 +180,74 @@ const GestionUsuarios: React.FC<GestionUsuariosProps> = ({ onBack }) => {
     { label: 'Estudiante', value: 'estudiante' }
   ];
 
-  const handleUpdateUser = (userId: string, updatedData: Partial<Usuario>) => {
-    // Simulación de actualización
-    setUsuarios(usuarios.map(user => 
-      user._id === userId 
-        ? { ...user, ...updatedData }
-        : user
-    ));
-    setEditingInTable(null);
-    setIsEditing(false);
+  const refreshUsers = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/get/allUser`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenUser')}`
+          }
+        }
+      );
+      
+      const formattedUsers = response.data.map((user: any) => ({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        type: user.type
+      }));
+      
+      setUsuarios(formattedUsers);
+    } catch (error) {
+      console.error('Error al obtener usuarios:', error);
+    }
   };
 
-  const handleDeleteUser = (userId: string) => {
-    // Simulación de eliminación
-    setUsuarios(usuarios.filter(user => user._id !== userId));
-    setIsDeleting(false);
+  const handleUpdateUser = async (userId: string, updatedData: Partial<Usuario>) => {
+    try {
+      await axios.put(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/update/${userId}/profile`,
+        {
+          name: updatedData.name,
+          type: updatedData.type,
+          email: updatedData.email
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenUser')}`
+          }
+        }
+      );
+
+      await refreshUsers(); // Recargar la lista después de actualizar
+      setEditingInTable(null);
+      window.alert('Usuario actualizado exitosamente');
+
+    } catch (error) {
+      console.error('Error al actualizar usuario:', error);
+      window.alert('Error al actualizar el usuario');
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenUser')}`
+          }
+        }
+      );
+
+      await refreshUsers(); // Recargar la lista después de eliminar
+      window.alert('Usuario eliminado exitosamente');
+
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+      window.alert('Error al eliminar el usuario');
+    }
   };
 
   const TableRow = ({ user }: { user: Usuario }) => {
@@ -183,6 +258,16 @@ const GestionUsuarios: React.FC<GestionUsuariosProps> = ({ onBack }) => {
       type: user.type
     });
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+    const handleSave = async () => {
+      await handleUpdateUser(user._id, localEdits);
+      setEditingInTable(null);
+    };
+
+    const handleDelete = async () => {
+      await handleDeleteUser(user._id);
+      setShowDeleteConfirm(false);
+    };
     
     if (isEditing) {
       return (
@@ -244,10 +329,7 @@ const GestionUsuarios: React.FC<GestionUsuariosProps> = ({ onBack }) => {
             <EditableCell>
               <Button
                 appearance="primary"
-                onClick={() => {
-                  handleUpdateUser(user._id, localEdits);
-                  setEditingInTable(null);
-                }}
+                onClick={handleSave}
               >
                 Guardar
               </Button>
@@ -294,7 +376,7 @@ const GestionUsuarios: React.FC<GestionUsuariosProps> = ({ onBack }) => {
               <>
                 <Button
                   appearance="danger"
-                  onClick={() => handleDeleteUser(user._id)}
+                  onClick={handleDelete}
                 >
                   Confirmar eliminación
                 </Button>

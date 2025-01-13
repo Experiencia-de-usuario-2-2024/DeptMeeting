@@ -95,9 +95,9 @@ const Informacion: React.FC = () => {
     const [currentView, setCurrentView] = useState('dashboard');
     // Mock data para estadísticas
     const stats = {
-        users: 125,
-        periods: 8,
-        commissions: 15
+        users: 4,
+        periods: 1,
+        commissions: 1
     };
 
     return (

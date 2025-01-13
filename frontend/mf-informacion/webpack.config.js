@@ -73,6 +73,11 @@ module.exports = {
         ],
     },
     plugins: [
+        new webpack.DefinePlugin({
+            "process.env.REACT_APP_BACKEND_URL": JSON.stringify(
+                process.env.REACT_APP_BACKEND_URL
+            ),
+        }),
         //new Dotenv({ path: "./.env.development" }), //Modificar si se quiere hacer local
         new WebpackShellPluginNext({
             onBuildStart: {

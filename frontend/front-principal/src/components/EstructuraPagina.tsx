@@ -62,6 +62,11 @@ const EstructuraPagina = () => {
     // Estado para controlar si la barra superior (con ActasPendientesView) está visible o no
     const [isTopBarShown, setIsTopBarShown] = useState(false);
 
+    // Helper function to check if user has admin privileges
+    const hasAdminPrivileges = (type: string | undefined) => {
+        return type === 'profesor' || type === 'director';
+    };
+
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -135,7 +140,7 @@ const EstructuraPagina = () => {
                         >
                             <MenuIcon color={isLeftSidebarVisible ? "#FF9200" : "white"} />
                         </button>
-                        {usuarioPerfilLog?.type === 'profesor' && (
+                        {hasAdminPrivileges(usuarioPerfilLog?.type) && (
                             <button 
                                 className={`${styles.button} ${styles.withText} ${isMobile ? styles.hideText : ''}`}
                                 onClick={() => setIsInfoModalOpen(true)}
@@ -157,7 +162,7 @@ const EstructuraPagina = () => {
                     </div>
 
                     <div className={styles.headerRight}>
-                        {usuarioPerfilLog?.type === 'profesor' && (
+                        {hasAdminPrivileges(usuarioPerfilLog?.type) && (
                             <button 
                                 className={`${styles.button} ${styles.withText} ${isMobile ? styles.hideText : ''}`}
                                 onClick={() => setIsKanbanModalOpen(true)}
@@ -190,8 +195,8 @@ const EstructuraPagina = () => {
                 </div>
             </header>
 
-            {/* TopBar solo visible cuando no está en DesarrolloReunion y es profesor */}
-            {usuarioPerfilLog?.type === 'profesor' && !verActaDialogica && (
+            {/* TopBar solo visible cuando no está en DesarrolloReunion y es profesor o director */}
+            {hasAdminPrivileges(usuarioPerfilLog?.type) && !verActaDialogica && (
                 <div className={`${styles.topBarContainer} 
                     ${isLeftSidebarVisible ? styles.withLeftSidebar : ''} 
                     ${isRightSidebarVisible ? styles.withRightSidebar : ''}`}
@@ -211,7 +216,7 @@ const EstructuraPagina = () => {
                 >
                     {verActaDialogica ? (
                         <DesarrolloReunionView />
-                    ) : usuarioPerfilLog?.type === 'profesor' ? (
+                    ) : hasAdminPrivileges(usuarioPerfilLog?.type) ? (
                         <HomeProfesorView />
                     ) : (
                         <TareasView />
