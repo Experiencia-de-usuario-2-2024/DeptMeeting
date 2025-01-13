@@ -56,6 +56,7 @@ const EstructuraPagina = () => {
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [isKanbanModalOpen, setIsKanbanModalOpen] = useState(false);
+    const [prove, setprove] = useState(false);
 
 
     // Estado para controlar si la barra superior (con ActasPendientesView) está visible o no
@@ -104,7 +105,7 @@ const EstructuraPagina = () => {
         if (storedProyecto) {
             setNombreProyecto(storedProyecto);
         }
-
+        setprove(true);
         fetchUserData();
     }, [navigate]);
 
@@ -199,7 +200,7 @@ const EstructuraPagina = () => {
 
             <div className={styles.mainContainer}>
                 <aside className={`${styles.leftSidebar} ${isLeftSidebarVisible ? styles.visible : ''}`}>
-                    <PeriodosConsejosView/>
+                    {prove && <PeriodosConsejosView/>}
                 </aside>
 
                 <main className={`${styles.mainContent} 

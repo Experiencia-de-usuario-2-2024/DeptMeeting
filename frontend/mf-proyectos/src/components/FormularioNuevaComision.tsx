@@ -193,7 +193,7 @@ const FormularioNuevaComision: React.FC = () => {
                     name: nameValue,
                     description: descriptionValueVer2,
                     userOwner: userOwnerValue,
-                    idPeriod: JSON.parse(period)._id
+                    idPeriod: period
                 }, {
                     headers: {
                         Authorization: `Bearer ${tokenUser}`

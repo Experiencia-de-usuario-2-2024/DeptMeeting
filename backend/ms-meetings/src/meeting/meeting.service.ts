@@ -152,4 +152,9 @@ export class MeetingService {
       throw error;
     }
   }
+
+  async findMeetingByIds(ids: string[]) {
+    const meetings = await this.model.find({ _id: { $in: ids } }).lean();
+    return ids.map(id => meetings.find(meeting => meeting._id.toString() === id));
+  }
 }

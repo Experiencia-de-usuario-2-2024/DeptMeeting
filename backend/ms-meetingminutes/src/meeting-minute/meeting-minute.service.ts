@@ -145,6 +145,14 @@ export class MeetingMinuteService {
     ).exec();
   }
 
+  agregarComisionATema(idTopic: string, comissionId: string) {
+    return this.modelTopic.findByIdAndUpdate(
+        idTopic,
+        {$push: {comissions: comissionId}},
+        {new: true}
+    ).exec();
+  }
+
   votar(idMeetingMinute: string, voteId: string) {
     return this.model.findByIdAndUpdate(
         idMeetingMinute,

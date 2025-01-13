@@ -180,4 +180,11 @@ export class MeetingController {
   countUsers(@Req() req: any) {
     return this._clientProxyMeeting.send('countmeetings', '');
   }
+
+  @Post('/get/byids')
+  @ApiOperation({ summary: 'Obtener reuniones por ids' })
+  getMeetingsByIds(@Body() ids: string[]){
+    return this._clientProxyMeeting.send(MeetingMSG.FIND_BY_IDS, ids);
+  }
+
 }

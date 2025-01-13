@@ -19,6 +19,7 @@ export enum ProjectMSG {
   DELETE = 'DELETE_PROJECT',
   ADD_GUEST = 'ADD_GUEST',
   ADD_MEMBER = 'ADD_MEMBER_PROJECT',
+  GET_PROJECTS_BY_ID = 'GET_PROJECTS_BY_ID',
 }
 
 export enum PeriodMSG {
@@ -28,4 +29,5 @@ export enum PeriodMSG {
   DELETE = 'DELETE_PERIOD',
   ADD_COMMISSION = 'ADD_COMMISSION',
   ADD_MEETING = 'ADD_MEETING',
+  FIND_ONE = 'FIND_ONE',
 }

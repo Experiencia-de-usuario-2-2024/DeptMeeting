@@ -101,6 +101,17 @@ class MeetingMinuteServices {
     }
   }
 
+  async addComissionToTopic(idTopic: string, comissionId: string) {
+    try {
+      const response = await httpClient.put(`/meeting-minute/topic/${idTopic}/comission`, comissionId);
+      console.log("Comisión agregada al tema: ", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error al agregar la comisión al tema", error);
+      throw error;
+    }
+  }
+
   async addVoteToMeetingMinute(idMeetingMinute: string, voteId: string) {
     try {
       const response = await httpClient.put(`/meeting-minute/${idMeetingMinute}/vote/${voteId}`);

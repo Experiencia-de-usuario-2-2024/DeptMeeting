@@ -67,6 +67,8 @@ import Doubt from "./DeptMeeting/Doubt";
 import meetingMinuteServices from "../services/meeting-minute.services";
 import elementServices from "../services/element.services";
 import ComissionForm from "./DeptMeeting/ComissionForm";
+import projectServices from "../services/project.services";
+import Comission from "./DeptMeeting/Comission";
 
 
 var listaEstudiantes: string[] = [];
@@ -596,8 +598,13 @@ const FormularioEnReunion: React.FC = () => {
                     obtenerCompromisosUsuario(participante);
                 });
                 const responseTopics = await meetingMinuteServices.getTopicsInMeetingMinuteByIds(response.data[0].topics);
-                const updatedTopics = await Promise.all(responseTopics.map(async (topic: any) => {
+                let updatedTopics = await Promise.all(responseTopics.map(async (topic: any) => {
                     topic.elements = await elementServices.getElementsInTopicsByIds(topic.elements);
+                    return topic;
+                }));
+                updatedTopics = await Promise.all(updatedTopics.map(async (topic: any) => {
+                    if (!!topic.comissions) topic.comissions = await projectServices.getByIds(topic.comissions);
+                    else topic.comissions = [];
                     return topic;
                 }));
                 setDeptTopics(updatedTopics);
@@ -1748,6 +1755,20 @@ const FormularioEnReunion: React.FC = () => {
         closeModalTextoLibre();
     }
 
+    const agregarComision = (comission: any) => {
+
+        meetingMinuteServices.addComissionToTopic(idTopic, comission._id);
+
+        setDeptTopics(prevTopics =>
+            prevTopics.map(topic =>
+                topic._id === idTopic
+                    ? { ...topic, comissions: [...topic.comissions, comission] }
+                    : topic
+            )
+        );
+    }
+
+
     const [idTopic, setIdTopic] = useState<string>('');
 
     const guardarVote = (data: any) => {
@@ -2232,6 +2253,10 @@ return (
                                                     )}
                                                 </div>
                                             ))}
+                                            {topic.comissions.map((comission, comissionIndex) => (
+                                                <Comission comission={comission}/>
+                                            ))}
+
                                             <Inline space="space.200" alignInline="center" shouldWrap>
 
                                                 {/* <Button appearance="primary" onClick={() => {openModalCompromiso(); numeroTemaSeleccionado = 0; numeroTemaSeleccionado = index + 1;}}>Compromiso</Button> */}
@@ -3217,7 +3242,7 @@ return (
         {/* ******************************************************************** Modal dialog de Comission ************************************************************ */}
         {/* ********************************************************************************************************************************************************** */}
             {isOpenComission && (
-                <ComissionForm participants={meetingminute?.participants} closeModal={closeModalComission}/>
+                <ComissionForm participants={meetingminute?.participants} closeModal={closeModalComission} topic={idTopic} period={"6771c5a5041bdfc3f5e9496a"} agregarComision={agregarComision}/>
             )}
 
 

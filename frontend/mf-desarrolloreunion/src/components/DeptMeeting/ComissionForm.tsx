@@ -8,43 +8,59 @@ import TextField from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
 import Select, { ActionMeta, PropsValue } from 'react-select';
+import {DatePicker} from "@atlaskit/datetime-picker";
+import projectServices from "../../services/project.services";
 
 
 interface ComissionFormProps {
     participants: string[];
     closeModal: () => void;
+    period: string;
+    topic: string;
+    agregarComision: (comision: any) => void;
 }
 
-const ComissionForm: React.FC<ComissionFormProps> = ({participants, closeModal}) => {
+const ComissionForm: React.FC<ComissionFormProps> = ({participants, closeModal, period, topic, agregarComision}) => {
 
     const [isLoading, setIsLoading] = useState(false);
+    const [formData, setFormData] = useState<any>({
+        name: '',
+        shortName: '',
+        descriptionVer2: '',
+        userOwner: '',
+        userMember: []
+    });
 
-    interface Participant {
-        email: string;
-        value: string;
-        label: string;
+    const obtenerDato = (nombre: string) => {
+        return [...document.getElementsByName(nombre)].map((element: any) => (element as HTMLInputElement).value);
     }
 
     const ShortNameField = () => (
         <Field
             aria-required={true}
             name="shortName"
-            defaultValue=""
+            defaultValue={formData.shortName}
             label="Nombre abreviado de la comisión"
             isRequired
         >
-            {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
+            {({ fieldProps }) =>
+                <TextField {...fieldProps}
+                />
+            }
         </Field>
     );
     const Name = () => (
         <Field
             aria-required={true}
             name="name"
-            defaultValue=""
+            defaultValue={formData.name}
             label="Nombre de la comisión"
             isRequired
         >
-            {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
+            {({ fieldProps}) =>
+                <TextField {...fieldProps}
+                />
+            }
         </Field>
     );
 
@@ -52,11 +68,15 @@ const ComissionForm: React.FC<ComissionFormProps> = ({participants, closeModal})
         <Field
             aria-required={true}
             name="descriptionVer2"
-            defaultValue=""
+            defaultValue={formData.descriptionVer2}
             label="Descripción de la comision"
             isRequired
         >
-            {({ fieldProps }) => <TextArea {...fieldProps} onChange={(event) => fieldProps.onChange(event.target.value)} />}
+            {({ fieldProps}) =>
+                <TextArea
+                    {...fieldProps}
+                />
+            }
         </Field>
     );
 
@@ -67,17 +87,19 @@ const ComissionForm: React.FC<ComissionFormProps> = ({participants, closeModal})
             label="Dueño/a del proyecto (correo electrónico)"
             isRequired
         >
-            {({ fieldProps, error, valid }) => <TextField {...fieldProps} />}
+            {({ fieldProps }) =>
+                <TextField {...fieldProps}
+                />
+            }
         </Field>
     );
 
+    const [selectedOption, setSelectedOption] = useState<any>([]);
     const UserMember = () => {
-        const [selectedParticipant, setSelectedParticipant] = useState<PropsValue<Participant>>([]);
         return (
             <Field
                 aria-required={true}
                 name="userMember"
-                defaultValue={selectedParticipant}
                 label="Miembros del proyecto"
                 isRequired
             >
@@ -87,11 +109,10 @@ const ComissionForm: React.FC<ComissionFormProps> = ({participants, closeModal})
                             {...fieldProps}
                             isMulti
                             options={participants.map((participant) => ({ value: participant, label: participant, email: participant }))}
-                            value={selectedParticipant}
-                            onChange={(newValue: PropsValue<Participant>, actionMeta: ActionMeta<Participant>) => {
-                                setSelectedParticipant(newValue);
-                                // Handle the onChange event here
-                                console.log(newValue);
+                            value={selectedOption}
+                            onChange={(newValue: PropsValue<any>, actionMeta: ActionMeta<any>) => {
+                                console.log("newValue", newValue);
+                                setSelectedOption(newValue);
                             }}
                             placeholder="Seleccione..."
                         />
@@ -100,21 +121,55 @@ const ComissionForm: React.FC<ComissionFormProps> = ({participants, closeModal})
         );
     };
 
-    const crearProyecto = (data: any) => {
+    const formatDate = (isoString: string): string => {
+        const date = new Date(isoString);
+        console.log("date", date);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = String(date.getFullYear());
+        return `${day}-${month}-${year}`;
+    };
+
+    const crearProyecto = async () => {
         setIsLoading(true);
-        if (data)
-        console.log("creando proyecto...");
+        const name = obtenerDato("name")[0];
+        const shortName = obtenerDato("shortName")[0];
+        const descriptionVer2 = obtenerDato("descriptionVer2")[0];
+        const userOwner = obtenerDato("userOwner")[0];
+        const userMember = obtenerDato("userMember");
+        let deadline = obtenerDato("deadline")[0];
+        const [year, month, day] = deadline.split('-');
+        deadline = `${day}-${month}-${year}`;
+
+        if (name === "" || shortName === "" || descriptionVer2 === "" || userOwner === "" || userMember.length === 0 || deadline === "") {
+            alert("Por favor, rellene todos los campos");
+            setIsLoading(false);
+            return;
+        }
+        const data = {
+            name: name,
+            shortName: shortName,
+            description: descriptionVer2,
+            userOwner: userOwner,
+            userMembers: userMember,
+            projectDateI: formatDate(new Date().toISOString()),
+            projectDateT: deadline,
+            topic: topic,
+            period: period,
+        }
+        console.log("data", data);
+
+        const response = await projectServices.create(data)
+        console.log("response", response);
+        setIsLoading(false);
+        agregarComision(response);
+        closeModal();
     }
 
     return (
         <ModalTransition>
             <Modal onClose={closeModal} shouldScrollInViewport>
-                <Form<{ username: string }>
-                    onSubmit={(data) => {
-                        console.log('form data', data);
-                        crearProyecto(data)
-                    }}
-                >
+                <Form onSubmit={() => console.log("Hello")}>
                     {({formProps}) => (
                         <form {...formProps}>
                             <ModalHeader>
@@ -126,13 +181,18 @@ const ComissionForm: React.FC<ComissionFormProps> = ({participants, closeModal})
                                 <DescripcionVer2/>
                                 <UserOwner/>
                                 <UserMember/>
+                                <Field name="deadline" label="Fecha límite para la comisión">
+                                    {({ fieldProps }) =>
+                                        <DatePicker {...fieldProps} dateFormat="DD-MM-YYYY" placeholder="Selecciona una fecha" />}
+                                </Field>
                             </ModalBody>
                             <ModalFooter>
                                 <LoadingButton
-                                    type="submit"
+                                    type="button"
                                     appearance="primary"
                                     isLoading={isLoading}
                                     style={{marginLeft: '5px'}}
+                                    onClick={() => crearProyecto()}
                                 >
                                     Crear comisión
                                 </LoadingButton>

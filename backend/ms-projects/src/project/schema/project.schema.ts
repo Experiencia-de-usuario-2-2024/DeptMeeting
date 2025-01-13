@@ -10,6 +10,9 @@ export const ProjectSchema = new mongoose.Schema(
     guests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'guests' }], // emails de usuarios invitados
     userOwner: [{type: String}], // emails de usuarios jefes de proyecto
     userMembers: [{type: String}], // emails de usuarios miembros
+    period: { type: mongoose.Schema.Types.ObjectId, ref: 'period' }, // periodo del proyecto
+    meeting: {type: mongoose.Schema.Types.ObjectId, ref: 'meeting'}, // reunion asociada
+    topic: {type: mongoose.Schema.Types.ObjectId, ref: 'topic'}, // tema del proyecto
     userMembersOriginal: [{type: String}] // emails de usuarios miembros VERSION ORIGINAL -> atributo nuevo. Su funcion es restaurar los usuarios originales una vez finalice la reunion en la que se invito gente externa al proyecto
   },
   { timestamps: true },

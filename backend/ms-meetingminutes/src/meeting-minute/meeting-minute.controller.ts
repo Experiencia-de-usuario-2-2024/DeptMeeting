@@ -104,6 +104,11 @@ export class MeetingMinuteController {
         return this.meetingMinuteService.agregarElementoATema(payload.id, payload.elementId);
     }
 
+    @MessagePattern(MeetingMinuteMSG.ADD_COMISSION_TO_TOPIC)
+    agregarComisionATema(@Payload() payload: any) {
+        return this.meetingMinuteService.agregarComisionATema(payload.id, payload.comissionId);
+    }
+
     @MessagePattern(MeetingMinuteMSG.GET_TOPICS_BY_ID)
     obtenerTemasPorId(@Payload() id: string[]) {
         return this.meetingMinuteService.obtenerTemasPorId(id);

@@ -11,10 +11,16 @@ interface ComissionProps {
     userMembersOriginal: string[];
 }
 
-const Comission = () => {
+const Comission: React.FC<{comission: ComissionProps}> = ({comission}) => {
     return (
         <div>
-            Comission
+            <h2>{comission.name}</h2>
+            <h3>{comission.description}</h3>
+            {
+                comission.userMembers.map((member, index) => (
+                    <p key={index}>Miembro: {member}</p>))
+            }
+            <p>Fecha Límite: {comission.projectDateT}</p>
         </div>
     );
 }

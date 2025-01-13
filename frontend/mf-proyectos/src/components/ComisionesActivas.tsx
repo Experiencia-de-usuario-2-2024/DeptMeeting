@@ -55,7 +55,7 @@ const ComisionesActivas: React.FC = () => {
         const fetchComisionesActivas = async () => {
             try {
                 const response = await axios.get(
-                    `${process.env.REACT_APP_BACKEND_GATEWAY}/api/comisiones/activas`,
+                    `${process.env.REACT_APP_BACKEND_URL}/api/comisiones/activas`,
                     {
                         headers: {
                             Authorization: `Bearer ${tokenUser}`,

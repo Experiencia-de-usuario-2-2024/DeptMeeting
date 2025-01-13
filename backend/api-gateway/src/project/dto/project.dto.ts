@@ -15,6 +15,9 @@ export class ProjectDTO {
   updatedAt: Date; // fecha de actualización
   kanbanColumns: string[]; // columnas del kanban
   metrics: any; // Métricas del proyecto
+  meeting: string;
+  period: string;
+  topic: string;
   status: string; // estado del proyecto
   options: any; // opciones del proyecto -> isAgile, useKanban, etc
   sprints: any; // sprints del proyecto, aqui va el puntaje x dia de cada sprint
