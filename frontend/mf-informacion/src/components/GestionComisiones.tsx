@@ -191,8 +191,9 @@ const GestionComisiones: React.FC<GestionComisionesProps> = ({ onBack }) => {
     const [localEdits, setLocalEdits] = useState({
       title: meeting.title,
       date: meeting.date,
-      status: meeting.status || 'pre' // Establecer 'pre' como valor por defecto
+      status: meeting.status || 'pre'
     });
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     if (isEditing) {
       return (
@@ -259,21 +260,37 @@ const GestionComisiones: React.FC<GestionComisionesProps> = ({ onBack }) => {
         <td>{statusOptions.find(option => option.value === (meeting.status || 'pre'))?.label}</td>
         <td>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <Button
-              appearance="primary"
-              onClick={() => setEditingInTable(meeting.id)}
-            >
-              Editar
-            </Button>
-            <Button
-              appearance="danger"
-              onClick={() => {
-                setSelectedMeeting(meeting);
-                setIsDeleting(true);
-              }}
-            >
-              Eliminar
-            </Button>
+            {!showDeleteConfirm ? (
+              <>
+                <Button
+                  appearance="primary"
+                  onClick={() => setEditingInTable(meeting.id)}
+                >
+                  Editar
+                </Button>
+                <Button
+                  appearance="danger"
+                  onClick={() => setShowDeleteConfirm(true)}
+                >
+                  Eliminar
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  appearance="danger"
+                  onClick={() => handleDeleteMeeting(periodId, meeting.id)}
+                >
+                  Confirmar eliminación
+                </Button>
+                <Button
+                  appearance="subtle"
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  Cancelar
+                </Button>
+              </>
+            )}
           </div>
         </td>
       </tr>
@@ -333,48 +350,6 @@ const GestionComisiones: React.FC<GestionComisionesProps> = ({ onBack }) => {
           )}
         </PeriodContainer>
       ))}
-
-      <ModalTransition>
-        {isDeleting && selectedMeeting && (
-          <Modal
-            onClose={() => setIsDeleting(false)}
-            heading="Eliminar reunión"
-            appearance="danger"
-          >
-            <DeleteModalContent>
-              <div className="warning-header">
-                <span role="img" aria-label="warning">⚠️</span>
-                <span>Eliminar reunión permanentemente</span>
-              </div>
-              
-              <p>¿Estás seguro que deseas eliminar esta reunión del sistema?</p>
-              <p className="warning">Esta acción no podrá ser revertida.</p>
-              
-              <div className="meeting-details">
-                <h4>Detalles de la reunión a eliminar:</h4>
-                <p><strong>Título:</strong> {selectedMeeting.title}</p>
-                <p><strong>Fecha:</strong> {selectedMeeting.date}</p>
-                <p><strong>Estado:</strong> {statusOptions.find(option => option.value === selectedMeeting.status)?.label}</p>
-              </div>
-
-              <div className="action-buttons">
-                <Button
-                  appearance="subtle"
-                  onClick={() => setIsDeleting(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  appearance="danger"
-                  onClick={() => handleDeleteMeeting(expandedPeriod!, selectedMeeting.id)}
-                >
-                  Confirmar eliminación
-                </Button>
-              </div>
-            </DeleteModalContent>
-          </Modal>
-        )}
-      </ModalTransition>
     </Container>
   );
 };

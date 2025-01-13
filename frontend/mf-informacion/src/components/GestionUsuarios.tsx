@@ -182,6 +182,7 @@ const GestionUsuarios: React.FC<GestionUsuariosProps> = ({ onBack }) => {
       email: user.email,
       type: user.type
     });
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     
     if (isEditing) {
       return (
@@ -271,24 +272,40 @@ const GestionUsuarios: React.FC<GestionUsuariosProps> = ({ onBack }) => {
         <td>{user.type}</td>
         <td>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <Button
-              appearance="primary"
-              onClick={() => {
-                setEditingInTable(user._id);
-                setEditingData({});
-              }}
-            >
-              Editar
-            </Button>
-            <Button
-              appearance="danger"
-              onClick={() => {
-                setSelectedUser(user);
-                setIsDeleting(true);
-              }}
-            >
-              Eliminar
-            </Button>
+            {!showDeleteConfirm ? (
+              <>
+                <Button
+                  appearance="primary"
+                  onClick={() => {
+                    setEditingInTable(user._id);
+                    setEditingData({});
+                  }}
+                >
+                  Editar
+                </Button>
+                <Button
+                  appearance="danger"
+                  onClick={() => setShowDeleteConfirm(true)}
+                >
+                  Eliminar
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  appearance="danger"
+                  onClick={() => handleDeleteUser(user._id)}
+                >
+                  Confirmar eliminación
+                </Button>
+                <Button
+                  appearance="subtle"
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  Cancelar
+                </Button>
+              </>
+            )}
           </div>
         </td>
       </tr>
@@ -328,48 +345,6 @@ const GestionUsuarios: React.FC<GestionUsuariosProps> = ({ onBack }) => {
           ))}
         </tbody>
       </Table>
-
-      <ModalTransition>
-        {isDeleting && selectedUser && (
-          <Modal
-            onClose={() => setIsDeleting(false)}
-            heading="Eliminar usuario"
-            appearance="danger"
-          >
-            <DeleteModalContent>
-              <div className="warning-header">
-                <span role="img" aria-label="warning">⚠️</span>
-                <span>Eliminar usuario permanentemente</span>
-              </div>
-              
-              <p>¿Estás seguro que deseas eliminar este usuario del sistema?</p>
-              <p className="warning">Esta acción eliminará permanentemente al usuario y no podrá ser revertida.</p>
-              
-              <div className="user-details">
-                <h4>Detalles del usuario a eliminar:</h4>
-                <p><strong>Nombre:</strong> {selectedUser.name}</p>
-                <p><strong>Correo electrónico:</strong> {selectedUser.email}</p>
-                <p><strong>Rol actual:</strong> {selectedUser.type}</p>
-              </div>
-
-              <div className="action-buttons">
-                <Button
-                  appearance="subtle"
-                  onClick={() => setIsDeleting(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  appearance="danger"
-                  onClick={() => handleDeleteUser(selectedUser._id)}
-                >
-                  Confirmar eliminación
-                </Button>
-              </div>
-            </DeleteModalContent>
-          </Modal>
-        )}
-      </ModalTransition>
 
       <ModalTransition>
         {isEditing && selectedUser && (
