@@ -134,13 +134,15 @@ const EstructuraPagina = () => {
                         >
                             <MenuIcon color={isLeftSidebarVisible ? "#FF9200" : "white"} />
                         </button>
-                        <button 
-                            className={`${styles.button} ${styles.withText} ${isMobile ? styles.hideText : ''}`}
-                            onClick={() => setIsInfoModalOpen(true)}
-                        >
-                            <InfoIcon color="white" />
-                            <span className={styles.buttonText}>INFORMACIÓN</span>
-                        </button>
+                        {usuarioPerfilLog?.type === 'profesor' && (
+                            <button 
+                                className={`${styles.button} ${styles.withText} ${isMobile ? styles.hideText : ''}`}
+                                onClick={() => setIsInfoModalOpen(true)}
+                            >
+                                <InfoIcon color="white" />
+                                <span className={styles.buttonText}>PANEL DE ADMINISTRACIÓN</span>
+                            </button>
+                        )}
                     </div>
 
                     <div className={styles.headerCenter}>

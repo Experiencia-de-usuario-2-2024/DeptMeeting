@@ -1,12 +1,19 @@
-import React from "react";
-import ReactPlayer from 'react-player';
+import React, { useState } from "react";
 import styled from 'styled-components';
+import Button from '@atlaskit/button';
+import PeopleGroupIcon from '@atlaskit/icon/glyph/people-group';
+import BoardIcon from '@atlaskit/icon/glyph/board';
+import CalendarIcon from '@atlaskit/icon/glyph/calendar';
+import SettingsIcon from '@atlaskit/icon/glyph/settings';
 
 // imagenes de los elementos dialogicos
 import i__Compromiso from "../assets/static/i__Compromiso.png";
 import i__Acuerdo from "../assets/static/i__Acuerdo.png";
 import i__Desacuerdo from "../assets/static/i__Desacuerdo.png";
 import i__Duda from "../assets/static/i__Duda.png";
+import GestionUsuarios from "./GestionUsuarios";
+import GestionPeriodos from "./GestionPeriodos";
+import GestionComisiones from "./GestionComisiones";
 
 const Container = styled.div`
   display: flex;
@@ -44,62 +51,124 @@ const StyledImage = styled.img`
   height: auto;
 `;
 
+const AdminHeader = styled.div`
+  padding: 24px;
+  background-color: #00A499;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  color: white;
+`;
+
+const AdminGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  padding: 16px;
+`;
+
+const AdminCard = styled.div`
+  background-color: #E5F6F5;
+  border: 1px solid #00A499;
+  border-radius: 4px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const StatsContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+`;
+
+const StatCard = styled.div`
+  background-color: white;
+  border: 1px solid #00A499;
+  border-radius: 4px;
+  padding: 16px;
+  text-align: center;
+`;
+
 const Informacion: React.FC = () => {
+    const [currentView, setCurrentView] = useState('dashboard');
+    // Mock data para estadísticas
+    const stats = {
+        users: 125,
+        periods: 8,
+        commissions: 15
+    };
+
     return (
         <Container>
-            <ContentBox>
-                <h1 style={{ textAlign: 'center' }}>Bienvenido a DeptMeeting</h1>
-                <br />
+            {currentView === 'dashboard' ? (
+                <>
+                    <AdminHeader>
+                        <h1>Panel de Administración DeptMeeting</h1>
+                        <p>Gestiona usuarios, períodos y comisiones del sistema</p>
+                    </AdminHeader>
 
-                <h1>¿Qué son las actas dialógicas?</h1>
-                <br />
+                    <StatsContainer>
+                        <StatCard>
+                            <h2>{stats.users}</h2>
+                            <p>Usuarios Registrados</p>
+                        </StatCard>
+                        <StatCard>
+                            <h2>{stats.periods}</h2>
+                            <p>Períodos Activos</p>
+                        </StatCard>
+                        <StatCard>
+                            <h2>{stats.commissions}</h2>
+                            <p>Comisiones Activas</p>
+                        </StatCard>
+                    </StatsContainer>
 
-                {/* VIDEO */}
-                <ReactPlayer width="100%" controls url='https://youtu.be/VkTo36gDTqY' />
-                <StyledLink 
-                    href="https://odysee.com/@SaludLibre:0/Actas-Dial%C3%B3gicas-Explicadas-por-Edmundo-Leiva:b" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                >
-                    Video original
-                </StyledLink>
+                    <AdminGrid>
+                        <AdminCard>
+                            <h2>Gestión de Usuarios</h2>
+                            <p>Administra usuarios, permisos y roles</p>
+                            <Button 
+                                appearance="primary"
+                                iconBefore={<PeopleGroupIcon label="" />}
+                                onClick={() => setCurrentView('users')}
+                            >
+                                Gestionar Usuarios
+                            </Button>
+                        </AdminCard>
 
-                {/* TEXTO */}
-                <br />
-                <h1>Conceptos claves:</h1>
-                <hr></hr>
-                
-                <h2>Elementos dialógicos:</h2>
-                <ImageContainer>
-                    <StyledImage src={i__Acuerdo} alt="Simple example" />
-                    <h3> &#8226; Acuerdos: La relación de correspondencia que establece una pauta o modelos adoptados por todos los participantes.</h3>    
-                </ImageContainer>
+                        <AdminCard>
+                            <h2>Gestión de Períodos</h2>
+                            <p>Administra períodos académicos</p>
+                            <Button
+                                appearance="primary"
+                                iconBefore={<CalendarIcon label="" />}
+                                onClick={() => setCurrentView('periods')}
+                            >
+                                Gestionar Períodos
+                            </Button>
+                        </AdminCard>
 
-                <ImageContainer>
-                    <StyledImage src={i__Desacuerdo} alt="Simple example" />
-                    <h3> &#8226; Desacuerdos: Aquello en lo que no se logra un consenso a fruto de una discusión. Se puede convertir en una fuente para ahondar en los temas que generan conflicto y para revisar en el futuro las comprensiones alcanzadas.</h3>
-                </ImageContainer>
-
-                <ImageContainer>
-                    <StyledImage src={i__Compromiso} alt="Simple example" />
-                    <h3> &#8226; Compromisos: Responsabilidades asignadas a cada participante de la reunión, las cuales se designan para ser cumplidas en un plazo específico.</h3>
-                </ImageContainer>
-
-                <ImageContainer>
-                    <StyledImage src={i__Duda} alt="Simple example" />
-                    <h3> &#8226; Dudas: Asuntos para los cuales no se disponen de antecedentes suficientes que permitan formular un juicio fundamentado.</h3>
-                </ImageContainer>
-                <h3>Fuente: Leiva-Lobos et al.(2008)</h3>
-
-                <hr></hr>
-
-                <h2>Fases de una reunión:</h2>
-                <h3> &#8226; Pre-reunión: Corresponde a la primera fase de la reunión, en donde se realiza la preparación del acta dialógica. En esta etapa, en coordinación del secretario y anfitrión, se establece la información preliminar (fecha, hora, objetivo, temas, URLs adjuntos, etc) de la reunión, así como también la vinculación de usuarios como invitados. En el tránsito de esta fase a la próxima se notifica por email a los invitados que hay una reunión que requiere su atención.</h3>
-                <h3> &#8226; En-reunión: Luego de concluir la fase de pre-reunión, anfitrión/secretario ingresan a la sesión con su marca de tiempo real que idealmente debería coincidir con datos de fecha y hora indicada ingresados en la pre-reunión, iniciando así la fase de en-reunión. Además del secretario y el anfitrión, los invitados se convierten en participantes al conectarse a la aplicación. Luego, obtienen la facultad de editar los distintos aspectos de una acta dialógica en tiempo real. En tal caso la reunión se centra en los temas definidos previamente, donde se añaden colaborativamente elementos dialógicos para sintetizar lo que se va dialogando en la reunión, culminando con una hora de término que debe ser registrada.</h3>
-                <h3> &#8226; Post-reunión: Por último, se tiene la fase de post-reunión que es iniciada tras concluir la fase en-reunión y que tiene por objetivo recopilar toda la información y afinar los detalles inconclusos o confusos que surgieron de la fase anterior, actualizados únicamente por el secretario o anfitrión. Además, se establece quiénes de los invitados asistió como participante activo y quienes faltaron.</h3>
-
-                <hr></hr>
-            </ContentBox>
+                        <AdminCard>
+                            <h2>Gestión de Comisiones</h2>
+                            <p>Administra comisiones y sus miembros</p>
+                            <Button
+                                appearance="primary"
+                                iconBefore={<BoardIcon label="" />}
+                                onClick={() => setCurrentView('commissions')}
+                            >
+                                Gestionar Comisiones
+                            </Button>
+                        </AdminCard>
+                    </AdminGrid>
+                </>
+            ) : currentView === 'users' ? (
+                <GestionUsuarios onBack={() => setCurrentView('dashboard')} />
+            ) : currentView === 'periods' ? (
+                <GestionPeriodos onBack={() => setCurrentView('dashboard')} />
+            ) : currentView === 'commissions' ? (
+                <GestionComisiones onBack={() => setCurrentView('dashboard')} />
+            ) : null}
         </Container>
     );
 };
