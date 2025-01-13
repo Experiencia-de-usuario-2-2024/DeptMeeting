@@ -2,3 +2,4 @@
 .idea/
 **/dist/
 /frontend/mf-login/bun.lockb
+frontend/mf-informacion/bun.lockb
